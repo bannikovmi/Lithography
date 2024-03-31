@@ -9,3 +9,4 @@ class Resource():
 
 	def send_message(self, message):
 		print(message)
+		
