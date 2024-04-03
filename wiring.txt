@@ -1,0 +1,28 @@
+Drives Pinout and directions
+
+DRX
+	1 B1
+	2 B2
+	3 A1
+	4 A2
+
+	dir 1: CounterClockWise, Ooutwards (From motor)
+	dir 0: ClockWise, Inwards (To motor) 
+
+DRY
+	1 B1
+	2 B2
+	3 A1
+	4 A2
+
+	dir 1: CounterClockWise, Ooutwards (From motor)
+	dir 0: ClockWise, Inwards (To motor) 
+
+DRZ
+	1 B1
+	2 B2
+	3 A1
+	4 A2
+
+	dir 1: CounterClockWise, UP
+	dir 0: ClockWise, DOWN

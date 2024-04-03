@@ -1,4 +1,4 @@
-import sys, time
+import json, sys, time
 from machine import ADC, Pin, Timer
 
 # local imports
@@ -49,6 +49,7 @@ class ESP(Resource):
 		super().__init__()
 		self.timers_pool = [False, False, False, False]
 		self.adc_timer = None
+		self.config_file = config_file
 
 		with open(self.config_file, "r") as file:
 			self.config = json.load(file)
