@@ -1,3 +1,6 @@
+# standard library imports
+import sys, os
+
 # pyqt-related imports
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QCheckBox, QGridLayout, QGroupBox, QLabel,
@@ -5,11 +8,12 @@ from PyQt5.QtWidgets import (QCheckBox, QGridLayout, QGroupBox, QLabel,
 import pyqtgraph as pg
 
 # local imports
-from led import QLedIndicator
+sys.path.insert(0, os.path.abspath('..')) # enable import from sibling packages
+from gui.led import QLedIndicator
 
-class QMotionStepperWidget(QGroupBox):
+class QStepperWidget(QGroupBox):
 
-    def __init__(self, config, label="Motion control"):
+    def __init__(self, config, label="XY motion"):
 
         super().__init__(label)
         self.config = config
@@ -22,11 +26,10 @@ class QMotionStepperWidget(QGroupBox):
 
         self.clockwise_rb = QRadioButton("Clockwise")
         self.counterclockwise_rb = QRadioButton("Counterclockwise")
-        self.clockwise_rb.setChecked(True)
 
         self.nsteps_label = QLabel("Steps")
         self.nsteps_sb = QSpinBox()
-        self.nsteps_sb.setRange(1, 100)r
+        self.nsteps_sb.setRange(1, 100_000)
         self.execute_pb = QPushButton("Execute")
 
         self.clockwise_lim_lab = QLabel("Clockwise max")

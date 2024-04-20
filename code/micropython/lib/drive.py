@@ -84,7 +84,7 @@ class Drive(Resource):
                 else:
                     self.direction = self.POS
                     self.single_toggle = 1
-                    self.esp.attach_interrupt(self.max_id, trigger="FALL", handler=self.on_max_event)
+                    # self.esp.attach_interrupt(self.max_id, trigger="FALL", handler=self.on_max_event)
             
             else:
 
@@ -94,7 +94,7 @@ class Drive(Resource):
                 else:
                     self.direction = self.NEG
                     self.single_toggle = -1
-                    self.esp.attach_interrupt(self.min_id, trigger="FALL", handler=self.on_max_event)
+                    # self.esp.attach_interrupt(self.min_id, trigger="FALL", handler=self.on_min_event)
 
 
             # Perform this calculation here and not in the callback
@@ -131,8 +131,8 @@ class Drive(Resource):
 
         if self.timer is not None:
 
-            self.esp.detach_interrupt(min_id)
-            self.config[f"{self.name}"]["is_at_min"] = True
+            # self.esp.detach_interrupt(min_id)
+            self.esp.config[f"{self.name}"]["is_at_min"] = True
 
             self.timer.deinit()
             self.esp.deallocate_timer(self.timer_id)
@@ -144,8 +144,8 @@ class Drive(Resource):
 
         if self.timer is not None:
 
-            self.esp.detach_interrupt(max_id)
-            self.config[f"{self.name}"]["is_at_max"] = True
+            # self.esp.detach_interrupt(max_id)
+            self.esp.config[f"{self.name}"]["is_at_max"] = True
 
             self.timer.deinit()
             self.esp.deallocate_timer(self.timer_id)

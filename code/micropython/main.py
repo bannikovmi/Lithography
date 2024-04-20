@@ -17,13 +17,17 @@ esp = ESP(config_file="config.json")
 resources = {
     "ESP": esp,
     "DHT": DHT(esp=esp, bus_id = 13),
-    "DRX": Drive(esp=esp, name="DRX", en_id=15, step_id=2, dir_id=4,
-        max_id=16, min_id=17),
-    # "DRY": Drive(esp=esp, name="DRY", en_id = 5, step_id = 6, dir_id = 7,
+    "DRX": Drive(esp=esp, name="DRX", en_id=5, step_id=17, dir_id=16,
+        max_id=15, min_id=2),
+    # "DRY": Drive(esp=esp, name="DRY", en_id = 5, step_id = 6, dir_id = 7,DR
     #     max_id = 8, min_id = 9),
     # "DRZ": Drive(esp=esp, name="DRZ", en_id = 10, step_id = 11, dir_id = 12,
-    #     max_id = 13, min_id = 14),
+    #     max_id = 13, min_id = 14),D
 }
+
+# from time import sleep_ms
+# from machine import ADC
+# adc_pin = ADC(4)DR
 
 while True:
         

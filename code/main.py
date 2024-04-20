@@ -14,11 +14,10 @@ import sys
 import pyvisa
 
 # pyqt-related imports
-from PyQt5.QtWidgets import QApplication, QGridLayout, QMainWindow, QWidget
+from PyQt5.QtWidgets import QApplication, QGridLayout, QMainWindow, QTabWidget, QWidget
 
-# local imports
-from gui import QMotionStepperWidget
-from motion import MotionMessage
+# local gui imports
+from motion.tab import QMotionTab
 
 # load configurations
 import tomli
@@ -40,42 +39,24 @@ class MainWindow(QMainWindow):
         self.rm = pyvisa.ResourceManager()
 
         # Setup ESP Wroom32 for motion control
-        self.esp = self.rm.open_resource('ASRL4::INSTR')
-        self.esp.baud_rate = 115200
-        self.esp.write_termination = ' \n'
-        self.esp.read_termination = '\n'
-        self.esp.timeout = 1000
+        self.ESP = self.rm.open_resource('ASRL4::INSTR')
+        self.ESP.baud_rate = 115200
+        self.ESP.write_termination = ' \n'
+        self.ESP.read_termination = '\n'
+        self.ESP.timeout = 1000
 
     def initUI(self):
 
-        self.main_widget = QWidget()
-        self.setCentralWidget(self.main_widget)
+        # Create tab widgets
+        self.tabs = QTabWidget()
+        self.setCentralWidget(self.tabs)
 
-        self.grid = QGridLayout()
-        self.main_widget.setLayout(self.grid)
-
-        self.motion_stepper_widget = QMotionStepperWidget(self.config)
-        self.grid.addWidget(self.motion_stepper_widget)
-        self.motion_stepper_widget.execute_pb.clicked.connect(self.execute_motion)
+        self.motion_tab = QMotionTab(self.config, self.ESP)
+        self.tabs.addTab(self.motion_tab, "Motion")
 
         # Resize main window and set title
         self.setWindowTitle('Lithography')
         self.show()
-
-
-    def execute_motion(self):
-
-        # self.motion_stepper_widget.execute_pb.setDisabled(True)
-        if self.motion_stepper_widget.clockwise_rb.isChecked():
-            self.direction = 1
-        else:
-            self.direction = 0
-
-        self.nsteps = self.motion_stepper_widget.nsteps_sb.value()
-        self.delay = 1000
-        
-        # self.esp.write(MotionMessage(self.direction, self.nsteps, self.delay).to_serial_message())
-        print(self.esp.read())
 
 def main():
 

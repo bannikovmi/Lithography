@@ -1,0 +1,24 @@
+[data]
+
+	[data.time]
+	format_string = ".3f"
+	units = "s"
+	is_in_file = true
+
+	[data.source_current]
+	format_string = ".3f"
+	units = "s"
+	is_in_file = true
+
+[history]
+max_points_count = 10000
+
+[magnet_source]
+TPA = 0.16328
+
+he_fill_borders = [770, 760, 750, 740, 730, 720]
+max_field_limits = [12, 10, 8, 4, 2, 0]
+max_field_1 = 19
+max_field_2 = 20
+max_field_3 = 21
+
