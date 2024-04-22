@@ -9,9 +9,9 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QGridLayout, QWidget
 
 # local imports
-from .plane import QPlaneMotionWidget
+from .plane import QPlanePositioningWidget
 
-class QMotionTab(QWidget):
+class QPositioningTab(QWidget):
 
     def __init__(self, config, ESP):
         
@@ -26,8 +26,8 @@ class QMotionTab(QWidget):
         self.grid = QGridLayout()
         self.setLayout(self.grid)
 
-        self.plane_motion_widget = QPlaneMotionWidget(self.config, self.ESP)
-        self.grid.addWidget(self.plane_motion_widget, 0, 0)
+        self.plane_positioning_widget = QPlanePositioningWidget(self.config, self.ESP)
+        self.grid.addWidget(self.plane_positioning_widget, 0, 0)
 
         self.grid.setColumnStretch(1, 1)
 

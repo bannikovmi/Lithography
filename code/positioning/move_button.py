@@ -15,11 +15,17 @@ class QMoveButton(QToolButton):
 
 		super().__init__()
 		
+		self.direction = direction
 		self.setArrowType(self.directions[direction][0])
 		self.setShortcut(self.directions[direction][1])
-		self.setAutoRepeat(True)
 		self.setAutoRepeatDelay(100)
 
-	def on_single_press(self):
+	def setAutoRepeat(self, state):
 
-		self.esp
+		super().setAutoRepeat(state)
+		
+		new_shortcut = QShortcut(self.directions[self.direction][1], self)
+		new_shortcut.setAutoRepeat(True)
+		print(new_shortcut)
+		# self.shortcut.setAutoRepeat(state)
+

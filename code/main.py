@@ -17,7 +17,7 @@ import pyvisa
 from PyQt5.QtWidgets import QApplication, QGridLayout, QMainWindow, QTabWidget, QWidget
 
 # local gui imports
-from motion.tab import QMotionTab
+from positioning.tab import QPositioningTab
 
 # load configurations
 import tomli
@@ -39,11 +39,12 @@ class MainWindow(QMainWindow):
         self.rm = pyvisa.ResourceManager()
 
         # Setup ESP Wroom32 for motion control
-        self.ESP = self.rm.open_resource('ASRL4::INSTR')
-        self.ESP.baud_rate = 115200
-        self.ESP.write_termination = ' \n'
-        self.ESP.read_termination = '\n'
-        self.ESP.timeout = 1000
+        # self.ESP = self.rm.open_resource('ASRL4::INSTR')
+        # self.ESP.baud_rate = 115200
+        # self.ESP.write_termination = ' \n'
+        # self.ESP.read_termination = '\n'
+        # self.ESP.timeout = 1000
+        self.ESP = None
 
     def initUI(self):
 
@@ -51,8 +52,8 @@ class MainWindow(QMainWindow):
         self.tabs = QTabWidget()
         self.setCentralWidget(self.tabs)
 
-        self.motion_tab = QMotionTab(self.config, self.ESP)
-        self.tabs.addTab(self.motion_tab, "Motion")
+        self.positioning_tab = QPositioningTab(self.config, self.ESP)
+        self.tabs.addTab(self.positioning_tab, "Positioning")
 
         # Resize main window and set title
         self.setWindowTitle('Lithography')
