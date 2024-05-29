@@ -10,7 +10,7 @@ import pyqtgraph as pg
 
 # local imports
 sys.path.insert(0, os.path.abspath('..')) # enable import from sibling packages
-from gui.led import QLedIndicator
+from gui.led import QRoundLedIndicator
 from gui.numeric import QNumericControl
 
 from .move_button import QMoveButton
@@ -30,17 +30,17 @@ class QPlanePositioningWidget(QGroupBox):
         self.grid = QGridLayout()
         self.setLayout(self.grid)
 
-        self.arrow_button_group = QArrowButtonGroup(self.config)
+        self.arrow_button_group = QPlaneArrowButtonGroup(self.config)
         self.grid.addWidget(self.arrow_button_group, 0, 0, 2, 1)
 
         self.mode_gb = QGroupBox("Mode")
         self.mode_grid = QGridLayout()
         self.mode_gb.setLayout(self.mode_grid)
 
-        self.single_rb = QRadioButton("single")
+        self.single_rb = QRadioButton("single-step")
         self.continious_rb = QRadioButton("continious")
         self.mode_grid.addWidget(self.single_rb, 0, 0)
-        self.mode_grid.addWidget(self.continious_rb, 0, 1)
+        self.mode_grid.addWidget(self.continious_rb, 1, 0)
 
         self.single_rb.clicked.connect(self.toggle_mode)
         self.continious_rb.clicked.connect(self.toggle_mode)
@@ -50,13 +50,13 @@ class QPlanePositioningWidget(QGroupBox):
         self.speed_control = QNumericControl(label="Speed", units="μm/s", mapper_type="linear")
         self.speed_control.setMinimum(0.1)
         self.speed_control.setMapper("log10")
-        self.grid.addWidget(self.speed_control, 2, 0, 1, 3)
+        self.grid.addWidget(self.speed_control, 2, 0, 1, 2)
 
         self.step_control = QNumericControl(label="Step", units="μm", mapper_type="linear")
         self.step_control.setMinimum(0.1)
         self.step_control.setMaximum(10000)
         self.step_control.setMapper("log10")
-        self.grid.addWidget(self.step_control, 3, 0, 1, 3)
+        self.grid.addWidget(self.step_control, 3, 0, 1, 2)
 
         #####################################
         self.continious_rb.setChecked(True)
@@ -92,7 +92,7 @@ class QPlanePositioningWidget(QGroupBox):
         print("moving up")
 
 
-class QArrowButtonGroup(QGroupBox):
+class QPlaneArrowButtonGroup(QGroupBox):
 
     def __init__(self, config, label=None):
 
@@ -112,10 +112,20 @@ class QArrowButtonGroup(QGroupBox):
         self.right_pb = QMoveButton("right")
         self.up_pb = QMoveButton("up")
 
-        self.grid.addWidget(self.down_pb, 1, 1)
-        self.grid.addWidget(self.left_pb, 1, 0)
-        self.grid.addWidget(self.right_pb, 1, 2)
-        self.grid.addWidget(self.up_pb, 0, 1)
+        self.grid.addWidget(self.down_pb, 2, 2)
+        self.grid.addWidget(self.left_pb, 2, 1)
+        self.grid.addWidget(self.right_pb, 2, 3)
+        self.grid.addWidget(self.up_pb, 1, 2)
+
+        # self.down_led = QRoundLedIndicator()
+        # self.left_led = QRoundLedIndicator()
+        # self.right_led = QRoundLedIndicator()
+        # self.up_led = QRoundLedIndicator()
+
+        # self.grid.addWidget(self.down_led, 3, 2)
+        # self.grid.addWidget(self.left_led, 2, 0)
+        # self.grid.addWidget(self.right_led, 2, 4)
+        # self.grid.addWidget(self.up_led, 0, 2)
 
     def setMode(self, mode):
 

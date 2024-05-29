@@ -1,33 +1,30 @@
 # 
 import sys, select, time, json
-# 
+
 # local imports
 from lib.command import Command
-
-from machine import Pin
 
 # import resources classes
 from lib.esp import ESP
 from lib.drive import Drive
 from lib.DHT import DHT
+from lib.LED import LED
+from lib.switch import Switch
 
-# Initialize ESP and resources and save them into dictionary
+# Initialize ESP and resources
 esp = ESP(config_file="config.json")
 
 resources = {
     "ESP": esp,
-    "DHT": DHT(esp=esp, bus_id = 13),
-    "DRX": Drive(esp=esp, name="DRX", en_id=5, step_id=17, dir_id=16,
-        max_id=15, min_id=2),
-    # "DRY": Drive(esp=esp, name="DRY", en_id = 5, step_id = 6, dir_id = 7,DR
-    #     max_id = 8, min_id = 9),
-    # "DRZ": Drive(esp=esp, name="DRZ", en_id = 10, step_id = 11, dir_id = 12,
-    #     max_id = 13, min_id = 14),D
+    "PMP": Switch(esp=esp, name="PMP"),
+    "FAN": Switch(esp=esp, name="FAN"),
+    "BLD": LED(esp=esp, name="BLD"),
+    "RLD": LED(esp=esp, name="RLD"),
+    "DRX": Drive(esp=esp, name="DRX"),
+    "DRY": Drive(esp=esp, name="DRY"),
+    "DRZ": Drive(esp=esp, name="DRZ"),
+    "DRL": Drive(esp=esp, name="DRL"),
 }
-
-# from time import sleep_ms
-# from machine import ADC
-# adc_pin = ADC(4)DR
 
 while True:
         

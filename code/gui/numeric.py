@@ -108,10 +108,11 @@ class QMapper(QObject):
 
 class QNumericControl(QGroupBox):
     
-    def __init__(self, label, units, mapper_type="linear"):
+    def __init__(self, label, units, mapper_type="linear", orientation=Qt.Horizontal):
 
         self.units = units
         self.mapper_type = mapper_type
+        self.orientation = orientation
 
         super().__init__(label)
         self.initUI()
@@ -123,15 +124,21 @@ class QNumericControl(QGroupBox):
         self.grid = QGridLayout()
         self.setLayout(self.grid)
 
-        self.slider = QSlider(Qt.Horizontal)
+        self.slider = QSlider(self.orientation)
         self.slider.setMaximum(1000) # higher-resolution slider
         self.spinbox = QDoubleSpinBox()
         self.units_lab = QLabel(self.units)
 
-        self.grid.addWidget(self.slider, 0, 0)
-        self.grid.addWidget(self.spinbox, 0, 1)
-        self.grid.addWidget(self.units_lab, 0, 2)
-        self.grid.setColumnStretch(0, 1)
+        if self.orientation == Qt.Horizontal:
+            self.grid.addWidget(self.slider, 0, 0)
+            self.grid.addWidget(self.spinbox, 0, 1)
+            self.grid.addWidget(self.units_lab, 0, 2)
+            self.grid.setColumnStretch(0, 1)
+        else:
+            self.grid.addWidget(self.spinbox, 0, 0)
+            self.grid.addWidget(self.units_lab, 0, 1)
+            self.grid.addWidget(self.slider, 1, 0, 1, 2)
+            self.grid.setRowStretch(0,  1)
 
         self.slider.valueChanged.connect(self.on_slider_change)
         self.spinbox.valueChanged.connect(self.on_spinbox_change)

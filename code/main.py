@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
 
     def init_resources(self):
 
-        self.rm = pyvisa.ResourceManager()
+        self.rm = pyvisa.ResourceManager("@py")
 
         # Setup ESP Wroom32 for motion control
         # self.ESP = self.rm.open_resource('ASRL4::INSTR')

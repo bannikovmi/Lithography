@@ -1,7 +1,8 @@
-from machine import Timer
+from machine import Timer, Pin
 
 # local imports
 from resource import Resource
+from tasks import LastingTask
 
 class Drive(Resource):
 
@@ -9,148 +10,183 @@ class Drive(Resource):
     NEG = 0
 
     drive_commands = {
-        "DS": "disable",
-        "EN": "enable",
-        "GP": "get_position",
-        "MV": "move",
-        "SP": "set_position"
+        "POW": "power",
+        "SPD": "speed",
+        "MOV": "move",
     }
 
     # merge with parent commands
     available_commands = Resource.available_commands | drive_commands
 
-    def __init__(self, esp, name, en_id, dir_id, step_id, min_id, max_id):
+    def __init__(self, esp, name):
     
         # Save esp resource instance and name
         self.esp = esp
         self.name = name
 
-        # Save pin identifiers
-        self.en_id = en_id
-        self.dir_id = dir_id
-        self.step_id = step_id
-        self.min_id = min_id
-        self.max_id = max_id
+        # Initialize ESP pins
+        self.en_pin = Pin(self.esp.config[name]["en_id"])
+        self.dir_pin = Pin(self.esp.config[name]["dir_id"])
+        self.step_pin = Pin(self.esp.config[name]["step_id"])
 
-        # Initialize on_startup_parametres
-        self.n_toggle = 0
-        self.direction = 0
-        self.timer = None
+        # Disable drive on startup
+        self.power = False
 
-        # Attach pull resistors
-        self.esp.initialize_pin(self.min_id, mode="IN", pull="UP")
-        self.esp.initialize_pin(self.max_id, mode="IN", pull="UP")
+        # Save PCF pin id's
+        self.min_id = self.esp.config[name]["min_id"]
+        self.max_id = self.esp.config[name]["max_id"]
 
-    def disable(self):
-        # setting value to HIGH disables pin
-        self.esp.set_pin_state(self.en_id, 1)
-
-    def enable(self):
-        # setting value to LOW enables pin
-        self.esp.set_pin_state(self.en_id, 0)
-
-    def get_position(self):
-
-        if self.n_toggle % 2 == 0:
-            position = self.n_toggle // 2
+        # Deterimine limit trigger
+        if self.esp.config[name]["limit_on"] == 1:
+            self.limit_trigger = Pin.IRQ_RISING
         else:
-            position =  self.n_toggle // 2 + 1
-        print(position)
+            self.limit_trigger = Pin.IRQ_FALLING
 
-    def set_position(self, new_position, freq):
+        # Pull PCF min and max pins high to work as limit switchers
+        self.esp.pcf.pin(self.min_id, 1)
+        self.esp.pcf.pin(self.max_id, 1)
 
-        new_position = int(new_position)
-        if self.n_toggle % 2 == 0:
-            old_position = self.n_toggle // 2
+        # Set default parametres
+        self.speed(self.esp.config[name]["speed"])
+        self.direction(self.esp.config[name]["direction"])
+
+    ##########################################################################################
+    #### Properties
+    ##########################################################################################
+    @property
+    def direction(self):
+        val = self.dir_pin()
+        pos_dir = self.esp.config[name]["pos_dir"]
+        if val == pos_dir:
+            return 1
         else:
-            old_position =  self.n_toggle // 2 + 1
-
-        nsteps = new_position - old_position
-        self.move(nsteps, freq)
-
-    def move(self, nsteps, freq):
-
-        # Ensure that a move operation is not already in place
-        if self.timer is None:
-
-            # Save nsteps value, calculate direction and single_toggle values, attach interrupts
-            self.nsteps = int(nsteps)
-            
-            if self.nsteps > 0:
-
-                # Check that the sensor is not currently at max
-                if self.esp.config[f"{self.name}"]["is_at_max"]:
-                    print(f"{self.name}_MV_MAX")
-                else:
-                    self.direction = self.POS
-                    self.single_toggle = 1
-                    # self.esp.attach_interrupt(self.max_id, trigger="FALL", handler=self.on_max_event)
-            
-            else:
-
-                # Check that we are not at min
-                if self.esp.config[f"{self.name}"]["is_at_min"]:
-                    print(f"{self.name}_MV_MIN")
-                else:
-                    self.direction = self.NEG
-                    self.single_toggle = -1
-                    # self.esp.attach_interrupt(self.min_id, trigger="FALL", handler=self.on_min_event)
-
-
-            # Perform this calculation here and not in the callback
-            self.double_nsteps = 2*abs(self.nsteps)
-            self.counter = 0
-
-            # Initialize pins state
-            self.esp.set_pin_state(self.dir_id, self.direction)
-            self.esp.set_pin_state(self.step_id, 0)
-
-            # Initialize timer
-            self.timer_id = self.esp.allocate_timer_id()
-            self.timer = Timer(self.timer_id)
-            self.timer.init(mode=Timer.PERIODIC, freq=2*int(freq),
-                callback=lambda t: self.on_timer_event())
-
+            return -1
+    
+    @direction.setter
+    def direction(self, value)
+        if int(value) == 1:
+            self.dir_pin(self.esp.config[name]["pos_dir"])
         else:
-            print(f"{self.name}_MV_BUSY")
+            self.dir_pin(int(not self.esp.config[name]["pos_dir"]))
+
+    ##########################################################################################
+    #### Host IO commands
+    ##########################################################################################
+    def power(self, state=None):
         
-    def on_timer_event(self):
+        if state is None:
+            print(self.en_pin())
+        else:
+            self.en_pin(int(state))
 
-        if self.counter < self.double_nsteps: # frequency is two-fold
-            self.esp.toggle_pin_state(self.step_id)
+    def speed(self, value=None):
+    
+        if value is None:
+            print(self._speed)
+        else:
+            self._speed = int(value)
+
+    def move(self, nsteps=None):
+
+        if nsteps is None: # Return state
+
+            if self.timer is None: # No movement
+                print(f"{self.name}_MOV_NONE")
+            else: # Movement is in place, return counter
+                print(f"{self.name}_MOV_{self.nsteps}_{self.counter}")
+        
+        else: # Perform movement
+
+            if self.timer is not None: # A move operation is already in place
+                print(f"{self.name}_MOV_BUSY")
+            else:
+                # Save nsteps to local variable for use in timeout handler
+                self.nsteps = int(nsteps)
+
+                if self.nsteps > 0:
+                    # Check that the positioner is not currently at max
+                    if self.esp.pcf.pin(self.max_id) == self.esp.config[name]["limit_on"]:
+                        print(f"{self.name}_MOV_MAX")
+                        return
+                    else:
+                        self.direction(1)
+                
+                else:
+                    # Check that the positioner is not currently at min
+                    if self.esp.pcf.pin(self.min_id) == self.esp.config[name]["limit_on"]:
+                        print(f"{self.name}_MOV_MIN")
+                        return
+                    else:
+                        self.direction(-1)
+
+                self.counter = 0
+
+                # Initialize timer
+                self.timer_id = self.esp.allocate_timer_id()
+                self.timer = Timer(self.timer_id)
+                self.timer.init(mode=Timer.PERIODIC, freq=int(self.speed()),
+                    callback=lambda t: self.on_timer_event())
+        
+    def on_timer(self):
+
+        if self.counter < self.n_steps:
+            self.step_pin(not self.step_pin()) # Toggle step pin
             self.counter += 1
-            self.n_toggle += self.single_toggle
         else:
             if self.timer is not None:
                 self.timer.deinit()
                 self.esp.deallocate_timer(self.timer_id)
                 self.timer = None
-                print(f"{self.name}_MV_END")
+                print(f"{self.name}_MOV_END")
 
-    def on_min_event(self, min_id):
+    def on_min(self):
 
-        if self.timer is not None:
-
-            # self.esp.detach_interrupt(min_id)
-            self.esp.config[f"{self.name}"]["is_at_min"] = True
+        if self.esp.pcf.pin(self.min_id) == self.esp.config[name]["limit_on"]            
 
             self.timer.deinit()
             self.esp.deallocate_timer(self.timer_id)
             self.timer = None
 
-            print(f"{self.name}_MV_MIN")
+            print(f"{self.name}_MOV_MIN")
 
-    def on_max_event(self, max_id):
+    def on_min(self):
 
-        if self.timer is not None:
-
-            # self.esp.detach_interrupt(max_id)
-            self.esp.config[f"{self.name}"]["is_at_max"] = True
+        if self.esp.pcf.pin(self.min_id) == self.esp.config[name]["limit_on"]::            
 
             self.timer.deinit()
             self.esp.deallocate_timer(self.timer_id)
             self.timer = None
 
-            print(f"{self.name}_MV_MAX")
+            print(f"{self.name}_MOV_MIN")
 
+    # def get_position(self):
 
+    #     if self.n_toggle % 2 == 0:
+    #         position = self.n_toggle // 2
+    #     else:
+    #         position =  self.n_toggle // 2 + 1
+    #     print(position)
+
+    # def set_position(self, new_position, freq):
+
+    #     new_position = int(new_position)
+    #     if self.n_toggle % 2 == 0:
+    #         old_position = self.n_toggle // 2
+    #     else:
+    #         old_position =  self.n_toggle // 2 + 1
+
+    #     nsteps = new_position - old_position
+    #     self.move(nsteps, freq)
+
+class UARTInterface:
+
+    def __init__(self, uart):
+        self.uart = uart
+
+    
+class Movement(LastingTask):
+
+    def __init__(self, timer, interrupt):
+
+        super().__init__(timer)
+        self.interrupt = interrupt
