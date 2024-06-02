@@ -1,1 +1,1 @@
-print(int(not 1))
+print(bytes([0b10100000]))

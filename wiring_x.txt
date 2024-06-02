@@ -1,5 +1,0 @@
-Wiring scheme XY
-1 B1
-2 B2
-3 A1
-4 A2

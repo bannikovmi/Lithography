@@ -57,8 +57,9 @@ config = {
         "min_id": 11,
         "max_id": 10,
         "microstep": 1,
-        "pos_dir": 1,
-        "limit_on": 0,
+        "pos_dir": 0,
+        "limit_on": 1,
+        "speed": 1000
     },
     "DRL": {
     	"uart_addr": 3,
@@ -71,6 +72,13 @@ config = {
         "pos_dir": 1,
         "limit_on": 1,
     },
+    "UART": {
+        "id": 2,
+        "baudrate": 9600,
+        "parity": None,
+        "bits": 8,
+        "stop": 1
+    }
 }
 
 with open("config.json", 'w') as file:
