@@ -21,18 +21,17 @@ class LED(Resource):
         self.pwm = PWM(Pin(self.esp.config[self.name]["pin_id"]))
         
         # Set parametres to default values
-        self.duty = self.esp.config[self.name]["duty"]
-        self.freq = self.esp.config[self.name]["freq"]
-
+        self.duty(self.esp.config[self.name]["duty"])
+        self.freq(self.esp.config[self.name]["freq"])
     
     def duty(self, value=None):
         if value is None:
-            print(self.pwm.duty())
+            print(f"{self.name}_DUT_{self.pwm.duty()}")
         else:
             self.pwm.duty(int(value))
 
     def freq(self, value=None):
         if value is None:
-            print(self.pwm.freq())
+            print(f"{self.name}_FRQ_{self.pwm.freq()}")
         else:
             self.pwm.freq(int(value))

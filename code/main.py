@@ -39,12 +39,12 @@ class MainWindow(QMainWindow):
         self.rm = pyvisa.ResourceManager("@py")
 
         # Setup ESP Wroom32 for motion control
-        # self.ESP = self.rm.open_resource('ASRL4::INSTR')
-        # self.ESP.baud_rate = 115200
-        # self.ESP.write_termination = ' \n'
-        # self.ESP.read_termination = '\n'
-        # self.ESP.timeout = 1000
-        self.ESP = None
+        self.ESP = self.rm.open_resource('ASRL4::INSTR')
+        self.ESP.baud_rate = 115200
+        self.ESP.write_termination = '\r\n'
+        self.ESP.read_termination = '\r\n'
+        self.ESP.timeout = 50
+        # self.ESP = None
 
     def initUI(self):
 

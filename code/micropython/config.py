@@ -20,12 +20,12 @@ config = {
     "BLD": {
         "pin_id": 2,
         "freq": 1000,
-        "duty": 5,
+        "duty": 0,
     },
     "RLD": {
         "pin_id": 15,
         "freq": 1000,
-        "duty": 5,
+        "duty": 0,
     },
     "DRX": {
     	"uart_addr": 0,
@@ -35,19 +35,21 @@ config = {
         "min_id": 4,
         "max_id": 5,
         "microstep": 1,
-        "pos_dir": 1,
-        "limit_on": 1,
+        "pos_dir": 0,
+        "limit_on": 0,
+        "speed": 5000
     },
     "DRY": {
 	    "uart_addr": 1,
         "en_id": 1,
-        "step_id": 2,
+        "step_id": 25,
         "dir_id": 26,
         "min_id": 6,
         "max_id": 7,
         "microstep": 1,
-        "pos_dir": 1,
-        "limit_on": 1,
+        "pos_dir": 0,
+        "limit_on": 0,
+        "speed": 5000
     },
     "DRZ": {
     	"uart_addr": 2,
@@ -59,7 +61,7 @@ config = {
         "microstep": 1,
         "pos_dir": 0,
         "limit_on": 1,
-        "speed": 1000
+        "speed": 5000
     },
     "DRL": {
     	"uart_addr": 3,
@@ -69,8 +71,9 @@ config = {
         "min_id": 13,
         "max_id": 12,
         "microstep": 1,
-        "pos_dir": 1,
-        "limit_on": 1,
+        "pos_dir": 0,
+        "limit_on": 0,
+        "speed": 5000
     },
     "UART": {
         "id": 2,

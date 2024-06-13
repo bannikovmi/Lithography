@@ -1,8 +1,7 @@
 class Resource():
 
-	available_commands = {
-	}
+    available_commands = {
+    }
 
-	def exec_command(self, name, *args):
-		getattr(self, self.available_commands[name])(*args)
-
+    def exec_command(self, name, *args):
+        getattr(self, self.available_commands[name])(*args)

@@ -11,6 +11,8 @@ class ESP(Resource):
 
     esp_commands = {
         "ADC": "ADC_read",
+        "PCF": "PCF_pin",
+        "INT": "INT"
     }
 
     # merge with parent commands
@@ -25,7 +27,7 @@ class ESP(Resource):
             self.config = json.load(file)
 
         # Create TaskManager
-        self.task_manager = TaskManager()
+        self.task_manager = TaskManager(self)
 
         # Initialize I2C communication
         scl_pin = Pin(self.config["ESP"]["scl_id"])
@@ -47,6 +49,23 @@ class ESP(Resource):
             adc_reader = ADCReader(name, int(adc_id), int(freq), int(nsteps))
             self.task_manager.start_task(adc_reader)
 
+    def PCF_pin(self, pin_id, state=None):
+
+        pin_id = int(pin_id)
+        name = f"ESP_PCF_{pin_id}"
+
+        if state is None:
+            pin_state = int(self.pcf.pin(pin_id))
+            print(f"{name}_{pin_state}")
+            return pin_state
+        else:
+            self.pcf.pin(pin_id, int(state))
+
+    def INT(self):
+
+        for name in self.task_manager.interrupts:
+            interrupt = self.task_manager.interrupts[name]
+            print(name, interrupt.name, interrupt.int_id, interrupt.init_val)
 
     # def blink(self, sleep_time):
 

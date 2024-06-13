@@ -179,3 +179,11 @@ class QNumericControl(QGroupBox):
 
         self.spinbox.setMinimum(val)
         self.setMapper(self.mapper_type)
+
+    def value(self):
+
+        return self.spinbox.value()
+
+    def setValue(self, val):
+
+        self.spinbox.setValue(val)

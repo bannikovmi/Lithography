@@ -78,7 +78,7 @@ class Drive(Resource):
         
         if state is None:
             self._power = int(not self.esp.pcf.pin(self.en_id))
-            print(self._power)
+            print(f"{self.name}_POW_{self._power}")
         else:
             self._power = int(state)
             self.esp.pcf.pin(self.en_id, not self._power) # Setting pin to low enables drive power
@@ -86,7 +86,7 @@ class Drive(Resource):
     def speed(self, value=None):
     
         if value is None:
-            print(self._speed)
+            print(f"{self.name}_POW_{self._speed}")
         else:
             self._speed = int(value)
 
@@ -104,22 +104,29 @@ class Drive(Resource):
             except KeyError:
                 print(f"{name}_NONE")
         else:
-            movement = Movement(name=name, drive=self, nsteps=int(nsteps))
-            self.esp.task_manager.start_task(movement)
+            try:
+                movement = Movement(name=name, drive=self, nsteps=int(nsteps))
+                self.esp.task_manager.start_task(movement)
+            except Exception as e:
+                print(e)
 
     def at_max(self):
 
         if self.esp.pcf.pin(self.max_id) == self.esp.config[self.name]["limit_on"]:
             print(f"{self.name}_MAX_1")
+            return True
         else:
             print(f"{self.name}_MAX_0")
+            return False
 
     def at_min(self):
 
         if self.esp.pcf.pin(self.min_id) == self.esp.config[self.name]["limit_on"]:
             print(f"{self.name}_MIN_1")
+            return True
         else:
             print(f"{self.name}_MIN_0")
+            return False
 
         # if nsteps is None: # Return state
 
@@ -219,14 +226,38 @@ class Movement(LastingTask):
 
         super().__init__(name=name, mode=Timer.PERIODIC, freq=drive._speed)
 
-        if nsteps > 0:
+        # Just in case pull min and max pins high once again
+        self.drive.esp.pcf.pin(self.drive.max_id, 1)
+        self.drive.esp.pcf.pin(self.drive.min_id, 1)
+
+        if nsteps > 0:             
+
+            # Ensure we are not at max
+            if self.drive.at_max():
+                raise Exception(f"{self.name}_MAX")
+
             self.drive.direction = 1
-        else:
+            
+            int_name = f"{self.name}_MAX"
+            int_id = self.drive.esp.config[self.drive.name]["max_id"]
+        else:    
+
+            # Ensure we are not at min
+            if self.drive.at_min():
+                raise Exception(f"{self.name}_MIN")
             self.drive.direction = -1
+            int_name = f"{self.name}_MIN"
+            int_id = self.drive.esp.config[self.drive.name]["min_id"]            
+        
         self.nsteps = abs(nsteps)
         self.counter = 0
 
+        init_val = not self.drive.esp.config[self.drive.name]["limit_on"]
+        self.interrupt = MovementInterrupt(int_name, int_id, init_val)
+
     def callback(self, t):
+
+        # print(f"{self.name} callback {self.counter}")
 
         if self.counter < self.nsteps:
             self.counter += 1
@@ -234,3 +265,17 @@ class Movement(LastingTask):
         else:
             self.finished = True
             print(f"{self.drive.name}_MOV_FIN")
+
+    def finish(self):
+
+        # Just in case pull min and max pins high once again
+        self.drive.esp.pcf.pin(self.drive.max_id, 1)
+        self.drive.esp.pcf.pin(self.drive.min_id, 1)
+
+class MovementInterrupt:
+
+    def __init__(self, name, int_id, init_val):
+
+        self.name = name
+        self.int_id = int_id
+        self.init_val = init_val

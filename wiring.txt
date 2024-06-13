@@ -6,8 +6,8 @@ DRX
 	3 A1
 	4 A2
 
-	dir 1: CounterClockWise, Ooutwards (From motor)
-	dir 0: ClockWise, Inwards (To motor) 
+	dir 0: ClockWise, Inwards (To motor), towards MAX, positive steps 
+	dir 1: CounterClockWise, Outwards (From motor), towards MIN, negative steps
 
 DRY
 	1 B1
@@ -15,8 +15,8 @@ DRY
 	3 A1
 	4 A2
 
-	dir 1: CounterClockWise, Ooutwards (From motor)
-	dir 0: ClockWise, Inwards (To motor) 
+	dir 0: ClockWise, Inwards (To motor), towards MAX, positive steps, GUI UP
+	dir 1: CounterClockWise, Outwards (From motor), towards MIN, negative steps, GUI DOWN
 
 DRZ
 	1 B1
@@ -24,5 +24,14 @@ DRZ
 	3 A1
 	4 A2
 
-	dir 1: CounterClockWise, UP, towards MIN, negative nsteps
 	dir 0: ClockWise, DOWN, towards MAX, positive nsteps
+	dir 1: CounterClockWise, UP, towards MIN, negative nsteps
+	
+DRL
+	1 B1
+	2 B2
+	3 A1
+	4 A2
+
+	dir 0: ClockWise, Inwards (To motor), towards MAX, positive nsteps
+	dir 1: CounterClockWise, Outwards (From motor), towards MIN, negative nsteps

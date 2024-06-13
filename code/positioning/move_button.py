@@ -24,8 +24,8 @@ class QMoveButton(QToolButton):
 
 		super().setAutoRepeat(state)
 		
-		new_shortcut = QShortcut(self.directions[self.direction][1], self)
-		new_shortcut.setAutoRepeat(True)
-		print(new_shortcut)
-		# self.shortcut.setAutoRepeat(state)
+		# new_shortcut = QShortcut(self.directions[self.direction][1], self)
+		# new_shortcut.setAutoRepeat(True)
+		# print(new_shortcut)
+		# # self.shortcut.setAutoRepeat(state)
 

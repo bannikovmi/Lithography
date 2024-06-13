@@ -6,13 +6,20 @@ Author: Mikhail Bannikov bannikovmi96@gmail.com
 
 # pyqt-related imports
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QGridLayout, QWidget
+from PyQt5.QtWidgets import (
+    QGridLayout,
+    QVBoxLayout,
+    QWidget
+    )
 
 # local imports
 from .vacuum import QVacuumWidget
 from .plane import QPlanePositioningWidget
 from .height import QZMotionWidget
 from .lense import QLenseMotionWidget
+from .climate import QAHTWidget
+from .LED import QLEDWidget
+from .listener import Listener
 
 class QPositioningTab(QWidget):
 
@@ -23,7 +30,18 @@ class QPositioningTab(QWidget):
 
         super().__init__()
         self.initUI()
-        self.connect_signals()
+
+        self.resources = {
+            "DRX": self.plane_positioning_widget,
+            "DRY": self.plane_positioning_widget,
+            "DRZ": self.z_motion_widget,
+            "DRL": self.lense_motion_widget,
+            "AHT": self.AHT_widget,
+            "RLD": self.RLED_widget,
+            "BLD": self.BLED_widget,
+            "TMG": TaskManager()
+        }
+        self.listener = Listener(self.config, self.ESP, self.resources)
 
     def initUI(self):
     
@@ -33,24 +51,27 @@ class QPositioningTab(QWidget):
         # self.vacuum_widget = QVacuumWidget(self.config, self.ESP)
         # self.grid.addWidget(self.vacuum_widget, 0, 0)
 
+        self.lense_motion_widget = QLenseMotionWidget(self.config, self.ESP)
+        self.grid.addWidget(self.lense_motion_widget, 0, 0)
+
         self.z_motion_widget = QZMotionWidget(self.config, self.ESP)
         self.grid.addWidget(self.z_motion_widget, 1, 0)
 
-        self.lense_motion_widget = QLenseMotionWidget(self.config, self.ESP)
-        self.grid.addWidget(self.lense_motion_widget, 0, 1)
-
         self.plane_positioning_widget = QPlanePositioningWidget(self.config, self.ESP)
-        self.grid.addWidget(self.plane_positioning_widget, 1, 1)
+        self.grid.addWidget(self.plane_positioning_widget, 2, 0)
 
+        self.vbox = QVBoxLayout()
+        self.grid.addLayout(self.vbox, 0, 1, 3, 1)
 
-    def connect_signals(self):
+        self.AHT_widget = QAHTWidget(self.config, self.ESP)
+        self.vbox.addWidget(self.AHT_widget, 0)
 
+        self.RLED_widget = QLEDWidget(self.config, self.ESP, name="RLD", label="Red LED")
+        self.BLED_widget = QLEDWidget(self.config, self.ESP, name="BLD", label="Blue LED")
+        self.vbox.addWidget(self.RLED_widget, 1)
+        self.vbox.addWidget(self.BLED_widget, 1)
+
+class TaskManager:
+
+    def update_UI(self, command, arguments):
         pass
-        # self.vacuum_widget.state_changed.connect(self.plane_positioning_widget.setEnabled)
-
-        # self.grid.setColumnStretch(2, 1)
-
-    # def on_timer_event(self):
-
-    #     self.temp_monitor_widget.on_timer_event()
-    #     self.temp_control_widget.on_timer_event()

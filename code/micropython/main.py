@@ -7,8 +7,8 @@ from command import Command
 # import resources classes
 from ESP import ESP
 from drive import Drive
-# from DHT import DHT
-# from LED import LED
+from AHT import AHT
+from LED import LED
 # from switch import Switch
 
 # Initialize ESP and resources
@@ -18,12 +18,13 @@ resources = {
     "ESP": esp,
     # "PMP": Switch(esp=esp, name="PMP"),
     # "FAN": Switch(esp=esp, name="FAN"),
-    # "BLD": LED(esp=esp, name="BLD"),
-    # "RLD": LED(esp=esp, name="RLD"),
-    # "DRX": Drive(esp=esp, name="DRX"),
-    # "DRY": Drive(esp=esp, name="DRY"),
+    "AHT": AHT(esp=esp, name="AHT"),
+    "BLD": LED(esp=esp, name="BLD"),
+    "RLD": LED(esp=esp, name="RLD"),
+    "DRX": Drive(esp=esp, name="DRX"),
+    "DRY": Drive(esp=esp, name="DRY"),
     "DRZ": Drive(esp=esp, name="DRZ"),
-    # "DRL": Drive(esp=esp, name="DRL"),
+    "DRL": Drive(esp=esp, name="DRL"),
 }
 
 while True:
