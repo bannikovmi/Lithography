@@ -45,7 +45,7 @@ class TMC_2209:
     _msres = -1
     _stepsPerRevolution = 0
     
-    _loglevel = Loglevel.none
+    _loglevel = Loglevel.debug
 
     _currentPos = 0                 # current position of stepper in steps
     _targetPos = 0                  # the target position in steps
@@ -76,7 +76,9 @@ class TMC_2209:
 #-----------------------------------------------------------------------
     def __init__(self, pin_step, pin_dir, pin_en, baudrate=115200, serialport=2):
         
+        print("initializing uart")
         self.tmc_uart = TMC_UART(serialport, baudrate)
+        print("\tfinished")
         self._pin_step = pin_step
         self._pin_dir = pin_dir
         self._pin_en = pin_en

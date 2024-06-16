@@ -92,8 +92,12 @@ class QLenseMotionWidget(QGroupBox):
 
         if self.lense_power_cb.isChecked():
             self.ESP.write("DRL_POW_1")
+            self.arrow_button_group.left_pb.setDisabled(False)
+            self.arrow_button_group.right_pb.setDisabled(False)
         else:
             self.ESP.write("DRL_POW_0")
+            self.arrow_button_group.left_pb.setDisabled(True)
+            self.arrow_button_group.right_pb.setDisabled(True)
 
         self.ESP.write("DRZ_MAX")
         self.ESP.write("DRZ_MIN")

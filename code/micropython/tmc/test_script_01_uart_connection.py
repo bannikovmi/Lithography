@@ -1,5 +1,5 @@
 import sys
-from tmc.TMC_2209_StepperDriver import *
+from TMC_2209_StepperDriver import *
 import time
 
 

@@ -101,8 +101,12 @@ class QPlanePositioningWidget(QGroupBox):
 
         if self.x_power_cb.isChecked():
             self.ESP.write("DRX_POW_1")
+            self.arrow_button_group.left_pb.setDisabled(False)
+            self.arrow_button_group.right_pb.setDisabled(False)
         else:
             self.ESP.write("DRX_POW_0")
+            self.arrow_button_group.left_pb.setDisabled(True)
+            self.arrow_button_group.right_pb.setDisabled(True)
 
         self.ESP.write("DRX_MAX")
         self.ESP.write("DRX_MIN")
@@ -111,8 +115,12 @@ class QPlanePositioningWidget(QGroupBox):
 
         if self.y_power_cb.isChecked():
             self.ESP.write("DRY_POW_1")
+            self.arrow_button_group.up_pb.setDisabled(False)
+            self.arrow_button_group.down_pb.setDisabled(False)
         else:
             self.ESP.write("DRY_POW_0")
+            self.arrow_button_group.up_pb.setDisabled(True)
+            self.arrow_button_group.down_pb.setDisabled(True)
 
         self.ESP.write("DRY_MAX")
         self.ESP.write("DRY_MIN")

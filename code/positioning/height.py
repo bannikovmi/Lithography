@@ -84,7 +84,7 @@ class QZMotionWidget(QGroupBox):
     # def toggle_mode(self):
 
     #     if self.continious_rb.isChecked():
-    #         self.speed_control.setDisabled(False)
+    #         self.speed_control.setDisabled()
     #         self.step_control.setDisabled(True)
     #         self.arrow_button_group.setMode("continious")
     #     else:
@@ -96,8 +96,12 @@ class QZMotionWidget(QGroupBox):
 
         if self.z_power_cb.isChecked():
             self.ESP.write("DRZ_POW_1")
+            self.arrow_button_group.up_pb.setDisabled(False)
+            self.arrow_button_group.down_pb.setDisabled(False)
         else:
             self.ESP.write("DRZ_POW_0")
+            self.arrow_button_group.up_pb.setDisabled(True)
+            self.arrow_button_group.down_pb.setDisabled(True)
 
         self.ESP.write("DRZ_MAX")
         self.ESP.write("DRZ_MIN")
