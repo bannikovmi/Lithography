@@ -1,18 +1,18 @@
-# 
-import sys, select, time, json
+# jeneral imports
+import sys
 
 # local imports
-from command import Command
+from resource.command import Command
 
-# import resources classes
-from ESP import ESP
-from drive import Drive
-from AHT import AHT
-from LED import LED
-# from switch import Switch
+# import resource classes
+from ESP.ESP import ESP
+from tmc.drive import Drive
+from aht.AHT import AHT
+from misc.LED import LED
+from misc.switch import Switch
 
 # Initialize ESP and resources
-esp = ESP(config_file="config.json")
+esp = ESP(config_file="config//config.json")
 
 resources = {
     "ESP": esp,
