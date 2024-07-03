@@ -5,7 +5,7 @@ Author: Mikhail Bannikov bannikovmi96@gmail.com
 """
 
 # pyqt-related imports
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import (
     QGridLayout,
     QVBoxLayout,
@@ -14,12 +14,10 @@ from PyQt5.QtWidgets import (
 
 # local imports
 from .vacuum import QVacuumWidget
-from .plane import QPlanePositioningWidget
-from .height import QZMotionWidget
-from .lense import QLenseMotionWidget
 from .climate import QAHTWidget
-from .LED import QLEDWidget
+from .LED import QLEDControlWidget
 from .listener import Listener
+from .motion import QMotionGB
 
 class QPositioningTab(QWidget):
 
@@ -32,10 +30,10 @@ class QPositioningTab(QWidget):
         self.initUI()
 
         self.resources = {
-            "DRX": self.plane_positioning_widget,
-            "DRY": self.plane_positioning_widget,
-            "DRZ": self.z_motion_widget,
-            "DRL": self.lense_motion_widget,
+            "DRX": self.x_motion_gb,
+            "DRY": self.y_motion_gb,
+            "DRZ": self.z_motion_gb,
+            "DRL": self.lense_motion_gb,
             "AHT": self.AHT_widget,
             "RLD": self.RLED_widget,
             "BLD": self.BLED_widget,
@@ -51,25 +49,34 @@ class QPositioningTab(QWidget):
         # self.vacuum_widget = QVacuumWidget(self.config, self.ESP)
         # self.grid.addWidget(self.vacuum_widget, 0, 0)
 
-        self.lense_motion_widget = QLenseMotionWidget(self.config, self.ESP)
-        self.grid.addWidget(self.lense_motion_widget, 0, 0)
+        self.lense_motion_gb = QMotionGB(self.config, self.ESP, name="DRL")
+        self.x_motion_gb = QMotionGB(self.config, self.ESP, name="DRX")
+        self.y_motion_gb = QMotionGB(self.config, self.ESP, name="DRY")
+        self.z_motion_gb = QMotionGB(self.config, self.ESP, name="DRZ")
 
-        self.z_motion_widget = QZMotionWidget(self.config, self.ESP)
-        self.grid.addWidget(self.z_motion_widget, 1, 0)
+        self.grid.addWidget(self.x_motion_gb, 1, 1)
+        self.grid.addWidget(self.y_motion_gb, 1, 0)
+        self.grid.addWidget(self.lense_motion_gb, 0, 1)
+        self.grid.addWidget(self.z_motion_gb, 0, 0)
 
-        self.plane_positioning_widget = QPlanePositioningWidget(self.config, self.ESP)
-        self.grid.addWidget(self.plane_positioning_widget, 2, 0)
+        self.grid.setColumnStretch(0, 1)
+        self.grid.setColumnStretch(1, 1)
+        self.grid.setColumnStretch(2, 0)
+
+        self.grid.setRowStretch(2, 1)
 
         self.vbox = QVBoxLayout()
-        self.grid.addLayout(self.vbox, 0, 1, 3, 1)
+        self.grid.addLayout(self.vbox, 0, 2, 2, 1)
 
         self.AHT_widget = QAHTWidget(self.config, self.ESP)
         self.vbox.addWidget(self.AHT_widget, 0)
 
-        self.RLED_widget = QLEDWidget(self.config, self.ESP, name="RLD", label="Red LED")
-        self.BLED_widget = QLEDWidget(self.config, self.ESP, name="BLD", label="Blue LED")
+        self.RLED_widget = QLEDControlWidget(self.config, self.ESP,
+            name="RLD", label="Red LED")
+        self.BLED_widget = QLEDControlWidget(self.config, self.ESP,
+            name="BLD", label="Blue LED")
         self.vbox.addWidget(self.RLED_widget, 1)
-        self.vbox.addWidget(self.BLED_widget, 1)
+        self.vbox.addWidget(self.BLED_widget, 2)
 
 class TaskManager:
 

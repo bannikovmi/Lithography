@@ -22,5 +22,60 @@ max_timer = 10_000
 init_timer = 1000
 eta_update_interval = 50
 
+[Drives]
+step_dividers = [1, 2, 4, 8, 16, 32, 64, 128, 256]
+
+	[Drives.DRX]
+	label = "X"
+	orientation = "Horizontal"
+	min_position = 0
+	max_position = 1_000_000
+	min_speed = 1
+	max_speed = 5000
+	init_speed = 1000
+	min_steps = 1
+	max_steps = 1_000_000
+	init_steps = 10_000
+	pos_direction = 1
+
+	[Drives.DRY]
+	label = "Y"
+	orientation = "Vertical"
+	min_position = 0
+	max_position = 1_000_000
+	min_speed = 1
+	max_speed = 5000
+	init_speed = 1000
+	min_steps = 1
+	max_steps = 1_000_000
+	init_steps = 10_000
+	pos_direction = 1
+
+	[Drives.DRZ]
+	label = "Z"
+	orientation = "Vertical"
+	min_position = 0
+	max_position = 1_000_000
+	min_speed = 1
+	max_speed = 5000
+	init_speed = 1000
+	min_steps = 1
+	max_steps = 1_000_000
+	init_steps = 10_000
+	pos_direction = -1
+
+	[Drives.DRL]
+	label = "Lense"
+	orientation = "Horizontal"
+	min_position = 0
+	max_position = 100_000
+	min_speed = 1
+	max_speed = 5000
+	init_speed = 1000
+	min_steps = 1
+	max_steps = 10_000
+	init_steps = 10_000
+	pos_direction = -1
+
 [Listener]
 polling_interval = 200

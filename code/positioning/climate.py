@@ -1,6 +1,12 @@
 # pyqt-related imports
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QGridLayout, QGroupBox, QLabel, QLineEdit, QDoubleSpinBox
+from PyQt5.QtWidgets import (
+    QGridLayout,
+    QGroupBox,
+    QLabel,
+    QLineEdit,
+    QDoubleSpinBox,
+    )
 
 class QAHTWidget(QGroupBox):
 

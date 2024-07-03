@@ -1,5 +1,7 @@
+# third-party imports
 from pyvisa.errors import VisaIOError
 
+# pyqt-related imports
 from PyQt5.QtCore import QObject, QTimer
 
 class Message:

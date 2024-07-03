@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (
     QSpinBox,
     )
 
-class QLEDWidget(QGroupBox):
+class QLEDControlWidget(QGroupBox):
 
     def __init__(self, config, ESP, name, label):
 
@@ -21,7 +21,6 @@ class QLEDWidget(QGroupBox):
         
         self.initUI()
         self.emission_on = False
-        self.ESP.write(f"{self.name}_DUT_{0}") # turn off the lighting
 
     def initUI(self):
         
@@ -148,6 +147,7 @@ class QLEDWidget(QGroupBox):
     def on_emission_finish(self):
 
         self.ESP.write(f"{self.name}_DUT_0")
+        self.emission_on = False
         
         if self.continious_rb.isChecked():
             
@@ -211,6 +211,4 @@ class QTimedOnGB(QGroupBox):
         self.hbox2.addWidget(self.eta_label, 1)
         self.hbox2.addWidget(self.eta_le, 2)
 
-        self.start_pb.clicked.connect(self.on_emission_start)
-
-    
+        self.start_pb.clicked.connect(self.on_emission_start) 
