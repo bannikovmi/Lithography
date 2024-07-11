@@ -11,7 +11,7 @@ Author: Mikhail Bannikov bannikovmi96@gmail.com
 import sys
 
 # third party imports
-import pyvisa
+import serial
 
 # pyqt-related imports
 from PyQt5.QtWidgets import QApplication, QGridLayout, QMainWindow, QTabWidget, QWidget
@@ -31,20 +31,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.config = config
-        self.init_resources()
         self.initUI()
-
-    def init_resources(self):
-
-        self.rm = pyvisa.ResourceManager("@py")
-
-        # Setup ESP Wroom32 for motion control
-        self.ESP = self.rm.open_resource('ASRL4::INSTR')
-        self.ESP.baud_rate = 115200
-        self.ESP.write_termination = '\r\n'
-        self.ESP.read_termination = '\r\n'
-        self.ESP.timeout = 50
-        # self.ESP = None
 
     def initUI(self):
 
@@ -52,12 +39,24 @@ class MainWindow(QMainWindow):
         self.tabs = QTabWidget()
         self.setCentralWidget(self.tabs)
 
-        self.positioning_tab = QPositioningTab(self.config, self.ESP)
+        self.positioning_tab = QPositioningTab(self.config)
         self.tabs.addTab(self.positioning_tab, "Positioning")
 
         # Resize main window and set title
         self.setWindowTitle('Lithography')
         self.show()
+
+    # def init_resources(self):
+
+    #     self.rm = pyvisa.ResourceManager("@py")
+
+    #     # Setup ESP Wroom32 for motion control
+    #     self.ESP = self.rm.open_resource('ASRL4::INSTR')
+    #     self.ESP.baud_rate = 115200
+    #     self.ESP.write_termination = '\r\n'
+    #     self.ESP.read_termination = '\r\n'
+    #     self.ESP.timeout = 50
+    #     # self.ESP = None
 
 def main():
 

@@ -16,20 +16,20 @@ from PyQt5.QtWidgets import (
 from .vacuum import QVacuumWidget
 from .climate import QAHTWidget
 from .LED import QLEDControlWidget
-from .listener import Listener
 from .motion import QMotionGB
+from .communication import ESP, CommunicationMode
 
 class QPositioningTab(QWidget):
 
-    def __init__(self, config, ESP):
+    def __init__(self, config):
         
         self.config = config
-        self.ESP = ESP
+        self.ESP = ESP(self.config, mode=CommunicationMode.simulation)
 
         super().__init__()
         self.initUI()
 
-        self.resources = {
+        self.ESP.resource_widgets = {
             "DRX": self.x_motion_gb,
             "DRY": self.y_motion_gb,
             "DRZ": self.z_motion_gb,
@@ -39,7 +39,7 @@ class QPositioningTab(QWidget):
             "BLD": self.BLED_widget,
             "TMG": TaskManager()
         }
-        self.listener = Listener(self.config, self.ESP, self.resources)
+        self.ESP.timer.start()
 
     def initUI(self):
     
