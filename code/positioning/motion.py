@@ -53,7 +53,14 @@ class QMotionGB(QGroupBox):
         self.setLayout(self.grid)
 
         self.move_params = QMoveParams(self.name, self.config)
-        self.grid.addWidget(self.move_params, 0, 0)
+        self.move_gb = QMoveBox(self.name, self.config)
+
+        if self.orientation == Qt.Horizontal:
+            self.grid.addWidget(self.move_gb, 0, 0)
+            self.grid.addWidget(self.move_params, 1, 0)
+        else:
+            self.grid.addWidget(self.move_gb, 0, 0)
+            self.grid.addWidget(self.move_params, 0, 1)
 
     #     self.power_cb = QCheckBox("Power")
     #     self.settings_pb = QPushButton("Settings")
@@ -279,18 +286,36 @@ class QMoveBox(QGroupBox):
         self.name = name
         self.config = config
 
+        self.orientation = PyQt_orientation(
+            self.config["Drives"][name]["orientation"])
+
         super().__init__("Movement")
         self.initUI()
 
     def initUI(self):
 
-        self.arrow_button_group = QArrowButtonGroup(self.name, self.config)
-        self.abort_pb = QPushButton("Abort movement")
-        self.abort_pb.setDisabled(True)
+        self.grid = QGridLayout()
+        self.setLayout(self.grid)
 
+        # Create widgets
+        self.arrow_button_group = QArrowButtonGroup(self.name, self.config)
+        self.abort_pb = QPushButton("Abort")
         self.position_widget = QPositionWidget(self.name, self.config)
 
 
+        # Add widgets to grid
+        self.grid.addWidget(self.arrow_button_group, 0, 0)
+        self.grid.addWidget(self.abort_pb, 1, 0)
+        self.grid.addWidget(self.position_widget, 0, 1, 2, 1)
+        # if self.orientation == Qt.Horizontal:
+            
+        # else:
+        #     self.grid.addWidget(self.abort_pb, )
+
+
+        # Set widgets params
+
+        self.abort_pb.setDisabled(True)
 
 class QArrowButtonGroup(QGroupBox):
 
