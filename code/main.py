@@ -42,6 +42,11 @@ class MainWindow(QMainWindow):
 
         # Resize main window and set title
         self.setWindowTitle('Lithography')
+        
+        # Fullscreen
+        self.resize(1920, 1080)
+        self.showMaximized()
+        
         self.show()
 
 def main():

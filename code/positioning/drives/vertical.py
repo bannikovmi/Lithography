@@ -62,7 +62,7 @@ class QPositionerWidget(QGroupBox):
         self.config = config
         self.esp = esp
 
-        super().__init__()
+        super().__init__("Movement")
         self.initUI()
 
     def initUI(self):

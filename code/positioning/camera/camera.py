@@ -8,7 +8,7 @@ from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import (
     QLabel,
     QGridLayout,
-    QWidget
+    QGroupBox
     )
 
 class VideoThread(QThread):
@@ -23,14 +23,14 @@ class VideoThread(QThread):
             if ret:
                 self.change_pixmap_signal.emit(cv_img)
 
-class QCameraWidget(QWidget):
+class QCameraWidget(QGroupBox):
 
     def __init__(self, config):
 
         self.config = config
         # self.cam_address = self.config["Camera"]["address"]
 
-        super().__init__()
+        super().__init__("Camera")
 
         self.initUI()
         self.thread = VideoThread()
@@ -43,6 +43,10 @@ class QCameraWidget(QWidget):
         self.setLayout(self.grid)
 
         self.image_lab = QLabel(self)
+        empty_arr = np.float32(np.zeros(shape=(480, 640)))
+        empty_img = self.convert_cv_qt(empty_arr)
+        self.image_lab.setPixmap(empty_img.scaledToWidth(1000))
+        # self.image_lab.resize(self.geometry().width(), self.geometry().height())
         self.grid.addWidget(self.image_lab, 0, 0, alignment=Qt.AlignCenter)
 
     @pyqtSlot(np.ndarray)
@@ -58,7 +62,5 @@ class QCameraWidget(QWidget):
         bytes_per_line = ch * w
         convert_to_Qt_format = QImage(rgb_image.data,
             w, h, bytes_per_line, QImage.Format_RGB888)
-        p = convert_to_Qt_format
-        # p = convert_to_Qt_format.scaled(self.geometry().width(), 
-        #     self.geometry().height(), Qt.KeepAspectRatio)
+        p = convert_to_Qt_format.scaledToWidth(1000)
         return QPixmap.fromImage(p)

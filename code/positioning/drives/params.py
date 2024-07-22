@@ -100,11 +100,17 @@ class QStepsControl(QNumericControl):
             self.divider_cmb.addItem(str(div))
 
         self.hbox2 = QHBoxLayout()
+        self.hbox3 = QHBoxLayout()
         self.vbox.addLayout(self.hbox2, 1)
+        self.vbox.addLayout(self.hbox3, 2)
 
-        for step in self.config["Drives"][self.name]["predef_steps"]:
+        for ind, step in enumerate(self.config["Drives"][self.name]["predef_steps"]):
             step_pb = QPushButton(f"{step}")
-            self.hbox2.addWidget(step_pb)
+
+            if ind < 3:
+                self.hbox2.addWidget(step_pb)
+            else:
+                self.hbox3.addWidget(step_pb)
             step_pb.clicked.connect(self.on_pb_click)
 
     def on_pb_click(self):

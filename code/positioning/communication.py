@@ -24,19 +24,20 @@ class ESP(QObject):
         self.simulation = simulation
 
         # Open pyvisa session and configure the device
-        self.rm = pyvisa.ResourceManager()
-        self.resource = self.rm.open_resource(
-            self.config["Communicator"]["pyvisa"]["address"])
+        if not self.simulation:
+            self.rm = pyvisa.ResourceManager("@py")
+            self.resource = self.rm.open_resource(
+                self.config["Communicator"]["pyvisa"]["address"])
 
-        baud_rate = self.config["Communicator"]["pyvisa"]["baud_rate"]
-        read_termination = self.config["Communicator"]["pyvisa"]["read_termination"]
-        write_termination = self.config["Communicator"]["pyvisa"]["write_termination"]
-        timeout = self.config["Communicator"]["pyvisa"]["timeout"]
+            baud_rate = self.config["Communicator"]["pyvisa"]["baud_rate"]
+            read_termination = self.config["Communicator"]["pyvisa"]["read_termination"]
+            write_termination = self.config["Communicator"]["pyvisa"]["write_termination"]
+            timeout = self.config["Communicator"]["pyvisa"]["timeout"]
 
-        self.resource.baud_rate = baud_rate
-        self.resource.read_termination = read_termination
-        self.resource.write_termination = write_termination
-        self.resource.timeout = timeout
+            self.resource.baud_rate = baud_rate
+            self.resource.read_termination = read_termination
+            self.resource.write_termination = write_termination
+            self.resource.timeout = timeout
 
         self.timer = QTimer()
         self.timer.setInterval(self.config["Communicator"]["polling_interval"])
