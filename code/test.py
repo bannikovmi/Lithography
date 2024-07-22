@@ -15,7 +15,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QGridLayout, QMainWindow, QTabWidget, QWidget
 
 # local gui imports
-from positioning.tab import QPositioningTab
+from positioning.drives.params import QDriveParams
 
 # load configurations
 import tomli
@@ -33,12 +33,14 @@ class MainWindow(QMainWindow):
 
     def initUI(self):
 
-        # Create tab widgets
-        self.tabs = QTabWidget()
-        self.setCentralWidget(self.tabs)
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
 
-        self.positioning_tab = QPositioningTab(self.config, simulation=True)
-        self.tabs.addTab(self.positioning_tab, "Positioning")
+        self.grid = QGridLayout()
+        self.central_widget.setLayout(self.grid)
+
+        self.params_widget = QDriveParams(config, name='DRX')
+        self.grid.addWidget(self.params_widget, 0, 0)
 
         # Resize main window and set title
         self.setWindowTitle('Lithography')

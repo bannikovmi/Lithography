@@ -43,8 +43,8 @@ class QMotionGB(QGroupBox):
         super().__init__(self.config["Drives"][name]["label"])
 
         self.initUI()
-        # self.connect_signals()
-        # self.power_toggle()
+        self.connect_signals()
+        self.power_toggle()
         self.is_moving = False
 
     def initUI(self):
@@ -53,184 +53,109 @@ class QMotionGB(QGroupBox):
         self.setLayout(self.grid)
 
         self.move_params = QMoveParams(self.name, self.config)
-        self.move_gb = QMoveBox(self.name, self.config)
+        self.move_box = QMoveBox(self.name, self.config)
 
         if self.orientation == Qt.Horizontal:
-            self.grid.addWidget(self.move_gb, 0, 0)
+            self.grid.addWidget(self.move_box, 0, 0)
             self.grid.addWidget(self.move_params, 1, 0)
         else:
-            self.grid.addWidget(self.move_gb, 0, 0)
+            self.grid.addWidget(self.move_box, 0, 0)
             self.grid.addWidget(self.move_params, 0, 1)
 
-    #     self.power_cb = QCheckBox("Power")
-    #     self.settings_pb = QPushButton("Settings")
-    #     self.arrow_button_group = QArrowButtonGroup(self.name, self.config)
-    #     self.abort_pb = QPushButton("Abort movement")
-    #     self.abort_pb.setDisabled(True)
+    def connect_signals(self):
 
-    #     self.position_widget = QPositionWidget(self.name, self.config)
+        self.move_box.arrow_button_group.pos_pb.clicked.connect(
+            lambda: self.move(sign=+self.config["Drives"][self.name]["pos_direction"]))
+        self.move_box.arrow_button_group.neg_pb.clicked.connect(
+            lambda: self.move(sign=-self.config["Drives"][self.name]["pos_direction"]))
+
+        self.move_params.power_cb.clicked.connect(self.power_toggle)
+        self.move_box.abort_pb.clicked.connect(self.on_abort)
+
+    def power_toggle(self):
+
+        if self.move_params.power_cb.isChecked():
+            self.esp.write(f"{self.name}_POW_1")
+            self.move_box.arrow_button_group.pos_pb.setDisabled(False)
+            self.move_box.arrow_button_group.neg_pb.setDisabled(False)
+        else:
+            self.esp.write(f"{self.name}_POW_0")
+            self.move_box.arrow_button_group.pos_pb.setDisabled(True)
+            self.move_box.arrow_button_group.neg_pb.setDisabled(True)
+
+        # Check Max and min limit switchers
+        self.esp.write(f"{self.name}_MAX")
+        self.esp.write(f"{self.name}_MIN")
+
+    def move(self, sign):
+
+        self.timer = QTimer()
+        self.timer.setInterval(
+            self.config["Drives"][self.name]["limits_check_interval"])
+        if sign > 0:
+            self.timer.timeout.connect(lambda: self.esp.write(f"{self.name}_MAX"))
+        else:
+            self.timer.timeout.connect(lambda: self.esp.write(f"{self.name}_MIN"))
+        self.timer.start()
+
+        self.move_box.abort_pb.setDisabled(False)
+        self.move_box.arrow_button_group.setDisabled(True)
+        self.move_params.power_cb.setDisabled(True)
+
+        nsteps = sign*int(self.move_params.steps_widget.value())
+        speed = int(self.move_params.speed_widget.value())
+        mstep = int(self.move_params.divider_cb.currentText())
+
+        self.esp.write(f"{self.name}_MST_{mstep}")
+        self.esp.write(f"{self.name}_SPD_{speed}")
+        self.esp.write(f"{self.name}_MOV_{nsteps}")
+
+        self.is_moving = True
+
+    def on_abort(self):
+
+        self.esp.write(f"{self.name}_MOV_ABT")
+        self.on_finish()
+
+    def on_finish(self):
+
+        self.move_box.abort_pb.setDisabled(True)
+        self.move_box.arrow_button_group.setDisabled(False)
+        self.move_params.power_cb.setDisabled(False)
+
+        self.esp.write(f"{self.name}_MAX")
+        self.esp.write(f"{self.name}_MIN")
+        self.timer.stop()
+        self.is_moving = False
         
-    #     self.microstep_label = QLabel("Step divider")
-    #     self.microstep_cb = QComboBox()
-    #     for div in self.config["Drives"]["step_dividers"]:
-    #         self.microstep_cb.addItem(str(div))
+    def update_UI(self, resource_name, command, arguments):
 
-    #     self.speed_widget = QSpeedWidget(self.name, self.config)
-    #     self.steps_widget = QStepsWidget(self.name, self.config)
-    #     divider = float(self.microstep_cb.currentText())
-    #     self.speed_widget.divider = divider
-    #     self.steps_widget.divider = divider
-
-    #     self.single_rb = QRadioButton("Single")
-    #     self.continious_rb = QRadioButton("Continious")
-    #     self.single_rb.setChecked(True)
-    #     self.continious_rb.setDisabled(True)
-
-    #     if self.orientation == Qt.Horizontal:
-
-    #         self.grid.addWidget(self.power_cb, 0, 0)
-    #         self.grid.addWidget(self.settings_pb, 0, 1)
-    #         # self.grid.addWidget(self.arrow_button_group, 1, 0, 1, 2)
-    #         # self.grid.addWidget(self.abort_pb, 2, 0, 1, 2)
-
-    #         self.grid.addWidget(self.position_widget, 0, 2, 2, 1)
-    #         self.grid.addWidget(self.microstep_label, 3, 0)
-    #         self.grid.addWidget(self.microstep_cb, 3, 1)
-    #         self.grid.addWidget(self.speed_widget, 2, 2, 2, 1)
-    #         self.grid.addWidget(self.steps_widget, 4, 2, 2, 1)
-
-    #         self.grid.addWidget(self.single_rb, 4, 0, 1, 2)
-    #         self.grid.addWidget(self.continious_rb, 5, 0, 1, 2)
-
-    #     else:
-
-    #         self.grid.addWidget(self.power_cb, 0, 1)
-    #         self.grid.addWidget(self.settings_pb, 0, 2)
-    #         self.grid.addWidget(self.arrow_button_group, 1, 1, 2, 1)
-    #         self.grid.addWidget(self.abort_pb, 3, 1, 1, 2)
-
-    #         self.grid.addWidget(self.position_widget, 0, 0, 4, 1)
-    #         self.grid.addWidget(self.microstep_label, 0, 3)
-    #         self.grid.addWidget(self.microstep_cb, 0, 4)
-    #         self.grid.addWidget(self.speed_widget, 1, 2, 1, 3)
-    #         self.grid.addWidget(self.steps_widget, 2, 2, 1, 3)
-
-    #         self.grid.addWidget(self.single_rb, 3, 3)
-    #         self.grid.addWidget(self.continious_rb, 3, 4)
-
-    #         self.grid.setColumnStretch(0, 0)
-    #         self.grid.setColumnStretch(1, 0)
-    #         self.grid.setColumnStretch(2, 1)
-
-    # def connect_signals(self):
-
-    #     self.microstep_cb.currentTextChanged.connect(
-    #         lambda txt: self.speed_widget.update_mult(float(txt)))
-    #     self.microstep_cb.currentTextChanged.connect(
-    #         lambda txt: self.steps_widget.update_mult(float(txt)))
-
-    #     self.arrow_button_group.pos_pb.clicked.connect(
-    #         lambda: self.move(sign=+self.config["Drives"][self.name]["pos_direction"]))
-    #     self.arrow_button_group.neg_pb.clicked.connect(
-    #         lambda: self.move(sign=-self.config["Drives"][self.name]["pos_direction"]))
-
-    #     self.power_cb.clicked.connect(self.power_toggle)
-    #     self.abort_pb.clicked.connect(self.on_abort)
-
-    # def power_toggle(self):
-
-    #     if self.power_cb.isChecked():
-    #         self.esp.write(f"{self.name}_POW_1")
-    #         self.arrow_button_group.pos_pb.setDisabled(False)
-    #         self.arrow_button_group.neg_pb.setDisabled(False)
-    #     else:
-    #         self.esp.write(f"{self.name}_POW_0")
-    #         self.arrow_button_group.pos_pb.setDisabled(True)
-    #         self.arrow_button_group.neg_pb.setDisabled(True)
-
-    #     # Check Max and min limit switchers
-    #     self.esp.write(f"{self.name}_MAX")
-    #     self.esp.write(f"{self.name}_MIN")
-
-    # # def toggle_mode(self):
-
-    # #     if self.continious_rb.isChecked():
-    # #         self.speed_control.setDisabled(False)
-    # #         self.step_control.setDisabled(True)
-    # #         self.arrow_button_group.setMode("continious")
-    # #     else:
-    # #         self.speed_control.setDisabled(True)
-    # #         self.step_control.setDisabled(False)
-    # #         self.arrow_button_group.setMode("single")
-
-    # def move(self, sign):
-
-    #     self.timer = QTimer()
-    #     self.timer.setInterval(500)
-    #     if sign > 0:
-    #         self.timer.timeout.connect(lambda: self.esp.write(f"{self.name}_MAX"))
-    #     else:
-    #         self.timer.timeout.connect(lambda: self.esp.write(f"{self.name}_MIN"))
-    #     self.timer.start()
-
-    #     self.abort_pb.setDisabled(False)
-    #     self.arrow_button_group.setDisabled(True)
-    #     self.power_cb.setDisabled(True)
-
-    #     nsteps = sign*int(self.steps_widget.value())
-    #     speed = int(self.speed_widget.value())
-    #     mstep = int(self.microstep_cb.currentText())
-
-    #     self.esp.write(f"{self.name}_MST_{mstep}")
-    #     self.esp.write(f"{self.name}_SPD_{speed}")
-    #     self.esp.write(f"{self.name}_MOV_{nsteps}")
-
-    #     self.is_moving = True
-
-    # def on_abort(self):
-
-    #     self.esp.write(f"{self.name}_MOV_ABT")
-    #     self.on_finish()
-
-    # def on_finish(self):
-
-    #     self.abort_pb.setDisabled(True)
-    #     self.arrow_button_group.setDisabled(False)
-    #     self.power_cb.setDisabled(False)
-
-    #     self.esp.write(f"{self.name}_MAX")
-    #     self.esp.write(f"{self.name}_MIN")
-    #     self.timer.stop()
-    #     self.is_moving = False
-        
-    # def update_UI(self, resource_name, command, arguments):
-
-    #     try:
-    #         if command == "MAX":
-    #             state = int(arguments[0])
-    #             if self.is_moving and state:
-    #                 self.on_abort()
-    #             if self.config["Drives"][self.name]["pos_direction"] == +1:
-    #                 self.arrow_button_group.pos_led.setChecked(state)
-    #                 self.arrow_button_group.pos_pb.setDisabled(state)
-    #             else:
-    #                 self.arrow_button_group.neg_led.setChecked(state)
-    #                 self.arrow_button_group.neg_pb.setDisabled(state)
-    #         elif command == "MIN":
-    #             state = int(arguments[0])
-    #             if self.is_moving and state:
-    #                 self.on_abort()
-    #             if self.config["Drives"][self.name]["pos_direction"] == +1:
-    #                 self.arrow_button_group.neg_led.setChecked(state)
-    #                 self.arrow_button_group.neg_pb.setDisabled(state)
-    #             else:
-    #                 self.arrow_button_group.pos_led.setChecked(state)
-    #                 self.arrow_button_group.pos_pb.setDisabled(state)
-    #         elif command == "MOV":
-    #             if arguments[0] == "FIN":
-    #                 self.on_finish()
-    #     except IndexError:
-    #         pass
+        try:
+            if command == "MAX":
+                state = int(arguments[0])
+                if self.is_moving and state:
+                    self.on_abort()
+                if self.config["Drives"][self.name]["pos_direction"] == +1:
+                    self.move_box.arrow_button_group.pos_led.setChecked(state)
+                    self.move_box.arrow_button_group.pos_pb.setDisabled(state)
+                else:
+                    self.move_box.arrow_button_group.neg_led.setChecked(state)
+                    self.move_box.arrow_button_group.neg_pb.setDisabled(state)
+            elif command == "MIN":
+                state = int(arguments[0])
+                if self.is_moving and state:
+                    self.on_abort()
+                if self.config["Drives"][self.name]["pos_direction"] == +1:
+                    self.move_box.arrow_button_group.neg_led.setChecked(state)
+                    self.move_box.arrow_button_group.neg_pb.setDisabled(state)
+                else:
+                    self.move_box.arrow_button_group.pos_led.setChecked(state)
+                    self.move_box.arrow_button_group.pos_pb.setDisabled(state)
+            elif command == "MOV":
+                if arguments[0] == "FIN":
+                    self.on_finish()
+        except IndexError:
+            pass
 
 class QMoveParams(QGroupBox):
 
@@ -241,6 +166,7 @@ class QMoveParams(QGroupBox):
 
         super().__init__("Parametres")
         self.initUI()
+        self.connect_signals()
 
     def initUI(self):
 
@@ -279,6 +205,13 @@ class QMoveParams(QGroupBox):
         self.single_rb.setDisabled(True)
         self.continious_rb.setDisabled(True)
 
+    def connect_signals(self):
+
+        self.divider_cb.currentTextChanged.connect(
+            lambda txt: self.speed_widget.update_mult(float(txt)))
+        self.divider_cb.currentTextChanged.connect(
+            lambda txt: self.steps_widget.update_mult(float(txt)))
+
 class QMoveBox(QGroupBox):
 
     def __init__(self, name, config):
@@ -302,19 +235,12 @@ class QMoveBox(QGroupBox):
         self.abort_pb = QPushButton("Abort")
         self.position_widget = QPositionWidget(self.name, self.config)
 
-
         # Add widgets to grid
         self.grid.addWidget(self.arrow_button_group, 0, 0)
         self.grid.addWidget(self.abort_pb, 1, 0)
         self.grid.addWidget(self.position_widget, 0, 1, 2, 1)
-        # if self.orientation == Qt.Horizontal:
-            
-        # else:
-        #     self.grid.addWidget(self.abort_pb, )
-
 
         # Set widgets params
-
         self.abort_pb.setDisabled(True)
 
 class QArrowButtonGroup(QGroupBox):

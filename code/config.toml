@@ -26,56 +26,76 @@ eta_update_interval = 50
 step_dividers = [1, 2, 4, 8, 16, 32, 64, 128, 256]
 
 	[Drives.DRX]
-	label = "X"
-	orientation = "Horizontal"
-	min_position = 0
-	max_position = 1_000_000
-	min_speed = 1
-	max_speed = 5000
-	init_speed = 1000
-	min_steps = 1
-	max_steps = 1_000_000
-	init_steps = 10_000
-	pos_direction = 1
-
-	[Drives.DRY]
-	label = "Y"
-	orientation = "Vertical"
-	min_position = 0
-	max_position = 1_000_000
-	min_speed = 1
-	max_speed = 5000
-	init_speed = 1000
-	min_steps = 1
-	max_steps = 1_000_000
-	init_steps = 10_000
-	pos_direction = 1
-
-	[Drives.DRZ]
-	label = "Z"
-	orientation = "Vertical"
-	min_position = 0
-	max_position = 1_000_000
-	min_speed = 1
-	max_speed = 5000
-	init_speed = 1000
-	min_steps = 1
-	max_steps = 1_000_000
-	init_steps = 10_000
-	pos_direction = -1
-
-	[Drives.DRL]
-	label = "Lense"
+	label = "X-drive config"
 	orientation = "Horizontal"
 	min_position = 0
 	max_position = 100_000
 	min_speed = 1
-	max_speed = 5000
+	max_speed = 1000
+	init_speed = 1000
+	min_steps = 1
+	max_steps = 100_000
+	init_steps = 1_000
+	pos_direction = 1
+	limits_check_interval = 500
+	predef_steps = [10, 30, 100, 300, 1000, 10000]
+	predef_speeds = [10, 30, 100, 300, 1000]
+
+	[Drives.DRY]
+	label = "Y-drive config"
+	orientation = "Vertical"
+	min_position = 0
+	max_position = 100_000
+	min_speed = 1
+	max_speed = 1000
+	init_speed = 1000
+	min_steps = 1
+	max_steps = 100_000
+	init_steps = 1_000
+	pos_direction = 1
+	limits_check_interval = 500
+	predef_steps = [10, 30, 100, 300, 1000, 10000]
+	predef_speeds = [10, 30, 100, 300, 1000]
+
+	[Drives.DRZ]
+	label = "Drive config"
+	orientation = "Vertical"
+	min_position = 0
+	max_position = 500_000
+	min_speed = 1
+	max_speed = 1000
+	init_speed = 1000
+	min_steps = 1
+	max_steps = 500_000
+	init_steps = 1_000
+	pos_direction = -1
+	limits_check_interval = 500
+	predef_steps = [10, 30, 100, 1000, 10000, 100000]
+	predef_speeds = [10, 30, 100, 300, 1000]
+
+	[Drives.DRL]
+	label = "Drive config"
+	orientation = "Horizontal"
+	min_position = 0
+	max_position = 100_000
+	min_speed = 1
+	max_speed = 1000
 	init_speed = 1000
 	min_steps = 1
 	max_steps = 10_000
-	init_steps = 10_000
+	init_steps = 1_000
 	pos_direction = -1
+	limits_check_interval = 500
+	predef_steps = [10, 30, 100, 300, 1000, 3000]
+	predef_speeds = [10, 30, 100, 300, 1000]
 
-[Listener]
+[Communicator]
 polling_interval = 200
+delay = 50
+
+	[Communicator.pyvisa]
+		address = "ASRL/dev/ttyACM0::INSTR"
+	    baud_rate = 115200
+	    read_termination = "\r\n"
+	    write_termination = "\r\n"
+	    timeout = 200
