@@ -43,10 +43,12 @@ class QCameraWidget(QGroupBox):
         self.setLayout(self.grid)
 
         self.image_lab = QLabel(self)
-        empty_arr = np.float32(np.zeros(shape=(480, 640)))
+        self.image_width = self.config["Camera"]["image_width"]
+        
+        empty_arr = np.float32(np.ones(shape=(480, 640)))
         empty_img = self.convert_cv_qt(empty_arr)
-        self.image_lab.setPixmap(empty_img.scaledToWidth(1000))
-        # self.image_lab.resize(self.geometry().width(), self.geometry().height())
+
+        self.image_lab.setPixmap(empty_img)
         self.grid.addWidget(self.image_lab, 0, 0, alignment=Qt.AlignCenter)
 
     @pyqtSlot(np.ndarray)
@@ -62,5 +64,5 @@ class QCameraWidget(QGroupBox):
         bytes_per_line = ch * w
         convert_to_Qt_format = QImage(rgb_image.data,
             w, h, bytes_per_line, QImage.Format_RGB888)
-        p = convert_to_Qt_format.scaledToWidth(1000)
+        p = convert_to_Qt_format.scaledToWidth(self.image_width)
         return QPixmap.fromImage(p)

@@ -20,10 +20,9 @@ from .numeric import QNumericControl
 
 class QDriveParams(QGroupBox):
 
-    def __init__(self, config, esp, name):
+    def __init__(self, config, name):
 
         self.config = config
-        self.esp = esp
         self.name = name
 
         super().__init__(self.config["Drives"][name]["label"])
@@ -41,18 +40,23 @@ class QDriveParams(QGroupBox):
         self.hbox = QHBoxLayout()
         self.grid.addLayout(self.hbox, 0, 0)
 
-        self.stop_pb = QPushButton("Stop")
         self.power_cb = QCheckBox("Power")
         self.settings_pb = QPushButton("Settings")
 
-        self.hbox.addWidget(self.stop_pb, 0)
-        self.hbox.addWidget(self.power_cb, 1)
-        self.hbox.addWidget(self.settings_pb, 2)
+        self.divider_lab = QLabel("Step divider")
+        self.divider_cmb = QComboBox()
+
+        self.hbox.addWidget(self.power_cb, 0)
+        self.hbox.addWidget(self.settings_pb, 1)
+        self.hbox.addWidget(self.divider_lab, 2)
+        self.hbox.addWidget(self.divider_cmb, 3)
+
+        for div in self.config["Drives"]["step_dividers"]:
+            self.divider_cmb.addItem(str(div))
         
         self.hbox.setStretch(0, 0)
         self.hbox.setStretch(1, 0)
         self.hbox.setStretch(2, 0)
-
         self.hbox.addStretch(1)
 
         self.steps_ctrl = QStepsControl(self.config, self.name)
@@ -84,20 +88,13 @@ class QStepsControl(QNumericControl):
 
         min_steps = self.config["Drives"][self.name]["min_steps"]
         max_steps = self.config["Drives"][self.name]["max_steps"]
+
         self.setMinimum(min_steps)
         self.setMaximum(max_steps)
         self.setMapper("log10")
 
-        self.divider_lab = QLabel("Step divider")
-        self.divider_cmb = QComboBox()
-        self.hbox1.addWidget(self.divider_lab, 4)
-        self.hbox1.addWidget(self.divider_cmb, 5)
-
-        self.hbox1.setStretch(4, 0)
-        self.hbox1.setStretch(5, 0)
-
-        for div in self.config["Drives"]["step_dividers"]:
-            self.divider_cmb.addItem(str(div))
+        init_steps = self.config["Drives"][self.name]["init_steps"]
+        self.setValue(init_steps)
 
         self.hbox2 = QHBoxLayout()
         self.hbox3 = QHBoxLayout()
@@ -153,6 +150,9 @@ class QSpeedControl(QNumericControl):
         self.setMinimum(min_speed)
         self.setMaximum(max_speed)
         self.setMapper("log10")
+
+        init_speed = self.config["Drives"][self.name]["init_speed"]
+        self.setValue(init_speed)        
 
         self.hbox2 = QHBoxLayout()
         self.vbox.addLayout(self.hbox2, 1)

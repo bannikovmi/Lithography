@@ -1,9 +1,6 @@
 #!/usr/bin/python
 
 """
-This module contains a set of commands for communication with Thyracont VSP transducers
-based on PyVISA library and custom data_packages module.
-
 Author: Mikhail Bannikov bannikovmi96@gmail.com
 """
 

@@ -13,10 +13,9 @@ from .numeric import QNumericIndicator
 
 class QPlaneGB(QGroupBox):
 
-    def __init__(self, config, esp):
+    def __init__(self, config):
 
         self.config = config
-        self.esp = esp
 
         super().__init__("In-plane positioning")
         self.initUI()
@@ -26,20 +25,19 @@ class QPlaneGB(QGroupBox):
         self.grid = QGridLayout()
         self.setLayout(self.grid)
 
-        self.x_params = QDriveParams(self.config, self.esp, name="DRX")
-        self.y_params = QDriveParams(self.config, self.esp, name="DRY")
-        self.positioner = QPositionerWidget(self.config, self.esp)
+        self.x_params = QDriveParams(self.config, name="DRX")
+        self.y_params = QDriveParams(self.config, name="DRY")
+        self.positioner = QPositionerWidget(self.config)
 
-        self.grid.addWidget(self.y_params, 0, 0)
-        self.grid.addWidget(self.x_params, 1, 0)
-        self.grid.addWidget(self.positioner, 0, 1, 2, 1)
+        self.grid.addWidget(self.y_params, 0, 1)
+        self.grid.addWidget(self.x_params, 1, 1)
+        self.grid.addWidget(self.positioner, 0, 0, 2, 1)
 
 class QArrowButtonGroup(QWidget):
 
-    def __init__(self, config, esp):
+    def __init__(self, config):
 
         self.config = config
-        self.esp = esp
 
         super().__init__()
         self.initUI()
@@ -69,10 +67,9 @@ class QArrowButtonGroup(QWidget):
 
 class QPositionerWidget(QGroupBox):
 
-    def __init__(self, config, esp):
+    def __init__(self, config):
 
         self.config = config
-        self.esp = esp
 
         super().__init__("Movement")
         self.initUI()
@@ -84,19 +81,19 @@ class QPositionerWidget(QGroupBox):
         self.grid = QGridLayout()
         self.setLayout(self.grid)
 
-        self.arrow_button_group = QArrowButtonGroup(self.config, self.esp)
+        self.arrow_button_group = QArrowButtonGroup(self.config)
         self.grid.addWidget(self.arrow_button_group, 0, 0)
-        self.x_indicator = QNumericIndicator(
-            label="X pos",
-            min_value=self.config["Drives"]["DRX"]["min_position"],
-            max_value=self.config["Drives"]["DRX"]["max_position"],
-            orientation=Qt.Horizontal
-        )
-        self.y_indicator = QNumericIndicator(
-            label="Y pos",
-            min_value=self.config["Drives"]["DRY"]["min_position"],
-            max_value=self.config["Drives"]["DRY"]["max_position"],
-            orientation=Qt.Vertical
-        )
-        self.grid.addWidget(self.x_indicator, 1, 0)
-        self.grid.addWidget(self.y_indicator, 0, 1)
+        # self.x_indicator = QNumericIndicator(
+        #     label="X pos",
+        #     min_value=self.config["Drives"]["DRX"]["min_position"],
+        #     max_value=self.config["Drives"]["DRX"]["max_position"],
+        #     orientation=Qt.Horizontal
+        # )
+        # self.y_indicator = QNumericIndicator(
+        #     label="Y pos",
+        #     min_value=self.config["Drives"]["DRY"]["min_position"],
+        #     max_value=self.config["Drives"]["DRY"]["max_position"],
+        #     orientation=Qt.Vertical
+        # )
+        # self.grid.addWidget(self.x_indicator, 1, 0)
+        # self.grid.addWidget(self.y_indicator, 0, 1)

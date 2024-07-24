@@ -1,26 +1,33 @@
-[BLD]
-init_freq = 1000
-init_duty = 0
-min_freq = 100
-max_freq = 10_000
-min_duty = 0
-max_duty = 1023
-min_timer = 100
-max_timer = 10_000
-init_timer = 1000
-eta_update_interval = 50
+[Camera]
+image_width = 1000
 
-[RLD]
-init_freq = 1000
-init_duty = 0
-min_freq = 100
-max_freq = 10_000
-min_duty = 0
-max_duty = 1023
-min_timer = 100
-max_timer = 10_000
-init_timer = 1000
-eta_update_interval = 50
+[LEDs]
+	
+	[LEDs.BLD]
+	label = "Exposure"
+	init_freq = 1000
+	init_duty = 0
+	min_freq = 100
+	max_freq = 10_000
+	min_duty = 0
+	max_duty = 1023
+	min_timer = 100
+	max_timer = 10_000
+	init_timer = 1000
+	eta_update_interval = 50
+
+	[LEDs.RLD]
+	label = "Illumination"
+	init_freq = 1000
+	init_duty = 0
+	min_freq = 100
+	max_freq = 10_000
+	min_duty = 0
+	max_duty = 1023
+	min_timer = 100
+	max_timer = 10_000
+	init_timer = 1000
+	eta_update_interval = 50
 
 [Drives]
 step_dividers = [1, 2, 4, 8, 16, 32, 64, 128, 256]
@@ -89,11 +96,11 @@ step_dividers = [1, 2, 4, 8, 16, 32, 64, 128, 256]
 	predef_steps = [10, 30, 100, 300, 1000, 3000]
 	predef_speeds = [10, 30, 100, 300, 1000]
 
-[Communicator]
-polling_interval = 200
+[Task_manager]
 delay = 50
+polling_interval = 200
 
-	[Communicator.pyvisa]
+	[Task_manager.pyvisa]
 		address = "ASRL/dev/ttyACM0::INSTR"
 	    baud_rate = 115200
 	    read_termination = "\r\n"

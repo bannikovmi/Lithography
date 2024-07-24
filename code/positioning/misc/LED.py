@@ -12,12 +12,13 @@ from PyQt5.QtWidgets import (
 
 class QLEDControlWidget(QGroupBox):
 
-    def __init__(self, config, ESP, name, label):
+    def __init__(self, config, name):
 
-        super().__init__(label)
-        self.name = name
         self.config = config
-        self.ESP = ESP
+        self.name = name
+
+        label = self.config["LEDs"][self.name]["label"]
+        super().__init__(label)  
         
         self.initUI()
         self.emission_on = False
@@ -31,9 +32,9 @@ class QLEDControlWidget(QGroupBox):
         self.freq_lab = QLabel("Frequency [Hz]")
         self.freq_sb = QSpinBox()
         self.freq_pb = QPushButton("Set")
-        self.freq_sb.setMinimum(self.config[self.name]["min_freq"])
-        self.freq_sb.setMaximum(self.config[self.name]["max_freq"])
-        self.freq_sb.setValue(self.config[self.name]["init_freq"])
+        self.freq_sb.setMinimum(self.config["LEDs"][self.name]["min_freq"])
+        self.freq_sb.setMaximum(self.config["LEDs"][self.name]["max_freq"])
+        self.freq_sb.setValue(self.config["LEDs"][self.name]["init_freq"])
         self.freq_pb.clicked.connect(self.set_freq)
 
         self.grid.addWidget(self.freq_lab, 0, 0)
@@ -56,9 +57,9 @@ class QLEDControlWidget(QGroupBox):
         # Duty
         self.duty_lab = QLabel("Duty")
         self.duty_sb = QSpinBox()
-        self.duty_sb.setMinimum(self.config[self.name]["min_duty"])
-        self.duty_sb.setMaximum(self.config[self.name]["max_duty"])
-        self.duty_sb.setValue(self.config[self.name]["init_duty"])
+        self.duty_sb.setMinimum(self.config["LEDs"][self.name]["min_duty"])
+        self.duty_sb.setMaximum(self.config["LEDs"][self.name]["max_duty"])
+        self.duty_sb.setValue(self.config["LEDs"][self.name]["init_duty"])
         self.duty_pb = QPushButton("Set")
         self.duty_pb.clicked.connect(self.set_duty)
 
@@ -69,9 +70,9 @@ class QLEDControlWidget(QGroupBox):
         # Timer
         self.timer_label = QLabel("Timer [ms]")
         self.timer_sb = QSpinBox()
-        self.timer_sb.setMinimum(self.config[self.name]["min_timer"])
-        self.timer_sb.setMaximum(self.config[self.name]["max_timer"])
-        self.timer_sb.setValue(self.config[self.name]["init_timer"])
+        self.timer_sb.setMinimum(self.config["LEDs"][self.name]["min_timer"])
+        self.timer_sb.setMaximum(self.config["LEDs"][self.name]["max_timer"])
+        self.timer_sb.setValue(self.config["LEDs"][self.name]["init_timer"])
 
         self.eta_label = QLabel("Time left [ms]")
         self.eta_le = QLineEdit()
@@ -82,8 +83,7 @@ class QLEDControlWidget(QGroupBox):
         self.grid.addWidget(self.eta_label, 3, 2)
         self.grid.addWidget(self.eta_le, 3, 3)
 
-    def update_UI(self, resource_name, command_name, arguments):
-
+    def updateUI(self, message):
         pass
 
     def set_freq(self):
@@ -134,7 +134,8 @@ class QLEDControlWidget(QGroupBox):
 
             self.eta_le.setText(f"{self.timer_sb.value()}")
             self.eta_timer = QTimer()
-            self.eta_timer.setInterval(self.config[self.name]["eta_update_interval"])
+            self.eta_timer.setInterval(
+                self.config["LEDs"][self.name]["eta_update_interval"])
             
             self.finish_time = QTime.currentTime().addMSecs(self.timer_sb.value())
             self.eta_timer.timeout.connect(lambda:
@@ -171,11 +172,10 @@ class QTimedOnGB(QGroupBox):
     emission_finished = pyqtSignal()
     duty_updated = pyqtSignal(int)
 
-    def __init__(self, config, ESP, name, label="Emission"):
+    def __init__(self, config, name):
 
-        super().__init__(label)
+        super().__init__("Emission")
         self.config = config
-        self.ESP = ESP
         self.name = name
         self.initUI()
 
@@ -191,11 +191,10 @@ class QTimedOnGB(QGroupBox):
 
         self.duty_label = QLabel("Duty")
 
-
         self.timer_label = QLabel("Timer [ms]")
         self.timer_sb = QSpinBox()
-        self.timer_sb.setMinimum(self.config[self.name]["min_timer"])
-        self.timer_sb.setMaximum(self.config[self.name]["max_timer"])
+        self.timer_sb.setMinimum(self.config["LEDs"][self.name]["min_timer"])
+        self.timer_sb.setMaximum(self.config["LEDs"][self.name]["max_timer"])
 
         self.start_pb = QPushButton("Start")
         self.eta_label = QLabel("Time left [ms]")

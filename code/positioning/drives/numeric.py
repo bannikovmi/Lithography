@@ -1,11 +1,13 @@
 from PyQt5.QtCore import QObject, Qt
-from PyQt5.QtWidgets import (QDoubleSpinBox,
+from PyQt5.QtWidgets import (
+    QDoubleSpinBox,
     QGroupBox,
     QGridLayout,
     QHBoxLayout,
     QLabel,
     QLineEdit,
     QSlider,
+    QSpinBox,
     QVBoxLayout,
     QWidget
     )
@@ -121,11 +123,13 @@ class QNumericControl(QWidget):
         label="",
         units="",
         mapper_type="linear",
+        dtype="int"
     ):
 
         self.label = label
         self.units = units
         self.mapper_type = mapper_type
+        self.dtype = dtype
 
         super().__init__()
         self.initUI()
@@ -143,7 +147,16 @@ class QNumericControl(QWidget):
         self.slider = QSlider(orientation=Qt.Horizontal)
         self.slider.setMaximum(1000) # higher-resolution slider
         self.slider.setMinimumWidth(150)
+
         self.spinbox = QDoubleSpinBox()
+        match self.dtype:
+            case "int":
+                self.spinbox.setDecimals(0)
+            case "float":
+                self.spinbox.setDecimals(2)
+            case _:
+                raise ValueError("Unknown datatype")
+
         self.units_lab = QLabel(self.units)
 
         self.hbox1.addWidget(self.name_label, 0)

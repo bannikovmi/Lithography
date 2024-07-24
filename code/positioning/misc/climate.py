@@ -10,11 +10,10 @@ from PyQt5.QtWidgets import (
 
 class QAHTWidget(QGroupBox):
 
-    def __init__(self, config, ESP, label="Climate"):
+    def __init__(self, config):
 
-        super().__init__(label)
+        super().__init__("Climate")
         self.config = config
-        self.ESP = ESP
         self.initUI()
 
         self.request_HT()
@@ -22,7 +21,6 @@ class QAHTWidget(QGroupBox):
         self.timer = QTimer()
         self.timer.setInterval(30000)
         self.timer.timeout.connect(self.request_HT)
-        self.timer.start()
 
     def initUI(self):
         
@@ -54,13 +52,14 @@ class QAHTWidget(QGroupBox):
 
     def request_HT(self):
 
-        self.ESP.write("AHT_GTM")
+        pass
+        # self.ESP.write("AHT_GTM")
 
-    def update_UI(self, resource_name, command_name, arguments):
+    def updateUI(self, message):
 
         try:
-            self.temp_le.setText(arguments[0])
-            self.hum_le.setText(arguments[1])
+            self.temp_le.setText(message.arguments[0])
+            self.hum_le.setText(message.arguments[1])
         except IndexError:
             pass
 

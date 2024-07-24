@@ -1,11 +1,11 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-	QGridLayout,
-	QGroupBox,
-	QHBoxLayout,
-	QVBoxLayout,
-	QWidget,
-	)
+    QGridLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QVBoxLayout,
+    QWidget,
+    )
 
 from .move_button import QMoveButton
 from .numeric import QNumericIndicator
@@ -14,31 +14,29 @@ from .params import QDriveParams
 
 class QLenseGB(QGroupBox):
 
-	def __init__(self, config, esp):
+    def __init__(self, config):
 
-		self.config = config
-		self.esp = esp
+        self.config = config
 
-		super().__init__("Lense positioning")
-		self.initUI()
+        super().__init__("Lense positioning")
+        self.initUI()
 
-	def initUI(self):
+    def initUI(self):
 
-		self.grid = QGridLayout()
-		self.setLayout(self.grid)
+        self.grid = QGridLayout()
+        self.setLayout(self.grid)
 
-		self.params = QDriveParams(self.config, self.esp, name="DRL")
-		self.positioner = QPositionerWidget(self.config, self.esp)
-		
-		self.grid.addWidget(self.params, 0, 0)
-		self.grid.addWidget(self.positioner, 0, 1)
+        self.params = QDriveParams(self.config, name="DRL")
+        self.positioner = QPositionerWidget(self.config)
+        
+        self.grid.addWidget(self.positioner, 0, 0)
+        self.grid.addWidget(self.params, 0, 1)
 
 class QArrowButtonGroup(QWidget):
 
-    def __init__(self, config, esp):
+    def __init__(self, config):
 
         self.config = config
-        self.esp = esp
 
         super().__init__()
         self.initUI()
@@ -58,10 +56,9 @@ class QArrowButtonGroup(QWidget):
 
 class QPositionerWidget(QGroupBox):
 
-    def __init__(self, config, esp):
+    def __init__(self, config):
 
         self.config = config
-        self.esp = esp
 
         super().__init__("Movement")
         self.initUI()
@@ -74,14 +71,14 @@ class QPositionerWidget(QGroupBox):
         self.setLayout(self.vbox)
 
         self.vbox.addStretch(1)
-        self.arrow_button_group = QArrowButtonGroup(self.config, self.esp)
+        self.arrow_button_group = QArrowButtonGroup(self.config)
         self.vbox.addWidget(self.arrow_button_group, 0)
         self.vbox.addStretch(1)
 
-        self.indicator = QNumericIndicator(
-            label="Lense pos",
-            min_value=self.config["Drives"]["DRL"]["min_position"],
-            max_value=self.config["Drives"]["DRL"]["max_position"],
-            orientation=Qt.Horizontal
-        )
-        self.vbox.addWidget(self.indicator, 1)
+        # self.indicator = QNumericIndicator(
+        #     label="Lense pos",
+        #     min_value=self.config["Drives"]["DRL"]["min_position"],
+        #     max_value=self.config["Drives"]["DRL"]["max_position"],
+        #     orientation=Qt.Horizontal
+        # )
+        # self.vbox.addWidget(self.indicator, 1)
