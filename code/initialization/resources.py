@@ -6,11 +6,11 @@ import pyvisa
 import logging
 logging.basicConfig(format='%(levelname)s:%(asctime)s:%(message)s', level=logging.CRITICAL)
 
-class ResourceInitializer():
+class ResourceManager():
 
     def __init__(self, config):
         
-        self.rm = pyvisa.ResourceManager()
+        self.pyvisa_rm = pyvisa.ResourceManager()
         self.config = config
 
     def get_resources(self):

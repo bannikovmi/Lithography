@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (
     QSpinBox,
     )
 
-class QLEDControlWidget(QGroupBox):
+class QBasicLEDWidget(QGroupBox):
 
     def __init__(self, config, name):
 
@@ -18,7 +18,7 @@ class QLEDControlWidget(QGroupBox):
         self.name = name
 
         label = self.config["LEDs"][self.name]["label"]
-        super().__init__(label)  
+        super().__init__(label)
         
         self.initUI()
         self.emission_on = False
@@ -40,6 +40,65 @@ class QLEDControlWidget(QGroupBox):
         self.grid.addWidget(self.freq_lab, 0, 0)
         self.grid.addWidget(self.freq_sb, 0, 1)
         self.grid.addWidget(self.freq_pb, 0, 2, 1, 2)
+        
+        # Duty
+        self.duty_lab = QLabel("Duty")
+        self.duty_sb = QSpinBox()
+        self.duty_sb.setMinimum(self.config["LEDs"][self.name]["min_duty"])
+        self.duty_sb.setMaximum(self.config["LEDs"][self.name]["max_duty"])
+        self.duty_sb.setValue(self.config["LEDs"][self.name]["init_duty"])
+        self.duty_pb = QPushButton("Set")
+        self.duty_pb.clicked.connect(self.set_duty)
+
+        self.grid.addWidget(self.duty_lab, 2, 0)
+        self.grid.addWidget(self.duty_sb, 2, 1)
+        self.grid.addWidget(self.duty_pb, 2, 2, 1, 2)
+
+    def set_freq(self):
+
+        value = self.freq_sb.value()
+        self.ESP.write(f"{self.name}_FRQ_{value}")
+
+    def set_duty(self):
+
+        value = self.duty_sb.value()
+        if self.emission_on:
+            self.ESP.write(f"{self.name}_DUT_{value}")
+
+    def on_emission_start(self):
+
+        self.start_pb.clicked.disconnect()
+        self.start_pb.clicked.connect(self.on_emission_finish)
+            
+        self.start_pb.setText("Turn off")
+        self.ESP.write(f"{self.name}_DUT_{self.duty_sb.value()}")
+
+    def on_emission_start(self):
+
+        self.start_pb.clicked.disconnect()
+        self.start_pb.clicked.connect(self.on_emission_start)
+            
+        self.start_pb.setText("Turn off")
+        self.ESP.write(f"{self.name}_DUT_{0}")
+
+
+class QAdvancedLEDWidget(QBasicLEDWidget):
+
+    def __init__(self, config, name):
+
+        self.config = config
+        self.name = name
+
+        label = self.config["LEDs"][self.name]["label"]
+        super().__init__(label)  
+        
+        self.initUI()
+        self.emission_on = False
+
+    def initUI(self):
+        
+        self.grid = QGridLayout()
+        self.setLayout(self.grid)
 
         # Mode
         self.continious_rb = QRadioButton("Continious")
@@ -85,17 +144,6 @@ class QLEDControlWidget(QGroupBox):
 
     def updateUI(self, message):
         pass
-
-    def set_freq(self):
-
-        value = self.freq_sb.value()
-        self.ESP.write(f"{self.name}_FRQ_{value}")
-
-    def set_duty(self):
-
-        value = self.duty_sb.value()
-        if self.emission_on:
-            self.ESP.write(f"{self.name}_DUT_{value}")
 
     def toggle_mode(self):
 

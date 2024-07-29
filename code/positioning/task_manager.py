@@ -24,7 +24,7 @@ class QTaskManager(QObject):
 
         self.config = config
         self.simulation = simulation
-        self.esp = ESP(self.config)
+        # self.esp = ESP(self.config)
         super().__init__()
 
         self.timer = QTimer()

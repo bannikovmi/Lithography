@@ -19,7 +19,7 @@ from .drives.plane import QPlaneGB
 from .drives.vertical import QVerticalGB
 from .drives.lense import QLenseGB
 from .misc.climate import QAHTWidget
-from .misc.LED import QLEDControlWidget
+from .misc.LED import QBasicLEDWidget
 from .misc.vacuum import QVacuumWidget
 from .task_manager import QTaskManager
 
@@ -66,15 +66,13 @@ class QPositioningTab(QWidget):
         self.vbox.addLayout(self.hbox, 1)
 
         self.aht_widget = QAHTWidget(self.config)
-        self.bled_widget = QLEDControlWidget(self.config, name="BLD")
-        self.rled_widget = QLEDControlWidget(self.config, name="RLD")
-        self.hbox.addWidget(self.bled_widget, 0)
-        self.hbox.addWidget(self.rled_widget, 1)
-        self.hbox.addWidget(self.aht_widget, 2)
+        self.illumination_widget = QBasicLEDWidget(self.config, name="RLD")
+        self.hbox.addWidget(self.illumination_widget, 0)
+        self.hbox.addWidget(self.aht_widget, 1)
 
-        self.hbox.setStretch(0, 1)
-        self.hbox.setStretch(1, 1)
-        self.hbox.setStretch(2, 0)
+        self.hbox.setStretch(0, 0)
+        self.hbox.setStretch(1, 0)
+        self.hbox.addStretch(1)
 
         self.grid.setColumnStretch(0, 1)
         self.grid.setColumnStretch(1, 0)
@@ -87,8 +85,7 @@ class QPositioningTab(QWidget):
         self.widgets["DRL"] = self.lense_gb
         self.widgets["CAM"] = self.camera_widget
         self.widgets["AHT"] = self.aht_widget
-        self.widgets["BLD"] = self.bled_widget
-        self.widgets["RLD"] = self.rled_widget
+        self.widgets["RLD"] = self.illumination_widget
 
     def updateUI(self, message):
         

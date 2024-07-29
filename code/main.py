@@ -13,11 +13,14 @@ from PyQt5.QtWidgets import QApplication, QGridLayout, QMainWindow, QTabWidget, 
 
 # local gui imports
 from positioning.tab import QPositioningTab
+from intitialization.resources import ResourceManager
 
 # load configurations
 import tomli
 with open("config.toml", mode='rb') as config_file:
     config = tomli.load(config_file)
+
+rm = ResourceManager(config)
 
 class MainWindow(QMainWindow):
 
