@@ -5,6 +5,8 @@ Author: Mikhail Bannikov bannikovmi96@gmail.com
 """
 
 # standard library imports
+import json
+import os
 import sys
 
 # third party imports
@@ -13,14 +15,13 @@ from PyQt5.QtWidgets import QApplication, QGridLayout, QMainWindow, QTabWidget, 
 
 # local gui imports
 from positioning.tab import QPositioningTab
-from intitialization.resources import ResourceManager
+from initialization.resources import QResourceManager
+# from tasks.manager import QTaskManager
 
 # load configurations
-import tomli
-with open("config.toml", mode='rb') as config_file:
-    config = tomli.load(config_file)
-
-rm = ResourceManager(config)
+config_file = os.path.join("config", "config.json")
+with open(config_file, "r") as file:
+    config = json.load(file)
 
 class MainWindow(QMainWindow):
 
@@ -29,6 +30,12 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.config = config
+        self.rm = QResourceManager(self.config)
+
+        for key, val in self.rm.resources.items():
+            print(key, val.__dict__)
+
+        # self.tm = QTaskManager(self.config, self.rm)
         self.initUI()
 
     def initUI(self):
@@ -37,8 +44,8 @@ class MainWindow(QMainWindow):
         self.tabs = QTabWidget()
         self.setCentralWidget(self.tabs)
 
-        self.positioning_tab = QPositioningTab(self.config, simulation=True)
-        self.tabs.addTab(self.positioning_tab, "Positioning")
+        # self.positioning_tab = QPositioningTab(self.config, simulation=True)
+        # self.tabs.addTab(self.positioning_tab, "Positioning")
 
         # Resize main window and set title
         self.setWindowTitle('Lithography')

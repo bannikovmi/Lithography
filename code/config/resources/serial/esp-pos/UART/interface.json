@@ -1,0 +1,7 @@
+{
+    "port": 2,
+    "baudrate": 115200,
+    "parity": null,
+    "bits": 8,
+    "stop": 1
+}

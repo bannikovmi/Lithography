@@ -1,0 +1,9 @@
+{
+    "mtr_id": 0,
+    "step_id": 32,
+    "dir_id": 33,
+    "microstep": 1,
+    "pos_dir": 0,
+    "limit_on": 0,
+    "speed": 1000	
+}

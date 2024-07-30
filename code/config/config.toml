@@ -1,6 +1,34 @@
 [Camera]
 image_width = 1000
 
+[resources]
+	
+	[ESP]
+		name = "pyvisa.serial"
+		address = "ASRL/dev/ttyACM0::INSTR"
+	    baud_rate = 115200
+	    read_termination = "\r\n"
+	    write_termination = "\r\n"
+	    timeout = 200
+
+	    [children]
+	    	[I2C]
+	    		[PCF]
+	    		[AHT]
+
+	    	[UART]
+		        port = 2
+		        baudrate = 115200
+		        parity = "none"
+		        bits = 8
+		        stop = 1
+	    		
+	    	[GPIO]
+
+
+	    		[BLD]
+	    		[RLD]
+
 [LEDs]
 	
 	[LEDs.BLD]

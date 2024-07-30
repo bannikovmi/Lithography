@@ -1,0 +1,6 @@
+{
+    "address": 54,
+    "max_interval": 30000,
+    "min_interval": 50,
+    "init_interval": 10000
+}

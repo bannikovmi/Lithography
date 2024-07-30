@@ -1,0 +1,15 @@
+{
+    "address": 32,  
+    "en-x_id": 0,
+    "en-y_id": 1,
+    "en-z_id": 2,
+    "en-l_id": 3,
+    "max-x_id": 4,
+    "min-x_id": 5,
+    "max-y_id": 6,
+    "min-y_id": 7,
+    "max-z_id": 11,
+    "min-z_id": 10,
+    "max-l_id": 13,
+    "min-l_id": 12
+}

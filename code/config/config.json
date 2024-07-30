@@ -1,0 +1,131 @@
+{
+    "resources": {
+        "resource": {},
+        "serial": {
+            "esp-enc": {
+                "resource": {},
+                "I2C": {
+                    "ENCY": {},
+                    "ENCX": {},
+                    "interface": {}
+                }
+            },
+            "esp-pos": {
+                "GPIO": {
+                    "FAN": {
+                        "pin_id": 19,
+                        "btn_id": 35,
+                        "on_startup": true
+                    },
+                    "interface": {},
+                    "BLD": {
+                        "pin_id": 2,
+                        "init_freq": 1000,
+                        "init_duty": 0
+                    },
+                    "PMP": {
+                        "pin_id": 18,
+                        "btn_id": 34,
+                        "on_startup": false
+                    },
+                    "RLD": {
+                        "pin_id": 2,
+                        "init_freq": 1000,
+                        "init_duty": 0
+                    }
+                },
+                "resource": {
+                    "pyvisa_address": "ASRL/dev/ttyACM0::INSTR",
+                    "baud_rate": 115200,
+                    "read_termination": "\r\n",
+                    "write_termination": "\r\n",
+                    "timeout": 200
+                },
+                "UART": {
+                    "DRL": {
+                        "mtr_id": 1,
+                        "step_id": 13,
+                        "dir_id": 12,
+                        "microstep": 1,
+                        "pos_dir": 0,
+                        "limit_on": 0,
+                        "speed": 1000
+                    },
+                    "DRZ": {
+                        "mtr_id": 1,
+                        "step_id": 14,
+                        "dir_id": 27,
+                        "microstep": 1,
+                        "pos_dir": 0,
+                        "limit_on": 1,
+                        "speed": 1000
+                    },
+                    "DRY": {
+                        "mtr_id": 1,
+                        "step_id": 25,
+                        "dir_id": 26,
+                        "microstep": 1,
+                        "pos_dir": 0,
+                        "limit_on": 0,
+                        "speed": 1000
+                    },
+                    "interface": {
+                        "port": 2,
+                        "baudrate": 115200,
+                        "parity": null,
+                        "bits": 8,
+                        "stop": 1
+                    },
+                    "DRX": {
+                        "mtr_id": 0,
+                        "step_id": 32,
+                        "dir_id": 33,
+                        "microstep": 1,
+                        "pos_dir": 0,
+                        "limit_on": 0,
+                        "speed": 1000
+                    }
+                },
+                "I2C": {
+                    "PCF": {
+                        "address": 32,
+                        "en-x_id": 0,
+                        "en-y_id": 1,
+                        "en-z_id": 2,
+                        "en-l_id": 3,
+                        "max-x_id": 4,
+                        "min-x_id": 5,
+                        "max-y_id": 6,
+                        "min-y_id": 7,
+                        "max-z_id": 11,
+                        "min-z_id": 10,
+                        "max-l_id": 13,
+                        "min-l_id": 12
+                    },
+                    "interface": {
+                        "freq": 400000,
+                        "int_id": 23,
+                        "scl_id": 22,
+                        "sda_id": 21
+                    },
+                    "AHT": {
+                        "address": 54,
+                        "max_interval": 30000,
+                        "min_interval": 50,
+                        "init_interval": 10000
+                    }
+                }
+            },
+            "cam": {
+                "resource": {}
+            },
+            "interface": {}
+        },
+        "ssh": {
+            "rasp0": {
+                "PROJ": {}
+            },
+            "interface": {}
+        }
+    }
+}
