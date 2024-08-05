@@ -1,0 +1,9 @@
+{
+	"label": "Illumination",
+	"min_freq": 100,
+	"max_freq": 10000,
+	"init_freq": 1000,
+	"min_duty": 0,
+	"max_duty": 1023,
+	"init_duty": 0
+}

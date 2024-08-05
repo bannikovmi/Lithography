@@ -14,9 +14,10 @@ from .params import QDriveParams
 
 class QLenseGB(QGroupBox):
 
-    def __init__(self, config):
+    def __init__(self, config, resource_manager):
 
         self.config = config
+        self.rm = resource_manager
 
         super().__init__("Lense positioning")
         self.initUI()
@@ -26,8 +27,8 @@ class QLenseGB(QGroupBox):
         self.grid = QGridLayout()
         self.setLayout(self.grid)
 
-        self.params = QDriveParams(self.config, name="DRL")
-        self.positioner = QPositionerWidget(self.config)
+        self.params = QDriveParams(self.config["params"])
+        self.positioner = QPositionerWidget(self.config["positioner"])
         
         self.grid.addWidget(self.positioner, 0, 0)
         self.grid.addWidget(self.params, 0, 1)

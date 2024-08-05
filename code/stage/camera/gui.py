@@ -25,9 +25,10 @@ class VideoThread(QThread):
 
 class QCameraWidget(QGroupBox):
 
-    def __init__(self, config):
+    def __init__(self, config, resource_manager):
 
         self.config = config
+        self.rm = resource_manager
         # self.cam_address = self.config["Camera"]["address"]
 
         super().__init__("Camera")
@@ -43,7 +44,7 @@ class QCameraWidget(QGroupBox):
         self.setLayout(self.grid)
 
         self.image_lab = QLabel(self)
-        self.image_width = self.config["Camera"]["image_width"]
+        self.image_width = self.config["image_width"]
         
         empty_arr = np.float32(np.ones(shape=(480, 640)))
         empty_img = self.convert_cv_qt(empty_arr)

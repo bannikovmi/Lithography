@@ -12,13 +12,12 @@ from PyQt5.QtWidgets import (
 
 class QBasicLEDWidget(QGroupBox):
 
-    def __init__(self, config, name):
+    def __init__(self, config, resource_manager):
 
         self.config = config
-        self.name = name
+        self.rm = resource_manager
 
-        label = self.config["LEDs"][self.name]["label"]
-        super().__init__(label)
+        super().__init__(self.config["label"])
         
         self.initUI()
         self.emission_on = False
@@ -32,9 +31,9 @@ class QBasicLEDWidget(QGroupBox):
         self.freq_lab = QLabel("Frequency [Hz]")
         self.freq_sb = QSpinBox()
         self.freq_pb = QPushButton("Set")
-        self.freq_sb.setMinimum(self.config["LEDs"][self.name]["min_freq"])
-        self.freq_sb.setMaximum(self.config["LEDs"][self.name]["max_freq"])
-        self.freq_sb.setValue(self.config["LEDs"][self.name]["init_freq"])
+        self.freq_sb.setMinimum(self.config["min_freq"])
+        self.freq_sb.setMaximum(self.config["max_freq"])
+        self.freq_sb.setValue(self.config["init_freq"])
         self.freq_pb.clicked.connect(self.set_freq)
 
         self.grid.addWidget(self.freq_lab, 0, 0)
@@ -44,9 +43,9 @@ class QBasicLEDWidget(QGroupBox):
         # Duty
         self.duty_lab = QLabel("Duty")
         self.duty_sb = QSpinBox()
-        self.duty_sb.setMinimum(self.config["LEDs"][self.name]["min_duty"])
-        self.duty_sb.setMaximum(self.config["LEDs"][self.name]["max_duty"])
-        self.duty_sb.setValue(self.config["LEDs"][self.name]["init_duty"])
+        self.duty_sb.setMinimum(self.config["min_duty"])
+        self.duty_sb.setMaximum(self.config["max_duty"])
+        self.duty_sb.setValue(self.config["init_duty"])
         self.duty_pb = QPushButton("Set")
         self.duty_pb.clicked.connect(self.set_duty)
 

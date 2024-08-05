@@ -29,6 +29,15 @@ class QResourceManager(QObject):
         # Add host resource, other interfaces and resources recursively
         self.add_resource(dir_path=dir_path, master_int=None)
 
+    def __getitem__(self, key):
+        return self.resources[key]
+
+    def __setitem__(self, key, value):
+        self.resources[key] = value
+
+    def __delitem__(self, key):
+        del self.resources[key]
+
     def add_resource(self, dir_path, master_int):
 
         # Create resource and load config
@@ -64,50 +73,3 @@ class QResourceManager(QObject):
             new_path = os.path.join(dir_path, name)
             if os.path.isdir(new_path):
                 self.add_resource(dir_path=new_path, master_int=interface)
-
-    # def dir_scan(dir_name):
-    #     """
-    #     Perform recursive scan of directories for files with .json extension,
-    #     initialize resources and add them to dictionary.
-    #     """
-
-    #     ret = {}
-
-    #     for name in os.listdir(dir_name):
-
-    #         new_path = os.path.join(dir_name, name)
-    #         if os.path.isdir(new_path):
-    #             ret[name] = dir_scan(new_path)
-    #         else:
-    #             with open(new_path, "r") as file:
-    #                 ret[name.split('.')[0]] = json.load(file)
-
-    #     return ret
-
-    # # def add_interface(self, int_name, int_value, parent=None):
-
-    # #     interface = QInterface(int_name)
-
-    # #     for key, val in int_value.items():
-
-    # #         if not isinstance(val, dict): # interface params are not dictionaries
-    # #             print("setting attribute to interface", int_name, key, val)
-    # #             setattr(interface, key, val) # add custom data to interface
-    # #         else: 
-    # #             pyvisa_handler = None
-    # #             try:
-    # #                 pyvisa_address = val["pyvisa_address"]
-    # #                 pyvisa_handler = self.pyvisa_rm.open_resource(pyvisa_address)
-    # #             except KeyError: # resource has no pyvisa address
-    # #                 pass
-
-    # #             resource = QResource(key, pyvisa_handler,
-    # #                 parent=parent, interface=int_name)
-    # #             self.resources[key] = resource
-
-    # #             # iterate over values in resource dictionary interfaces
-    # #             for name, value in val.items():
-    # #                 if not isinstance(value, dict):
-    # #                     setattr(resource, name, value) # add custom data to resource
-    # #                 else:
-    # #                     self.add_interface(name, value, parent=resource)

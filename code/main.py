@@ -14,9 +14,8 @@ import sys
 from PyQt5.QtWidgets import QApplication, QGridLayout, QMainWindow, QTabWidget, QWidget
 
 # local gui imports
-from stage.tab import QStageTab
-from initialization.resources.manager import QResourceManager
-from tasks.manager import QTaskManager
+from stage.widget import QStageWidget
+from backend.resources.manager import QResourceManager
 
 # load configurations
 config_file = os.path.join("config", "config.json")
@@ -30,19 +29,15 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.config = config
-        self.resource_manager = QResourceManager(self.config)
-        self.task_manager = QTaskManager(self.config, self.resource_manager)
+        self.rm = QResourceManager(self.config)
 
         self.initUI()
 
     def initUI(self):
 
-        # Create tab widgets
-        self.tabs = QTabWidget()
-        self.setCentralWidget(self.tabs)
-
-        self.stage_tab = QStageTab(self.task_manager, simulation=True)
-        self.tabs.addTab(self.stage_tab, "Stage control")
+        # Initialiaze main widget
+        self.stage_widget = QStageWidget(self.config["gui"]["stage"], self.rm)
+        self.setCentralWidget(self.stage_widget)
 
         # Resize main window and set title
         self.setWindowTitle('Lithography')

@@ -25,12 +25,10 @@ def dir_scan(dir_name):
 def init_config():
 
     resources = dir_scan("resources")
-    task_manager = dir_scan("task_manager")
     gui = dir_scan("gui")
 
     config = {
         "resources": resources,
-        "task_manager": task_manager,
         "gui": gui
     }
     with open("config.json", 'w') as file:

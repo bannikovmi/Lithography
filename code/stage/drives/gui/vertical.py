@@ -7,15 +7,19 @@ from PyQt5.QtWidgets import (
     QWidget
     )
 
+from stage.drives import QDrive
+
 from .params import QDriveParams
 from .move_button import QMoveButton
 from .numeric import QNumericIndicator
 
 class QVerticalGB(QGroupBox):
 
-    def __init__(self, config):
+    def __init__(self, config, resource_manager):
 
+        # Save arguments to instance attributes
         self.config = config
+        self.rm = resource_manager
 
         super().__init__("Vertical positioning")
         self.initUI()
@@ -25,8 +29,8 @@ class QVerticalGB(QGroupBox):
         self.grid = QGridLayout()
         self.setLayout(self.grid)
 
-        self.params = QDriveParams(self.config, name="DRZ")
-        self.positioner = QPositionerWidget(self.config)
+        self.params = QDriveParams(self.config["params"])
+        self.positioner = QPositionerWidget(self.config["positioner"])
         
         self.grid.addWidget(self.positioner, 0, 0)
         self.grid.addWidget(self.params, 0, 1)

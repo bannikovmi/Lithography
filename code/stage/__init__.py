@@ -1,0 +1,1 @@
+from .camera.gui import QCameraWidget

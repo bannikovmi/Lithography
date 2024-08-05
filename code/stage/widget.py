@@ -18,20 +18,18 @@ from .camera.gui import QCameraWidget
 from .drives.gui.plane import QPlaneGB
 from .drives.gui.vertical import QVerticalGB
 from .drives.gui.lense import QLenseGB
-# from .misc.climate import QAHTWidget
-# from .misc.LED import QBasicLEDWidget
+from .climate.gui import QAHTWidget
+from .LED.gui import QBasicLEDWidget
 # from .misc.vacuum import QVacuumWidget
 
-class QStageTab(QWidget):
+class QStageWidget(QWidget):
 
-    widgets = {}
-
-    def __init__(self, task_manager, simulation=False):
+    def __init__(self, config, resource_manager):
 
         super().__init__()
 
-        self.task_manager = task_manager
-        self.simulation = simulation
+        self.config = config
+        self.rm = resource_manager
 
         self.initUI()
         # self.task_manager.message_received.connect(self.updateUI)
@@ -42,31 +40,31 @@ class QStageTab(QWidget):
         self.grid = QGridLayout()
         self.setLayout(self.grid)
 
-        self.plane_gb = QPlaneGB(self.task_manager)
-        # self.vertical_gb = QVerticalGB(self.config)
-        # self.lense_gb = QLenseGB(self.config)
+        self.plane_gb = QPlaneGB(self.config["plane"], self.rm)
+        self.vertical_gb = QVerticalGB(self.config["vertical"], self.rm)
+        self.lense_gb = QLenseGB(self.config["lense"], self.rm)
 
-        # self.grid.addWidget(self.lense_gb, 0, 1)
-        # self.grid.addWidget(self.vertical_gb, 1, 1)
+        self.grid.addWidget(self.lense_gb, 0, 1)
+        self.grid.addWidget(self.vertical_gb, 1, 1)
         self.grid.addWidget(self.plane_gb, 2, 1)
 
-        # self.grid.setRowStretch(0, 1)
-        # self.grid.setRowStretch(1, 1)
-        # self.grid.setRowStretch(2, 1)
+        self.grid.setRowStretch(0, 1)
+        self.grid.setRowStretch(1, 1)
+        self.grid.setRowStretch(2, 1)
 
-        # self.vbox = QVBoxLayout()
-        # self.grid.addLayout(self.vbox, 0, 0, 3, 1)
+        self.vbox = QVBoxLayout()
+        self.grid.addLayout(self.vbox, 0, 0, 3, 1)
 
-        # self.camera_widget = QCameraWidget(self.config)
-        # self.vbox.addWidget(self.camera_widget, 0)
+        self.camera_widget = QCameraWidget(self.config["camera"], self.rm)
+        self.vbox.addWidget(self.camera_widget, 0)
 
-        # self.hbox = QHBoxLayout()
-        # self.vbox.addLayout(self.hbox, 1)
+        self.hbox = QHBoxLayout()
+        self.vbox.addLayout(self.hbox, 1)
 
-        # self.aht_widget = QAHTWidget(self.config)
-        # self.illumination_widget = QBasicLEDWidget(self.config, name="RLD")
-        # self.hbox.addWidget(self.illumination_widget, 0)
-        # self.hbox.addWidget(self.aht_widget, 1)
+        self.aht_widget = QAHTWidget(self.config["climate"], self.rm)
+        self.illumination_widget = QBasicLEDWidget(self.config["illumination"], self.rm)
+        self.hbox.addWidget(self.illumination_widget, 0)
+        self.hbox.addWidget(self.aht_widget, 1)
 
         # self.hbox.setStretch(0, 0)
         # self.hbox.setStretch(1, 0)

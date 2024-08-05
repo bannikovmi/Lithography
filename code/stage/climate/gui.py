@@ -10,10 +10,11 @@ from PyQt5.QtWidgets import (
 
 class QAHTWidget(QGroupBox):
 
-    def __init__(self, config):
+    def __init__(self, config, resource_manager):
 
         super().__init__("Climate")
         self.config = config
+        self.rm = resource_manager
         self.initUI()
 
         self.request_HT()

@@ -20,12 +20,11 @@ from .numeric import QNumericControl
 
 class QDriveParams(QGroupBox):
 
-    def __init__(self, config, name):
+    def __init__(self, config):
 
         self.config = config
-        self.name = name
 
-        super().__init__(self.config["Drives"][name]["label"])
+        super().__init__(self.config["label"])
 
         self.initUI()
         self.connect_signals()
@@ -51,7 +50,7 @@ class QDriveParams(QGroupBox):
         self.hbox.addWidget(self.divider_lab, 2)
         self.hbox.addWidget(self.divider_cmb, 3)
 
-        for div in self.config["Drives"]["step_dividers"]:
+        for div in self.config["step_dividers"]:
             self.divider_cmb.addItem(str(div))
         
         self.hbox.setStretch(0, 0)
@@ -59,7 +58,7 @@ class QDriveParams(QGroupBox):
         self.hbox.setStretch(2, 0)
         self.hbox.addStretch(1)
 
-        self.steps_ctrl = QStepsControl(self.config, self.name)
+        self.steps_ctrl = QStepsControl(self.config)
         self.grid.addWidget(self.steps_ctrl, 1, 0)
 
         # Set widget params
@@ -67,7 +66,7 @@ class QDriveParams(QGroupBox):
         self.settings_pb.setMenu(self.settings_menu)
 
         self.settings_qwa = QWidgetAction(self.settings_menu)
-        self.drive_settings = QDriveSettings(self.config, self.name)
+        self.drive_settings = QDriveSettings(self.config)
         self.settings_qwa.setDefaultWidget(self.drive_settings)
         self.settings_menu.addAction(self.settings_qwa)
 
@@ -76,32 +75,27 @@ class QDriveParams(QGroupBox):
 
 class QStepsControl(QNumericControl):
 
-    def __init__(self, config, name):
+    def __init__(self, config):
 
         self.config = config
-        self.name = name
 
         super().__init__(label="Steps", units="")
         self.extendUI()
 
     def extendUI(self):
 
-        min_steps = self.config["Drives"][self.name]["min_steps"]
-        max_steps = self.config["Drives"][self.name]["max_steps"]
-
-        self.setMinimum(min_steps)
-        self.setMaximum(max_steps)
+        self.setMinimum(self.config["min_steps"])
+        self.setMaximum(self.config["max_steps"])
         self.setMapper("log10")
 
-        init_steps = self.config["Drives"][self.name]["init_steps"]
-        self.setValue(init_steps)
+        self.setValue(self.config["init_steps"])
 
         self.hbox2 = QHBoxLayout()
         self.hbox3 = QHBoxLayout()
         self.vbox.addLayout(self.hbox2, 1)
         self.vbox.addLayout(self.hbox3, 2)
 
-        for ind, step in enumerate(self.config["Drives"][self.name]["predef_steps"]):
+        for ind, step in enumerate(self.config["predef_steps"]):
             step_pb = QPushButton(f"{step}")
 
             if ind < 3:
@@ -117,10 +111,9 @@ class QStepsControl(QNumericControl):
 
 class QDriveSettings(QWidget):
 
-    def __init__(self, config, name):
+    def __init__(self, config):
 
         self.config = config
-        self.name = name
 
         super().__init__()
         self.initUI()
@@ -130,34 +123,30 @@ class QDriveSettings(QWidget):
         self.grid = QGridLayout()
         self.setLayout(self.grid)
 
-        self.speed_ctrl = QSpeedControl(self.config, self.name)
+        self.speed_ctrl = QSpeedControl(self.config)
         self.grid.addWidget(self.speed_ctrl, 0, 0)
 
 class QSpeedControl(QNumericControl):
 
-    def __init__(self, config, name):
+    def __init__(self, config):
 
         self.config = config
-        self.name = name
 
         super().__init__(label="Speed", units="steps/s")
         self.extendUI()
 
     def extendUI(self):
 
-        min_speed = self.config["Drives"][self.name]["min_speed"]
-        max_speed = self.config["Drives"][self.name]["max_speed"]
-        self.setMinimum(min_speed)
-        self.setMaximum(max_speed)
+        self.setMinimum(self.config["min_speed"])
+        self.setMaximum(self.config["max_speed"])
         self.setMapper("log10")
 
-        init_speed = self.config["Drives"][self.name]["init_speed"]
-        self.setValue(init_speed)        
+        self.setValue(self.config["init_speed"])        
 
         self.hbox2 = QHBoxLayout()
         self.vbox.addLayout(self.hbox2, 1)
 
-        for speed in self.config["Drives"][self.name]["predef_speeds"]:
+        for speed in self.config["predef_speeds"]:
             speed_pb = QPushButton(f"{speed}")
             self.hbox2.addWidget(speed_pb)
             speed_pb.clicked.connect(self.on_pb_click)

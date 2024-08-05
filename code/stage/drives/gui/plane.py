@@ -16,13 +16,20 @@ from .numeric import QNumericIndicator
 
 class QPlaneGB(QGroupBox):
 
-    def __init__(self, task_manager):
+    def __init__(self, config, resource_manager):
 
-        self.task_manager = task_manager
-        self.x_drive = QDrive(name="DRX", self.task_manager)
-        self.y_drive = QDrive(name="DRY", self.task_manager)
+        # Save arguments to instance attributes
+        self.config = config
+        self.rm = resource_manager
 
         super().__init__("In-plane positioning")
+
+        # Initialize drives and update their values in resource manager
+        self.x_drive = QDrive(self.rm["DRX"])
+        self.y_drive = QDrive(self.rm["DRY"])
+        self.rm["DRX"] = self.x_drive
+        self.rm["DRY"] = self.y_drive
+
         self.initUI()
 
     def initUI(self):
@@ -30,9 +37,9 @@ class QPlaneGB(QGroupBox):
         self.grid = QGridLayout()
         self.setLayout(self.grid)
 
-        self.x_params = QDriveParams(self.config, name="DRX")
-        self.y_params = QDriveParams(self.config, name="DRY")
-        self.positioner = QPositionerWidget(self.config)
+        self.x_params = QDriveParams(self.config["x_params"])
+        self.y_params = QDriveParams(self.config["y_params"])
+        self.positioner = QPositionerWidget(self.config["positioner"])
 
         self.grid.addWidget(self.y_params, 0, 1)
         self.grid.addWidget(self.x_params, 1, 1)

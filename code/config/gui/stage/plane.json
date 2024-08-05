@@ -1,0 +1,30 @@
+{
+	"x_params": {
+		"label": "X-drive config",
+		"min_speed": 1,
+		"max_speed": 1000,
+		"init_speed": 1000,
+		"predef_speeds": [10, 30, 100, 300, 1000],
+		"min_steps": 1,
+		"max_steps": 100000,
+		"init_steps": 1000,
+		"predef_steps": [10, 30, 100, 300, 1000, 10000],
+		"step_dividers": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+		"init_step_div": 1
+	},
+	"y_params": {
+		"label": "Y-drive config",
+		"min_speed": 1,
+		"max_speed": 1000,
+		"init_speed": 1000,
+		"predef_speeds": [10, 30, 100, 300, 1000],
+		"min_steps": 1,
+		"max_steps": 100000,
+		"init_steps": 1000,
+		"predef_steps": [10, 30, 100, 300, 1000, 10000],
+		"step_dividers": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+		"init_step_div": 1
+	},
+	"positioner": {
+	}
+}
