@@ -48,6 +48,8 @@ class MainWindow(QMainWindow):
         
         self.show()
 
+print(os.getcwd())
+
 def main():
 
     app = QApplication(sys.argv)

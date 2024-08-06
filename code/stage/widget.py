@@ -20,6 +20,7 @@ from .drives.gui.vertical import QVerticalGB
 from .drives.gui.lense import QLenseGB
 from .climate.gui import QAHTWidget
 from .LED.gui import QBasicLEDWidget
+from .exposure.gui import QProjectorWidget
 # from .misc.vacuum import QVacuumWidget
 
 class QStageWidget(QWidget):
@@ -32,8 +33,6 @@ class QStageWidget(QWidget):
         self.rm = resource_manager
 
         self.initUI()
-        # self.task_manager.message_received.connect(self.updateUI)
-        # self.task_manager.timer.start()
 
     def initUI(self):
     
@@ -63,12 +62,15 @@ class QStageWidget(QWidget):
 
         self.aht_widget = QAHTWidget(self.config["climate"], self.rm)
         self.illumination_widget = QBasicLEDWidget(self.config["illumination"], self.rm)
+        self.projector_widget = QProjectorWidget(self.config["projector"], self.rm)
+        
         self.hbox.addWidget(self.illumination_widget, 0)
         self.hbox.addWidget(self.aht_widget, 1)
+        self.hbox.addWidget(self.projector_widget, 2)
 
-        # self.hbox.setStretch(0, 0)
-        # self.hbox.setStretch(1, 0)
-        # self.hbox.addStretch(1)
+        self.hbox.setStretch(0, 0)
+        self.hbox.setStretch(1, 1)
+        self.hbox.setStretch(2, 1)
 
         # self.grid.setColumnStretch(0, 1)
         # self.grid.setColumnStretch(1, 0)

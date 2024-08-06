@@ -1,1 +1,6 @@
-{}
+{
+	"hostname": "192.168.3.160",
+	"port": 22,
+	"username": "litho-proj-1",
+	"password": "FIAN1234"
+}

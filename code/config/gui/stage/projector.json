@@ -1,0 +1,6 @@
+{
+	"label": "Projector",
+	"min_exp_time": 1,
+	"max_exp_time": 10000,
+	"init_exp_time": 1000
+}

@@ -17,7 +17,7 @@ i2c = smbus.SMBus(8)  # we configured our software i2c to be on bus 8
 # Initialise the DLPC1438
 DMD = DLPC1438(i2c, PROJ_ON, HOST_IRQ)
 # Configure it (NOTE: Mode.STANDBY can clear these settings, so call it again after standby)
-DMD.configure_external_print(LED_PWM=1023)
+DMD.configure_external_print(LED_PWM=1023) #1023
 
 # switch to right mode
 DMD.switch_mode(Mode.EXTERNALPRINT)
@@ -36,7 +36,7 @@ import numpy as np
 # pins wired to the red channel, we need to write to those bytes with our code.
 
 h, w, c = 720, 1280, 4
-fb = np.memmap('/dev/fb0', dtype='uint8', mode='w+', shape=(h, w, c)) 
+fb = np.memmap('/dev/fb0', dtype='uint8',mode='w+', shape=(h, w, c)) 
  
 # fb.shape = (720,1280,4)
 # we first zero the framebuffer (otherwise you can get an image of the terminal :P)
@@ -74,12 +74,12 @@ input("Press Enter to continue...")
 print(">> Example: displaying a png image") ########################################################
 
 print("-- Converting image to bytes --")
-#print(fb.shape)
-#im_frame = Image.open("../media/openMLA_logo_1280x720.png")
-#pixeldata = np.array(im_frame)
+print(fb.shape)
+im_frame = Image.open("../media/test.png")
+pixeldata = np.array(im_frame.convert('L'))
 
-#fb[:,:,2] = pixeldata
-#input("Press Enter to continue...")
+fb[:,:,2] = pixeldata
+input("Press Enter to continue...")
 
 print(">> Example: repeating grayscale gradient (1px per step)") ###################################
 

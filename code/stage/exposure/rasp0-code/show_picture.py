@@ -17,7 +17,7 @@ i2c = smbus.SMBus(8)  # we configured our software i2c to be on bus 8
 # Initialise the DLPC1438
 DMD = DLPC1438(i2c, PROJ_ON, HOST_IRQ)
 # Configure it (NOTE: Mode.STANDBY can clear these settings, so call it again after standby)
-DMD.configure_external_print(LED_PWM=1023)
+DMD.configure_external_print(LED_PWM=1023) #1023
 
 # switch to right mode
 DMD.switch_mode(Mode.EXTERNALPRINT)
