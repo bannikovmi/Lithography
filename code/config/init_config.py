@@ -22,18 +22,23 @@ def dir_scan(dir_name):
 
     return ret
 
-def init_config():
+def init_config(dir_path):
 
-    resources = dir_scan("resources")
-    gui = dir_scan("gui")
+    res_path = os.path.join(dir_path, "resources")
+    gui_path = os.path.join(dir_path, "gui")
+
+    resources = dir_scan(res_path)
+    gui = dir_scan(gui_path)
 
     config = {
         "resources": resources,
         "gui": gui
     }
-    with open("config.json", 'w') as file:
+    with open(os.path.join(dir_path, "config.json"), 'w') as file:
         json.dump(config, file, indent=4)
+
+    return config
 
 # Load config files
 if __name__ == '__main__':
-    init_config()
+    init_config(os.getcwd())

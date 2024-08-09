@@ -3,7 +3,7 @@
         "host": {
             "resource": {},
             "serial": {
-                "esp-enc": {
+                "esp_enc": {
                     "resource": {},
                     "I2C": {
                         "ENCY": {
@@ -15,7 +15,7 @@
                         }
                     }
                 },
-                "esp-pos": {
+                "esp_pos": {
                     "GPIO": {
                         "PMP": {
                             "resource": {
@@ -48,11 +48,14 @@
                         }
                     },
                     "resource": {
-                        "pyvisa_address": "ASRL/dev/ttyACM0::INSTR",
-                        "baud_rate": 115200,
-                        "read_termination": "\r\n",
-                        "write_termination": "\r\n",
-                        "timeout": 200
+                        "pyvisa": {
+                            "address": "ASRL/dev/ttyACM0::INSTR",
+                            "baud_rate": 115200,
+                            "read_termination": "\r\n",
+                            "write_termination": "\r\n",
+                            "timeout": 200
+                        },
+                        "timer_interval": 50
                     },
                     "UART": {
                         "DRL": {
@@ -285,13 +288,85 @@
                 "init_duty": 0
             },
             "camera": {
-                "image_width": 1000
+                "auto_exp": true,
+                "auto_wb": true,
+                "image_width": 1024,
+                "brightness": {
+                    "label": "Brightness",
+                    "min": -64,
+                    "max": 64,
+                    "step": 1,
+                    "default": 32
+                },
+                "backlight_comp": {
+                    "label": "Backlight compensation",
+                    "min": 0,
+                    "max": 2,
+                    "step": 1,
+                    "default": 1
+                },
+                "contrast": {
+                    "label": "Contrast",
+                    "min": 0,
+                    "max": 64,
+                    "step": 1,
+                    "default": 32
+                },
+                "exposure": {
+                    "label": "Exposure time [ms]",
+                    "min": 1,
+                    "max": 5000,
+                    "step": 1,
+                    "default": 157
+                },
+                "gain": {
+                    "label": "Gain",
+                    "min": 0,
+                    "max": 100,
+                    "step": 1,
+                    "default": 50
+                },
+                "gamma": {
+                    "label": "Gamma",
+                    "min": 72,
+                    "max": 500,
+                    "step": 1,
+                    "default": 100
+                },
+                "hue": {
+                    "label": "Hue",
+                    "min": -40,
+                    "max": 40,
+                    "step": 1,
+                    "default": 20
+                },
+                "saturation": {
+                    "label": "Saturation",
+                    "min": 0,
+                    "max": 100,
+                    "step": 1,
+                    "default": 32
+                },
+                "sharpness": {
+                    "label": "Sharpness",
+                    "min": 0,
+                    "max": 6,
+                    "step": 1,
+                    "default": 3
+                },
+                "wb_temp": {
+                    "label": "WB temparature",
+                    "min": 2800,
+                    "max": 6500,
+                    "step": 1,
+                    "default": 4600
+                }
             },
             "climate": {},
             "projector": {
                 "label": "Projector",
                 "min_exp_time": 1,
-                "max_exp_time": 10000,
+                "max_exp_time": 100000,
                 "init_exp_time": 1000
             },
             "lense": {

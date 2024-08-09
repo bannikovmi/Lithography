@@ -23,15 +23,20 @@ from .LED.gui import QBasicLEDWidget
 from .exposure.gui import QProjectorWidget
 # from .misc.vacuum import QVacuumWidget
 
+from .esp_pos.API import QESPPos
+
 class QStageWidget(QWidget):
 
     def __init__(self, config, resource_manager):
 
-        super().__init__()
-
         self.config = config
         self.rm = resource_manager
 
+        # Overwrite esp resource here so that widgets may use it upon initialization
+        self.esp_pos = QESPPos(self.rm["esp_pos"])
+        self.esp_pos.open()
+
+        super().__init__()
         self.initUI()
 
     def initUI(self):

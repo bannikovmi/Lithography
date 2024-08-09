@@ -11,8 +11,13 @@ class QInterface(QObject):
 
     def __init__(self, name, master):
 
+        # Save data to instance attributes
         self.name = name
         self.master = master
+
+        # Create dictionaries for storing config and slave resources
+        self.slaves = {}
+        self.config = {}
 
         super().__init__()
 

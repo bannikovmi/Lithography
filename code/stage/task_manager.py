@@ -7,15 +7,6 @@ from PyQt5.QtCore import pyqtSignal, QObject, QTimer
 # local imports
 from .esp import ESP
 
-class QMessage(QObject):
-
-    def __init__(self, message=""):
-
-        split_message = message.split("_")
-        self.resource_name = split_message[0]
-        self.command_name = split_message[1]
-        self.arguments = split_message[2:]
-
 class QTaskManager(QObject):
 
     message_received = pyqtSignal(QMessage)

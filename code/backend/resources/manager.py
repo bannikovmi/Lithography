@@ -42,7 +42,7 @@ class QResourceManager(QObject):
 
         # Create resource and load config
         res_name = os.path.basename(os.path.normpath(dir_path))
-        resource = QResource(name=res_name, master_int=master_int)
+        resource = QResource(res_name, master_int=master_int)
         resource.load_config(os.path.join(dir_path, "resource.json"))
 
         # Add resource to interfaces' slave dictionary and to self dictionary

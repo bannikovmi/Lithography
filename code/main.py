@@ -13,22 +13,19 @@ import sys
 # pyqt-related imports
 from PyQt5.QtWidgets import QApplication, QGridLayout, QMainWindow, QTabWidget, QWidget
 
-# local gui imports
+# local imports
 from stage.widget import QStageWidget
 from backend.resources.manager import QResourceManager
-
-# load configurations
-config_file = os.path.join("config", "config.json")
-with open(config_file, "r") as file:
-    config = json.load(file)
+from config.init_config import init_config
 
 class MainWindow(QMainWindow):
 
-    def __init__(self, config):
+    def __init__(self):
         
         super().__init__()
 
-        self.config = config
+        # Load config files and create resource manager instance
+        self.config = init_config("config") 
         self.rm = QResourceManager(self.config)
 
         self.initUI()
@@ -48,12 +45,10 @@ class MainWindow(QMainWindow):
         
         self.show()
 
-print(os.getcwd())
-
 def main():
 
     app = QApplication(sys.argv)
-    window = MainWindow(config)
+    window = MainWindow()
 
     sys.exit(app.exec_())
 

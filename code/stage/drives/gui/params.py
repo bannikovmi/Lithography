@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (
     QWidgetAction
     )
 
-from .numeric import QNumericControl
+from widgets.numeric import QNumericControl
 
 class QDriveParams(QGroupBox):
 

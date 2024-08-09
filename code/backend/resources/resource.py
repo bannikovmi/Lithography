@@ -2,21 +2,26 @@
 import json
 
 # pyqt-related imports
-from PyQt5.QtCore import QMutex, QObject
+from PyQt5.QtCore import QMutex, QObject, QThreadPool
 
 class QResource(QObject):
 
-    interfaces = {}
-    config = {}
+    def __init__(self, arg1, master_int=None):
 
-    def __init__(self, 
-        name: str = "",
-        master_int=None,
-    ):
+        if isinstance(arg1, QResource):
+            # Copy data from resource to instance attributes
+            self.copy_resource(arg1)
+        else:
+            # Save data to instance attributes
+            self.name = arg1
+            self.master_int = master_int
 
-        # Save data to local variables
-        self.name = name
-        self.master_int = master_int
+            # Create dictionaries for storing config and slave interfaces
+            self.interfaces = {}
+            self.config = {}
+            
+            # Global thread pool instance
+            self.thread_pool = QThreadPool.globalInstance()
 
         super().__init__()
 
@@ -46,43 +51,10 @@ class QResource(QObject):
             ret[int_name] = interface.slaves
         return ret
 
-class QVISAResource(QResource):
-
-    def __init__(self,
-        name: str="",
-        parent_int=None,
-        pyvisa_handler=None,
-    ):
-
-        super().__init__(name, parent_int)
-        self.pyvisa_handler = pyvisa_handler
-
-    # Common methods
-    def clear(self):
-        self.pyvisa_handler.clear()
-
-    def open(self):
-        self.pyvisa_handler.open()
-
-    def close(self):
-        self.pyvisa_handler.close()
-
-    def read(self):
-        return self.pyvisa_handler.read()
-
-    def write(self, message):
-
-        return self.pyvisa_handler.write(message)
-
-    def query(self, message):
+    def copy_resource(self, resource):
         
-        return self.pyvisa_handler.query(message)
-
-    # Mutex version of query
-    def mutex_query(self, message):
-        
-        self.mutex.lock()
-        res = self.query(message)
-        self.mutex.unlock()
-
-        return res
+        self.name = resource.name
+        self.master_int = resource.master_int
+        self.config = resource.config
+        self.interfaces = resource.interfaces
+        self.thread_pool = resource.thread_pool

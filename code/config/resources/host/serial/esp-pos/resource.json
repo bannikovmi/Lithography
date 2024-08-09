@@ -1,7 +1,0 @@
-{
-	"pyvisa_address": "ASRL/dev/ttyACM0::INSTR",
-    "baud_rate": 115200,
-    "read_termination": "\r\n",
-    "write_termination": "\r\n",
-    "timeout": 200
-}

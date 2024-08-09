@@ -1,1 +1,0 @@
-from .resources.resource import QResource

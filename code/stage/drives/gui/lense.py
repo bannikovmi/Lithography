@@ -7,8 +7,9 @@ from PyQt5.QtWidgets import (
     QWidget,
     )
 
+from widgets.numeric import QNumericIndicator
+
 from .move_button import QMoveButton
-from .numeric import QNumericIndicator
 from .params import QDriveParams
 
 

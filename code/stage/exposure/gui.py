@@ -29,6 +29,7 @@ class QProjectorWidget(QGroupBox):
         self.rm = resource_manager
 
         self.rasp0 = QRaspZero(self.rm["rasp0"])
+        self.rasp0.connect()
 
         super().__init__(self.config["label"])
 
@@ -67,10 +68,14 @@ class QProjectorWidget(QGroupBox):
         self.upload_pb.clicked.connect(self.show_upload_dialog)
         self.expose_pb.clicked.connect(self.expose_pic)
 
+        self.rasp0.exposure_finished.connect(lambda: self.expose_pb.setDisabled(False))
+
     def expose_pic(self):
 
+        self.expose_pb.setDisabled(True)
         self.rasp0.expose_remote(self.selector.currentItem().text(),
             self.exp_time_sb.value(), separate_thread=True)
+
 
     def show_upload_dialog(self):
 
@@ -84,13 +89,8 @@ class QProjectorWidget(QGroupBox):
     def populate_listview(self):
 
         self.selector.clear()
-
-        pics = self.rasp0.list_pics()
-
+        
         for name in self.rasp0.list_pics():
             self.selector.addItem(name)
 
         self.selector.setCurrentItem(self.selector.item(0))
-
-    def updateUI(self, message):    
-        pass

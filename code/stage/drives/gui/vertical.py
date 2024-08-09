@@ -7,11 +7,12 @@ from PyQt5.QtWidgets import (
     QWidget
     )
 
-from stage.drives import QDrive
+from stage.drives.API.drive import QDrive
+from widgets.numeric import QNumericIndicator
 
 from .params import QDriveParams
 from .move_button import QMoveButton
-from .numeric import QNumericIndicator
+
 
 class QVerticalGB(QGroupBox):
 

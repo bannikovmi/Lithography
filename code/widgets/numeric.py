@@ -1,10 +1,16 @@
-from PyQt5.QtCore import QObject, Qt
-from PyQt5.QtWidgets import (QDoubleSpinBox,
-    QGridLayout,
+from PyQt5.QtCore import pyqtSignal, QObject, Qt
+from PyQt5.QtWidgets import (
+    QDoubleSpinBox,
     QGroupBox,
+    QGridLayout,
+    QHBoxLayout,
     QLabel,
     QLineEdit,
-    QSlider)
+    QSlider,
+    QSpinBox,
+    QVBoxLayout,
+    QWidget
+    )
 
 import numpy as np
 
@@ -111,55 +117,82 @@ class QMapper(QObject):
 
         return cls(x_min, x_max, y_min, y_max, map_func, inverse_map_func)
 
-class QNumericControl(QGroupBox):
+class QNumericControl(QWidget):
     
-    def __init__(self, label, units, mapper_type="linear", orientation=Qt.Horizontal):
+    valueChanged = pyqtSignal(float)
 
+    def __init__(self, 
+        label="",
+        units="",
+        mapper_type="linear",
+        dtype="int"
+    ):
+
+        self.label = label
         self.units = units
         self.mapper_type = mapper_type
-        self.orientation = orientation
+        self.dtype = dtype
 
-        super().__init__(label)
+        super().__init__()
         self.initUI()
 
         self.setMapper(mapper_type)
 
     def initUI(self):
 
-        self.grid = QGridLayout()
-        self.setLayout(self.grid)
+        self.vbox = QVBoxLayout()
+        self.hbox1 = QHBoxLayout()
+        self.setLayout(self.vbox)
+        self.vbox.addLayout(self.hbox1)
 
-        self.slider = QSlider(self.orientation)
+        self.name_label = QLabel(self.label)
+        self.slider = QSlider(orientation=Qt.Horizontal)
         self.slider.setMaximum(1000) # higher-resolution slider
         self.slider.setMinimumWidth(150)
+
         self.spinbox = QDoubleSpinBox()
+        match self.dtype:
+            case "int":
+                self.spinbox.setDecimals(0)
+            case "float":
+                self.spinbox.setDecimals(2)
+            case _:
+                raise ValueError("Unknown datatype")
+
         self.units_lab = QLabel(self.units)
 
-        if self.orientation == Qt.Horizontal:
-            self.grid.addWidget(self.slider, 0, 0)
-            self.grid.addWidget(self.spinbox, 0, 1)
-            self.grid.addWidget(self.units_lab, 0, 2)
-            self.grid.setColumnStretch(0, 1)
-        else:
-            self.grid.addWidget(self.spinbox, 0, 0)
-            self.grid.addWidget(self.units_lab, 0, 1)
-            self.grid.addWidget(self.slider, 1, 0, 1, 2)
-            self.grid.setRowStretch(0,  1)
+        self.hbox1.addWidget(self.name_label, 0)
+        self.hbox1.addWidget(self.slider, 1)
+        self.hbox1.addWidget(self.spinbox, 2)
+        self.hbox1.addWidget(self.units_lab, 3)
+
+        self.hbox1.setStretch(0, 0)
+        self.hbox1.setStretch(1, 1)
+        self.hbox1.setStretch(2, 0)
+        self.hbox1.setStretch(3, 0)
 
         self.slider.valueChanged.connect(self.on_slider_change)
         self.spinbox.valueChanged.connect(self.on_spinbox_change)
+        # self.valueChanged.connect(lambda val: print(f"setting {self.label} value to {val}"))
 
     def on_slider_change(self, val):
         
+        sb_val = self.mapper.evaluate(val)
+        self.valueChanged.emit(sb_val)
         self.spinbox.valueChanged.disconnect()
-        self.spinbox.setValue(self.mapper.evaluate(val))
+        self.spinbox.setValue(sb_val)
         self.spinbox.valueChanged.connect(self.on_spinbox_change)
 
     def on_spinbox_change(self, val):
         
+        self.valueChanged.emit(val)
         self.slider.valueChanged.disconnect()
         self.slider.setValue(round(self.mapper.evaluate_inverse(val)))
         self.slider.valueChanged.connect(self.on_slider_change)
+
+    def setDecimals(self, val):
+
+        self.spinbox.setDecimals(val)
 
     def setMapper(self, mapper_type):
 
@@ -194,11 +227,16 @@ class QNumericControl(QGroupBox):
 
         self.spinbox.setValue(val)
 
-class QNumericIndicator(QGroupBox):
+    def setSingleStep(self, val):
 
-    def __init__(self, label, units="", fstring=".3f", mapper_type="linear", 
+        self.spinbox.setSingleStep(val)
+
+class QNumericIndicator(QWidget):
+
+    def __init__(self, label="", units="", fstring=".3f", mapper_type="linear", 
         min_value = 0, max_value = 1000, orientation=Qt.Horizontal):
 
+        self.label = label
         self.units = units
         self.fstring = fstring
         self.mapper_type = mapper_type
@@ -206,7 +244,7 @@ class QNumericIndicator(QGroupBox):
         self.max_value = max_value
         self.orientation = orientation
 
-        super().__init__(label)
+        super().__init__()
         self.initUI()
 
         self.setMapper(mapper_type)
@@ -216,6 +254,7 @@ class QNumericIndicator(QGroupBox):
         self.grid = QGridLayout()
         self.setLayout(self.grid)
 
+        self.name_label = QLabel(self.label)
         self.slider = QSlider(self.orientation)
         self.slider.setMaximum(1000) # higher-resolution slider
         self.slider.setDisabled(True)
@@ -225,15 +264,24 @@ class QNumericIndicator(QGroupBox):
         self.units_lab = QLabel(self.units)
 
         if self.orientation == Qt.Horizontal:
-            self.grid.addWidget(self.slider, 0, 0)
-            self.grid.addWidget(self.lineedit, 0, 1)
-            self.grid.addWidget(self.units_lab, 0, 2)
-            self.grid.setColumnStretch(0, 1)
+            self.layout = QHBoxLayout()
+            alignment = Qt.AlignVCenter
+            self.slider.setMinimumWidth(100)
+            self.grid.addLayout(self.layout, 0, 0)
+            self.grid.addWidget(self.slider, 1, 0)
+
         else:
-            self.grid.addWidget(self.slider, 0, 0)
-            self.grid.addWidget(self.units_lab, 0, 1)
-            self.grid.addWidget(self.lineedit, 1, 0, 1, 2)
-            self.grid.setRowStretch(0,  1)
+            self.layout = QVBoxLayout()
+            alignment = Qt.AlignHCenter
+            self.slider.setMinimumWidth(100)
+            self.grid.addLayout(self.layout, 0, 0)
+            self.grid.addWidget(self.slider, 0, 1)
+
+        self.layout.addWidget(self.name_label, 0, alignment=alignment)
+        self.layout.addWidget(self.lineedit, 1, alignment=alignment)
+        self.layout.addWidget(self.units_lab, 2, alignment=alignment)
+
+        self.lineedit.setMaximumWidth(70)
 
     def value(self):
 
