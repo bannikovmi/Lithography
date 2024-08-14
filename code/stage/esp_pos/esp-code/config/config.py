@@ -37,7 +37,8 @@ config = {
         "microstep": 1,
         "pos_dir": 0,
         "limit_on": 0,
-        "speed": 5000
+        "irun": 15,
+        "speed": 1000
     },
     "DRY": {
 	    "mtr_id": 1,
@@ -49,7 +50,8 @@ config = {
         "microstep": 1,
         "pos_dir": 0,
         "limit_on": 0,
-        "speed": 5000
+        "irun": 15,
+        "speed": 1000
     },
     "DRZ": {
     	"mtr_id": 2,
@@ -61,7 +63,8 @@ config = {
         "microstep": 1,
         "pos_dir": 0,
         "limit_on": 1,
-        "speed": 5000
+        "irun": 15,
+        "speed": 1000
     },
     "DRL": {
     	"mtr_id": 3,
@@ -73,7 +76,8 @@ config = {
         "microstep": 1,
         "pos_dir": 0,
         "limit_on": 0,
-        "speed": 5000
+        "irun": 15,
+        "speed": 1000
     },
     "UART": {
         "port": 2,

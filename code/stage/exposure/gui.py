@@ -27,8 +27,9 @@ class QProjectorWidget(QGroupBox):
 
         self.config = config
         self.rm = resource_manager
+        self.rm.update_resource("rasp0", QRaspZero)
+        self.rasp0 = self.rm["rasp0"]
 
-        self.rasp0 = QRaspZero(self.rm["rasp0"])
         self.rasp0.connect()
 
         super().__init__(self.config["label"])

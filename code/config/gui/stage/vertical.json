@@ -1,16 +1,31 @@
 {
 	"params": {
 		"label": "Drive config",
-		"min_speed": 1,
-		"max_speed": 1000,
-		"init_speed": 1000,
-		"predef_speeds": [10, 30, 100, 300, 1000],
-		"min_steps": 1,
-		"max_steps": 500000,
-		"init_steps": 1000,
-		"predef_steps": [10, 30, 100, 1000, 10000, 100000],
-		"step_dividers": [1, 2, 4, 8, 16, 32, 64, 128, 256],
-		"init_step_div": 1
+		"speed": {
+			"min": 1,
+			"max": 1000,
+			"default": 1000,
+			"step": 1,
+			"predef": [10, 30, 100, 300, 1000]
+		},
+		"steps": {
+			"min": 1,
+			"max": 500000,
+			"default": 1000,
+			"step": 1,
+			"predef": [10, 30, 100, 1000, 10000, 100000]
+		},
+		"step_div": {
+			"default": 1,
+			"predef": [1, 2, 4, 8, 16, 32, 64, 128, 256]
+		},
+		"irun": {
+			"min": 0,
+			"max": 31,
+			"default": 5,
+			"step": 1
+		},
+		"pos_direction": -1
 	},
 	"positioner": {}
 }

@@ -47,8 +47,9 @@ class QResource(QObject):
     def slaves(self):
         # get all slaves for all interfaces in form of a dict
         ret = {}
-        for int_name, interface in self.interfaces:
-            ret[int_name] = interface.slaves
+        for interface in self.interfaces.values():
+            for key, val in interface.slaves.items():
+                ret[key] = val
         return ret
 
     def copy_resource(self, resource):

@@ -34,6 +34,7 @@ class QStageWidget(QWidget):
 
         # Overwrite esp resource here so that widgets may use it upon initialization
         self.esp_pos = QESPPos(self.rm["esp_pos"])
+        self.rm["esp_pos"] = self.esp_pos
         self.esp_pos.open()
 
         super().__init__()

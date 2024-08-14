@@ -16,11 +16,12 @@ class QBasicLEDWidget(QGroupBox):
 
         self.config = config
         self.rm = resource_manager
+        self.emission_on = False
 
         super().__init__(self.config["label"])
         
         self.initUI()
-        self.emission_on = False
+        # self.connect_signals()
 
     def initUI(self):
         
@@ -34,7 +35,6 @@ class QBasicLEDWidget(QGroupBox):
         self.freq_sb.setMinimum(self.config["min_freq"])
         self.freq_sb.setMaximum(self.config["max_freq"])
         self.freq_sb.setValue(self.config["init_freq"])
-        self.freq_pb.clicked.connect(self.set_freq)
 
         self.grid.addWidget(self.freq_lab, 0, 0)
         self.grid.addWidget(self.freq_sb, 0, 1)
@@ -47,11 +47,15 @@ class QBasicLEDWidget(QGroupBox):
         self.duty_sb.setMaximum(self.config["max_duty"])
         self.duty_sb.setValue(self.config["init_duty"])
         self.duty_pb = QPushButton("Set")
-        self.duty_pb.clicked.connect(self.set_duty)
 
         self.grid.addWidget(self.duty_lab, 2, 0)
         self.grid.addWidget(self.duty_sb, 2, 1)
         self.grid.addWidget(self.duty_pb, 2, 2, 1, 2)
+
+    def connect_signals(self):
+
+        self.freq_pb.clicked.connect(self.set_freq)
+        self.duty_pb.clicked.connect(self.set_duty)
 
     def set_freq(self):
 

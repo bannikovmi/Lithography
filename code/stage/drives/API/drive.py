@@ -1,55 +1,86 @@
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import pyqtSignal, QTimer
 
 from backend.resources.resource import QResource
 
 class QDrive(QResource):
     
+    movement_status = pyqtSignal(bool)
+    max_checked = pyqtSignal(int)
+    min_checked = pyqtSignal(int)
+
+    props = {
+        "speed": "SPD",
+        "mstep": "MST",
+        "power": "POW",
+        "max": "MAX",
+        "min": "MIN",
+        "irun": "IRN"
+    }
+
     def __init__(self, resource):
 
         super().__init__(resource)
 
         # master resource
         self.esp = self.master_int.master
+        self.is_moving = False
+        self.nsteps = 0
 
-    def move(self, sign):
+    def start_movement(self, nsteps):
 
-        # Set disabled state of several interface elements
-        self.move_box.abort_pb.setDisabled(False)
-        self.move_box.arrow_button_group.setDisabled(True)
-        self.move_params.power_cb.setDisabled(True)
+        self.nsteps = nsteps
+        self.movement_status.emit(True)
 
         # Construct timer for limit checking and launch it
         self.timer = QTimer()
         self.timer.setInterval(self.config["limits_check_interval"])
-        if sign > 0:
-            self.timer.timeout.connect(lambda: self.esp.write_message(f"{self.name}_MAX"))
-        else:
-            self.timer.timeout.connect(lambda: self.esp.write_message(f"{self.name}_MIN"))
+        self.timer.timeout.connect(self.on_timer)
         self.timer.start()
 
-        # Calculate params
-        nsteps = sign*int(self.move_params.steps_widget.value())
-        speed = int(self.move_params.speed_widget.value())
-        mstep = int(self.move_params.divider_cb.currentText())
-
-        self.esp.write(f"{self.name}_MST_{mstep}")
-        self.esp.write(f"{self.name}_SPD_{speed}")
-        self.esp.write(f"{self.name}_MOV_{nsteps}")
-
+        # Send message to start movement
+        self.esp.send_message(f"{self.name}_MOV_{nsteps}")
         self.is_moving = True
 
-    def on_abort(self):
+    def on_timer(self):
 
-        self.esp.write(f"{self.name}_MOV_ABT")
-        self.on_finish()
+        self.request("max")
+        self.request("min")
 
-    def on_finish(self):
+    def abort_movement(self):
 
-        self.move_box.abort_pb.setDisabled(True)
-        self.move_box.arrow_button_group.setDisabled(False)
-        self.move_params.power_cb.setDisabled(False)
+        self.esp.send_message(f"{self.name}_MOV_ABT")
+        self.on_movement_finish()
 
-        self.esp.write(f"{self.name}_MAX")
-        self.esp.write(f"{self.name}_MIN")
+    def on_movement_finish(self):
+
         self.timer.stop()
+        
         self.is_moving = False
+        self.movement_status.emit(False)
+        self.request("max")
+        self.request("min")
+
+    def request(self, key):
+        self.esp.send_message(f"{self.name}_{self.props[key]}")
+        
+    def set(self, key, val):
+        self.esp.send_message(f"{self.name}_{self.props[key]}_{val}")
+
+    def parse(self, command, arguments):
+
+        try:
+            if command == "MAX":
+                state = int(arguments[0])
+                self.max_checked.emit(state)
+                if self.is_moving and state and self.nsteps > 0:
+                    self.abort_movement()
+            elif command == "MIN":
+                state = int(arguments[0])
+                self.min_checked.emit(state)
+                if self.is_moving and state and self.nsteps < 0:
+                    self.abort_movement()
+            elif command == "MOV":
+                if arguments[0] == "FIN":
+                    self.on_movement_finish()
+        except IndexError:
+            pass

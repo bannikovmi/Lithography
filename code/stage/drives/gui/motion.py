@@ -75,17 +75,17 @@ class QMotionGB(QGroupBox):
     def power_toggle(self):
 
         if self.move_params.power_cb.isChecked():
-            self.esp.write(f"{self.name}_POW_1")
+            self.esp.send_message(f"{self.name}_POW_1")
             self.move_box.arrow_button_group.pos_pb.setDisabled(False)
             self.move_box.arrow_button_group.neg_pb.setDisabled(False)
         else:
-            self.esp.write(f"{self.name}_POW_0")
+            self.esp.send_message(f"{self.name}_POW_0")
             self.move_box.arrow_button_group.pos_pb.setDisabled(True)
             self.move_box.arrow_button_group.neg_pb.setDisabled(True)
 
         # Check Max and min limit switchers
-        self.esp.write(f"{self.name}_MAX")
-        self.esp.write(f"{self.name}_MIN")
+        self.esp.send_message(f"{self.name}_MAX")
+        self.esp.send_message(f"{self.name}_MIN")
 
     def move(self, sign):
 
@@ -93,9 +93,9 @@ class QMotionGB(QGroupBox):
         self.timer.setInterval(
             self.config["Drives"][self.name]["limits_check_interval"])
         if sign > 0:
-            self.timer.timeout.connect(lambda: self.esp.write(f"{self.name}_MAX"))
+            self.timer.timeout.connect(lambda: self.esp.send_message(f"{self.name}_MAX"))
         else:
-            self.timer.timeout.connect(lambda: self.esp.write(f"{self.name}_MIN"))
+            self.timer.timeout.connect(lambda: self.esp.send_message(f"{self.name}_MIN"))
         self.timer.start()
 
         self.move_box.abort_pb.setDisabled(False)
@@ -106,15 +106,15 @@ class QMotionGB(QGroupBox):
         speed = int(self.move_params.speed_widget.value())
         mstep = int(self.move_params.divider_cb.currentText())
 
-        self.esp.write(f"{self.name}_MST_{mstep}")
-        self.esp.write(f"{self.name}_SPD_{speed}")
-        self.esp.write(f"{self.name}_MOV_{nsteps}")
+        self.esp.send_message(f"{self.name}_MST_{mstep}")
+        self.esp.send_message(f"{self.name}_SPD_{speed}")
+        self.esp.send_message(f"{self.name}_MOV_{nsteps}")
 
         self.is_moving = True
 
     def on_abort(self):
 
-        self.esp.write(f"{self.name}_MOV_ABT")
+        self.esp.send_message(f"{self.name}_MOV_ABT")
         self.on_finish()
 
     def on_finish(self):
@@ -123,8 +123,8 @@ class QMotionGB(QGroupBox):
         self.move_box.arrow_button_group.setDisabled(False)
         self.move_params.power_cb.setDisabled(False)
 
-        self.esp.write(f"{self.name}_MAX")
-        self.esp.write(f"{self.name}_MIN")
+        self.esp.send_message(f"{self.name}_MAX")
+        self.esp.send_message(f"{self.name}_MIN")
         self.timer.stop()
         self.is_moving = False
         

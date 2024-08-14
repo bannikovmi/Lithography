@@ -27,7 +27,6 @@ class QDriveParams(QGroupBox):
         super().__init__(self.config["label"])
 
         self.initUI()
-        self.connect_signals()
 
     def initUI(self):
 
@@ -50,7 +49,7 @@ class QDriveParams(QGroupBox):
         self.hbox.addWidget(self.divider_lab, 2)
         self.hbox.addWidget(self.divider_cmb, 3)
 
-        for div in self.config["step_dividers"]:
+        for div in self.config["step_div"]["predef"]:
             self.divider_cmb.addItem(str(div))
         
         self.hbox.setStretch(0, 0)
@@ -70,9 +69,6 @@ class QDriveParams(QGroupBox):
         self.settings_qwa.setDefaultWidget(self.drive_settings)
         self.settings_menu.addAction(self.settings_qwa)
 
-    def connect_signals(self):
-        pass
-
 class QStepsControl(QNumericControl):
 
     def __init__(self, config):
@@ -84,18 +80,18 @@ class QStepsControl(QNumericControl):
 
     def extendUI(self):
 
-        self.setMinimum(self.config["min_steps"])
-        self.setMaximum(self.config["max_steps"])
+        self.setMinimum(self.config["steps"]["min"])
+        self.setMaximum(self.config["steps"]["max"])
         self.setMapper("log10")
 
-        self.setValue(self.config["init_steps"])
+        self.setValue(self.config["steps"]["default"])
 
         self.hbox2 = QHBoxLayout()
         self.hbox3 = QHBoxLayout()
         self.vbox.addLayout(self.hbox2, 1)
         self.vbox.addLayout(self.hbox3, 2)
 
-        for ind, step in enumerate(self.config["predef_steps"]):
+        for ind, step in enumerate(self.config["steps"]["predef"]):
             step_pb = QPushButton(f"{step}")
 
             if ind < 3:
@@ -126,6 +122,9 @@ class QDriveSettings(QWidget):
         self.speed_ctrl = QSpeedControl(self.config)
         self.grid.addWidget(self.speed_ctrl, 0, 0)
 
+        self.irun_ctrl = QRunCurrentControl(self.config)
+        self.grid.addWidget(self.irun_ctrl, 1, 0)
+
 class QSpeedControl(QNumericControl):
 
     def __init__(self, config):
@@ -137,16 +136,16 @@ class QSpeedControl(QNumericControl):
 
     def extendUI(self):
 
-        self.setMinimum(self.config["min_speed"])
-        self.setMaximum(self.config["max_speed"])
+        self.setMinimum(self.config["speed"]["min"])
+        self.setMaximum(self.config["speed"]["max"])
         self.setMapper("log10")
 
-        self.setValue(self.config["init_speed"])        
+        self.setValue(self.config["speed"]["default"])        
 
         self.hbox2 = QHBoxLayout()
         self.vbox.addLayout(self.hbox2, 1)
 
-        for speed in self.config["predef_speeds"]:
+        for speed in self.config["steps"]["predef"]:
             speed_pb = QPushButton(f"{speed}")
             self.hbox2.addWidget(speed_pb)
             speed_pb.clicked.connect(self.on_pb_click)
@@ -155,3 +154,27 @@ class QSpeedControl(QNumericControl):
 
         speed = float(self.sender().text())
         self.setValue(speed)
+
+class QRunCurrentControl(QNumericControl):
+
+    def __init__(self, config):
+
+        self.config = config
+
+        super().__init__(label="Run current", units="")
+        self.extendUI()
+
+    def extendUI(self):
+
+        self.setMinimum(self.config["irun"]["min"])
+        self.setMaximum(self.config["irun"]["max"])
+
+        self.setValue(self.config["irun"]["default"])
+        self.setSingleStep(self.config["irun"]["step"])     
+
+        self.set_pb = QPushButton("Set")
+        self.set_pb.setDisabled(True)
+        self.hbox1.addWidget(self.set_pb)
+
+        self.valueChanged.connect(lambda: self.set_pb.setDisabled(False))
+        self.set_pb.clicked.connect(lambda: self.set_pb.setDisabled(True))

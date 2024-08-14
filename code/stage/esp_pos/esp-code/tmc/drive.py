@@ -16,6 +16,7 @@ class Drive(Resource):
         "MAX": "at_max",
         "MIN": "at_min",
         "MST": "microstep",
+        "IRN": "irun",
     }
 
     # merge with parent commands
@@ -54,7 +55,8 @@ class Drive(Resource):
 
         # Set default parametres
         self.speed(self.esp.config[name]["speed"])
-        # self.direction(self.esp.config[name]["direction"])
+        self.irun(self.esp.config[name]["irun"])
+        self.microstep(self.esp.config[name]["microstep"])
 
     ##########################################################################################
     #### Properties
@@ -81,11 +83,11 @@ class Drive(Resource):
     def power(self, state=None):
         
         if state is None:
-            self._power = int(not self.esp.pcf.pin(self.en_id))
-            print(f"{self.name}_POW_{self._power}")
+            _power = int(not self.esp.pcf.pin(self.en_id))
+            print(f"{self.name}_POW_{_power}")
         else:
-            self._power = int(state)
-            self.esp.pcf.pin(self.en_id, not self._power) # Setting pin to low enables drive power
+            _power = int(state)
+            self.esp.pcf.pin(self.en_id, not _power) # Setting pin to low enables drive power
 
     def speed(self, value=None):
     
@@ -168,95 +170,15 @@ class Drive(Resource):
 
         self.esp.tmc_uart.write_reg_check(self.mtr_id, reg.GCONF, gconf)
 
-        # if nsteps is None: # Return state
-
-        #     if self.timer is None: # No movement
-        #         print(f"{self.name}_MOV_NONE")
-        #     else: # Movement is in place, return counter
-        #         print(f"{self.name}_MOV_{self.nsteps}_{self.counter}")
+    def irun(self, val=None):
         
-        # else: # Perform movement
-
-        #     if self.timer is not None: # A move operation is already in place
-        #         print(f"{self.name}_MOV_BUSY")
-        #     else:
-        #         # Save nsteps to local variable for use in timeout handler
-        #         self.nsteps = int(nsteps)
-
-        #         if self.nsteps > 0:
-        #             # Check that the positioner is not currently at max
-        #             if self.esp.pcf.pin(self.max_id) == self.esp.config[name]["limit_on"]:
-        #                 print(f"{self.name}_MOV_MAX")
-        #                 return
-        #             else:
-        #                 self.direction(1)
-                
-        #         else:
-        #             # Check that the positioner is not currently at min
-        #             if self.esp.pcf.pin(self.min_id) == self.esp.config[name]["limit_on"]:
-        #                 print(f"{self.name}_MOV_MIN")
-        #                 return
-        #             else:
-        #                 self.direction(-1)
-
-        #         self.counter = 0
-
-        #         # Initialize timer
-        #         self.timer_id = self.esp.allocate_timer_id()
-        #         self.timer = Timer(self.timer_id)
-        #         self.timer.init(mode=Timer.PERIODIC, freq=int(self.speed()),
-        #             callback=lambda t: self.on_timer_event())
-        
-    # def on_timer(self):
-
-    #     if self.counter < self.n_steps:
-    #         self.step_pin(not self.step_pin()) # Toggle step pin
-    #         self.counter += 1
-    #     else:
-    #         if self.timer is not None:
-    #             self.timer.deinit()
-    #             self.esp.deallocate_timer(self.timer_id)
-    #             self.timer = None
-    #             print(f"{self.name}_MOV_END")
-
-    # def on_min(self):
-
-    #     if self.esp.pcf.pin(self.min_id) == self.esp.config[name]["limit_on"]            
-
-    #         self.timer.deinit()
-    #         self.esp.deallocate_timer(self.timer_id)
-    #         self.timer = None
-
-    #         print(f"{self.name}_MOV_MIN")
-
-    # def on_min(self):
-
-    #     if self.esp.pcf.pin(self.min_id) == self.esp.config[name]["limit_on"]::            
-
-    #         self.timer.deinit()
-    #         self.esp.deallocate_timer(self.timer_id)
-    #         self.timer = None
-
-    #         print(f"{self.name}_MOV_MIN")
-
-    # def get_position(self):
-
-    #     if self.n_toggle % 2 == 0:
-    #         position = self.n_toggle // 2
-    #     else:
-    #         position =  self.n_toggle // 2 + 1
-    #     print(position)
-
-    # def set_position(self, new_position, freq):
-
-    #     new_position = int(new_position)
-    #     if self.n_toggle % 2 == 0:
-    #         old_position = self.n_toggle // 2
-    #     else:
-    #         old_position =  self.n_toggle // 2 + 1
-
-    #     nsteps = new_position - old_position
-    #     self.move(nsteps, freq)
+        if val is None:
+            print(f"{self.name}_IRN_{self._irun}")
+            return self._irun
+        else:
+            self._irun = int(val)
+            ihold_irun = 0 | self._irun << 8
+            self.esp.tmc_uart.write_reg_check(self.mtr_id, reg.IHOLD_IRUN, ihold_irun)
 
 class Movement(LastingTask):
 
@@ -319,3 +241,4 @@ class MovementInterrupt:
         self.name = name
         self.int_id = int_id
         self.init_val = init_val
+

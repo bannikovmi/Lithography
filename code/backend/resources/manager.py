@@ -56,6 +56,20 @@ class QResourceManager(QObject):
             if os.path.isdir(new_path):
                 self.add_interface(dir_path=new_path, master=resource)
 
+    def update_resource(self, key, new_class):
+
+        old_resource = self[key]
+        new_resource = new_class(self[key])
+
+        # Update slave interfaces
+        for interface in old_resource.interfaces.values():
+            interface.master = new_resource
+        # Update master interface
+        old_resource.master_int.slaves[key] = new_resource
+
+        # Update resource manager
+        self[key] = new_resource
+
     def add_interface(self, dir_path, master):
 
         # Create interface and load config

@@ -29,7 +29,8 @@ class QCameraWidget(QGroupBox):
 
         self.config = config
         self.rm = resource_manager
-        self.cam = QCamera(self.rm["cam"])
+        self.rm.update_resource("cam", QCamera)
+        self.cam = self.rm["cam"]
         self.cam.start()
 
         super().__init__("Camera")
