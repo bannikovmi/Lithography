@@ -101,7 +101,9 @@ class Drive(Resource):
         name = f"{self.name}_MOV"
 
         if nsteps == "ABT":
+            counter = self.esp.task_manager.tasks[name].counter
             self.esp.task_manager.abort_task(name)
+            print(f"{self.name}_MOV_FIN_{counter}")
         elif nsteps == None:
             try:
                 counter = self.esp.task_manager.tasks[name].counter
@@ -226,7 +228,7 @@ class Movement(LastingTask):
             self.drive.step_pin(not self.drive.step_pin()) # Toggle step pin
         else:
             self.finished = True
-            print(f"{self.drive.name}_MOV_FIN")
+            print(f"{self.drive.name}_MOV_FIN_{self.counter}")
 
     def finish(self):
 

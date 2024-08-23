@@ -31,6 +31,7 @@ class QProjectorWidget(QGroupBox):
         self.rasp0 = self.rm["rasp0"]
 
         self.rasp0.connect()
+        self.rasp0.init_projector()
 
         super().__init__(self.config["label"])
 
@@ -63,6 +64,11 @@ class QProjectorWidget(QGroupBox):
 
         # Populate list widget with picture names from remote machine
         self.populate_listview()
+
+    def closeEvent(self, event):
+
+        self.rasp0.stop_projector()
+        event.accept()
 
     def connect_signals(self):
 

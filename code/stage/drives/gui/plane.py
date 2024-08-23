@@ -12,7 +12,6 @@ from PyQt5.QtWidgets import (
 
 # local imports
 from stage.drives.API.drive import QDrive
-from widgets.numeric import QNumericIndicator
 
 from .params import QDriveParams
 from .move_button import QMoveButton
@@ -64,13 +63,18 @@ class QPlaneGB(QGroupBox):
             self.positioner.arrow_button_group.y_neg_pb.setDisabled)
 
         # Disable/enable interface after movement start/finish
-        self.x_drive.movement_status.connect(self.x_disable_interface)
-        self.y_drive.movement_status.connect(self.y_disable_interface)
+        self.x_drive.movement_started.connect(lambda: self.x_disable_interface(True))
+        self.x_drive.movement_finished.connect(lambda: self.x_disable_interface(False))
+        self.y_drive.movement_started.connect(lambda: self.y_disable_interface(True))
+        self.y_drive.movement_finished.connect(lambda: self.y_disable_interface(False))
+        
         # Clear eta lineedit upon movement finish
-        self.x_drive.movement_status.connect(lambda state:
-            self.positioner.x_eta_le.setText("") if state is False else None)
-        self.y_drive.movement_status.connect(lambda state:
-            self.positioner.y_eta_le.setText("") if state is False else None)
+        self.x_drive.movement_finished.connect(lambda: self.positioner.x_eta_le.setText(""))
+        self.y_drive.movement_finished.connect(lambda: self.positioner.y_eta_le.setText(""))
+
+        # Update position after drive position update
+        self.x_drive.pos_updated.connect(self.positioner.x_update_position)
+        self.y_drive.pos_updated.connect(self.positioner.y_update_position)
 
         # Power control
         self.x_params.power_cb.clicked.connect(self.x_on_power_toggle)
@@ -107,6 +111,10 @@ class QPlaneGB(QGroupBox):
         # Set run currents
         self.x_params.drive_settings.irun_ctrl.set_pb.clicked.emit()
         self.y_params.drive_settings.irun_ctrl.set_pb.clicked.emit()
+
+        # Set starting positions
+        self.positioner.x_update_position(self.x_drive.pos)
+        self.positioner.y_update_position(self.y_drive.pos)
 
     def x_disable_interface(self, state):
 
@@ -226,50 +234,57 @@ class QPositionerWidget(QGroupBox):
         self.vbox.addWidget(self.arrow_button_group, alignment=Qt.AlignHCenter)
         self.vbox.addStretch(1)
 
-        self.hbox2 = QHBoxLayout()
-        self.vbox.addLayout(self.hbox2)
+        self.grid = QGridLayout()
+        self.vbox.addLayout(self.grid)
 
-        self.hbox2.addStretch(1)
-        self.x_eta_lab = QLabel("X axis ETA [s]")
-        self.x_eta_le = QLineEdit()
-        self.x_eta_le.setReadOnly(True)
-        self.x_abort_pb = QPushButton("Abort x")
-        self.x_abort_pb.setDisabled(True)
-        
-        self.hbox2.addWidget(self.x_eta_lab)
-        self.hbox2.addWidget(self.x_eta_le)
-        self.hbox2.addWidget(self.x_abort_pb)
-        self.hbox2.addStretch(1)
+        self.y_pos_lab = QLabel("Position Y")
+        self.y_pos_int = QLineEdit()
+        self.y_pos_float = QLineEdit()
+        self.y_pos_int.setReadOnly(True)
+        self.y_pos_float.setReadOnly(True)
 
-        self.hbox3 = QHBoxLayout()
-        self.vbox.addLayout(self.hbox3)
+        self.x_pos_lab = QLabel("Position X")
+        self.x_pos_int = QLineEdit()
+        self.x_pos_float = QLineEdit()
+        self.x_pos_int.setReadOnly(True)
+        self.x_pos_float.setReadOnly(True)
 
-        self.hbox3.addStretch(1)
-        self.y_eta_lab = QLabel("X axis ETA [s]")
+        self.y_eta_lab = QLabel("ETA Y [s]")
         self.y_eta_le = QLineEdit()
         self.y_eta_le.setReadOnly(True)
-        self.y_abort_pb = QPushButton("Abort y")
+        self.y_abort_pb = QPushButton("Abort Y")
         self.y_abort_pb.setDisabled(True)
-        self.hbox3.addWidget(self.y_abort_pb)
-        
-        self.hbox3.addWidget(self.y_eta_lab)
-        self.hbox3.addWidget(self.y_eta_le)
-        self.hbox3.addWidget(self.y_abort_pb)
-        self.hbox3.addStretch(1)
 
-        self.hbox.addStretch(1)
+        self.x_eta_lab = QLabel("ETA X [s]")
+        self.x_eta_le = QLineEdit()
+        self.x_eta_le.setReadOnly(True)
+        self.x_abort_pb = QPushButton("Abort X")
+        self.x_abort_pb.setDisabled(True)
 
-        # self.x_indicator = QNumericIndicator(
-        #     label="X pos",
-        #     min_value=self.config["Drives"]["DRX"]["min_position"],
-        #     max_value=self.config["Drives"]["DRX"]["max_position"],
-        #     orientation=Qt.Horizontal
-        # )
-        # self.y_indicator = QNumericIndicator(
-        #     label="Y pos",
-        #     min_value=self.config["Drives"]["DRY"]["min_position"],
-        #     max_value=self.config["Drives"]["DRY"]["max_position"],
-        #     orientation=Qt.Vertical
-        # )
-        # self.grid.addWidget(self.x_indicator, 1, 0)
-        # self.grid.addWidget(self.y_indicator, 0, 1)
+        self.grid.addWidget(self.y_pos_lab, 0, 0, alignment=Qt.AlignLeft)
+        self.grid.addWidget(self.y_pos_int, 0, 1, alignment=Qt.AlignLeft)
+        self.grid.addWidget(self.y_pos_float, 0, 2, alignment=Qt.AlignLeft)
+
+        self.grid.addWidget(self.x_pos_lab, 1, 0, alignment=Qt.AlignLeft)
+        self.grid.addWidget(self.x_pos_int, 1, 1, alignment=Qt.AlignLeft)
+        self.grid.addWidget(self.x_pos_float, 1, 2, alignment=Qt.AlignLeft)
+
+        self.grid.addWidget(self.x_eta_lab, 2, 0, alignment=Qt.AlignLeft)
+        self.grid.addWidget(self.x_eta_le, 2, 1, alignment=Qt.AlignLeft)
+        self.grid.addWidget(self.x_abort_pb, 2, 2, alignment=Qt.AlignLeft)
+
+        self.grid.addWidget(self.y_eta_lab, 2, 0, alignment=Qt.AlignLeft)
+        self.grid.addWidget(self.y_eta_le, 2, 1, alignment=Qt.AlignLeft)
+        self.grid.addWidget(self.y_abort_pb, 2, 2, alignment=Qt.AlignLeft)
+
+    def x_update_position(self, pos):
+
+        int_, float_ = pos.to_improper()
+        self.x_pos_int.setText(int_)
+        self.x_pos_float.setText(float_)
+
+    def y_update_position(self, pos):
+
+        int_, float_ = pos.to_improper()
+        self.y_pos_int.setText(int_)
+        self.y_pos_float.setText(float_)

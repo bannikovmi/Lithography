@@ -13,21 +13,6 @@ class RunnerSignals(QObject):
 
     finished = pyqtSignal()
 
-class ConnectRunner(QRunnable):
-
-    def __init__(self, rasp0):
-
-        super().__init__()
-
-        self.rasp0 = rasp0
-        self.signals = RunnerSignals()
-
-    def run(self):
-
-        self.rasp0.connect()
-        self.rasp0.expose_remote(self.name, self.exposure_time) 
-        self.signals.finished.emit()
-
 class ExposureRunner(QRunnable):
 
     def __init__(self, rasp0, name, exposure_time):
@@ -60,6 +45,14 @@ class QRaspZero(QResource):
     def disconnect(self):
 
         self.ssh.close()
+
+    def init_projector(self):
+
+        self.exec_command("python /media/init.py")
+
+    def stop_projector(self):
+
+        self.exec_command("python /media/stop.py")
 
     def exec_command(self, command):
 

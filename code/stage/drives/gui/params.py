@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (
     QWidgetAction
     )
 
-from widgets.numeric import QNumericControl
+from widgets.numeric.control import QNumericControl
 
 class QDriveParams(QGroupBox):
 
@@ -64,10 +64,10 @@ class QDriveParams(QGroupBox):
         self.settings_menu = QMenu()
         self.settings_pb.setMenu(self.settings_menu)
 
-        self.settings_qwa = QWidgetAction(self.settings_menu)
+        self.settings_wa = QWidgetAction(self.settings_menu)
         self.drive_settings = QDriveSettings(self.config)
-        self.settings_qwa.setDefaultWidget(self.drive_settings)
-        self.settings_menu.addAction(self.settings_qwa)
+        self.settings_wa.setDefaultWidget(self.drive_settings)
+        self.settings_menu.addAction(self.settings_wa)
 
 class QStepsControl(QNumericControl):
 

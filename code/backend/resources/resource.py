@@ -6,7 +6,7 @@ from PyQt5.QtCore import QMutex, QObject, QThreadPool
 
 class QResource(QObject):
 
-    def __init__(self, arg1, master_int=None):
+    def __init__(self, arg1, config_path=None, master_int=None):
 
         if isinstance(arg1, QResource):
             # Copy data from resource to instance attributes
@@ -14,6 +14,7 @@ class QResource(QObject):
         else:
             # Save data to instance attributes
             self.name = arg1
+            self.config_path = config_path
             self.master_int = master_int
 
             # Create dictionaries for storing config and slave interfaces
@@ -25,14 +26,14 @@ class QResource(QObject):
 
         super().__init__()
 
-    def load_config(self, config_path):
+    def load_config(self):
         
-        with open(config_path, "r") as file:    
+        with open(self.config_path, "r") as file:    
             self.config = json.load(file)
 
-    def dump_config(self, config_path):
+    def dump_config(self):
 
-        with open(config_path, 'w') as file:
+        with open(self.config_path, 'w') as file:
             json.dump(self.config, file, indent=4)
 
     def add_interface(self, interface):
@@ -57,5 +58,6 @@ class QResource(QObject):
         self.name = resource.name
         self.master_int = resource.master_int
         self.config = resource.config
+        self.config_path = resource.config_path
         self.interfaces = resource.interfaces
         self.thread_pool = resource.thread_pool

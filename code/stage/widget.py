@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
     )
 
 # local imports
-from .camera.gui import QCameraWidget
+from .camera.gui.camera import QCameraWidget
 from .drives.gui.plane import QPlaneGB
 from .drives.gui.vertical import QVerticalGB
 from .drives.gui.lense import QLenseGB
@@ -90,6 +90,9 @@ class QStageWidget(QWidget):
         # self.widgets["CAM"] = self.camera_widget
         # self.widgets["AHT"] = self.aht_widget
         # self.widgets["RLD"] = self.illumination_widget
+
+    def closeEvent(self, event):
+        self.projector_widget.closeEvent(event)
 
     def updateUI(self, message):
         

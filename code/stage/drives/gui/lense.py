@@ -11,7 +11,6 @@ from PyQt5.QtWidgets import (
     )
 
 from stage.drives.API.drive import QDrive
-from widgets.numeric import QNumericIndicator
 
 from .params import QDriveParams
 from .move_button import QMoveButton
@@ -45,10 +44,13 @@ class QLenseGB(QGroupBox):
     def connect_signals(self):
 
         # Disable/enable interface after movement start/finish
-        self.drive.movement_status.connect(self.disable_interface)
+        self.drive.movement_started.connect(lambda: self.disable_interface(True))
+        self.drive.movement_finished.connect(lambda: self.disable_interface(False))
         # Clear eta lineedit upon movement finish
-        self.drive.movement_status.connect(lambda state:
-            self.positioner.eta_le.setText("") if state is False else None)
+        self.drive.movement_finished.connect(lambda: self.positioner.eta_le.setText(""))
+
+        # Update position after drive position update
+        self.drive.pos_updated.connect(self.positioner.update_position)
 
         # Power control
         self.params.power_cb.clicked.connect(self.on_power_toggle)
@@ -69,11 +71,9 @@ class QLenseGB(QGroupBox):
 
     def init_values(self):
 
-        # Power off
-        self.on_power_toggle()
-
-        # Set run current
-        self.params.drive_settings.irun_ctrl.set_pb.clicked.emit()
+        self.on_power_toggle() # Power off
+        self.params.drive_settings.irun_ctrl.set_pb.clicked.emit() # Set run current
+        self.positioner.update_position(self.drive.pos) # Set starting position
 
     def disable_interface(self, state):
 
@@ -151,26 +151,31 @@ class QPositionerWidget(QGroupBox):
         self.vbox.addWidget(self.arrow_button_group, 0)
         self.vbox.addStretch(1)
 
-        self.hbox = QHBoxLayout()
-        self.vbox.addLayout(self.hbox)
+        self.grid = QGridLayout()
+        self.vbox.addLayout(self.grid)
 
-        self.hbox.addStretch(1)
+        self.pos_lab = QLabel("Position")
+        self.pos_int = QLineEdit()
+        self.pos_float = QLineEdit()
+        self.pos_int.setReadOnly(True)
+        self.pos_float.setReadOnly(True)
+
         self.eta_lab = QLabel("ETA [s]")
         self.eta_le = QLineEdit()
         self.eta_le.setReadOnly(True)
         self.abort_pb = QPushButton("Abort")
         self.abort_pb.setDisabled(True)
-        self.hbox.addWidget(self.abort_pb)
-        
-        self.hbox.addWidget(self.eta_lab)
-        self.hbox.addWidget(self.eta_le)
-        self.hbox.addWidget(self.abort_pb)
-        self.hbox.addStretch(1)
 
-        # self.indicator = QNumericIndicator(
-        #     label="Lense pos",
-        #     min_value=self.config["Drives"]["DRL"]["min_position"],
-        #     max_value=self.config["Drives"]["DRL"]["max_position"],
-        #     orientation=Qt.Horizontal
-        # )
-        # self.vbox.addWidget(self.indicator, 1)
+        self.grid.addWidget(self.pos_lab, 0, 0, alignment=Qt.AlignLeft)
+        self.grid.addWidget(self.pos_int, 0, 1, alignment=Qt.AlignLeft)
+        self.grid.addWidget(self.pos_float, 0, 2, alignment=Qt.AlignLeft)
+
+        self.grid.addWidget(self.eta_lab, 1, 0, alignment=Qt.AlignLeft)
+        self.grid.addWidget(self.eta_le, 1, 1, alignment=Qt.AlignLeft)
+        self.grid.addWidget(self.abort_pb, 1, 2, alignment=Qt.AlignLeft)
+
+    def update_position(self, pos):
+
+        int_, float_ = pos.to_improper()
+        self.pos_int.setText(int_)
+        self.pos_float.setText(float_)

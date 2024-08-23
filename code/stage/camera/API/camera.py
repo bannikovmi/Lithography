@@ -57,6 +57,19 @@ class QCamera(QResource):
 
     frame_updated = pyqtSignal(np.ndarray)
 
+    props = {
+        "backlight_comp": cv.CAP_PROP_BACKLIGHT,
+        "brightness": cv.CAP_PROP_BRIGHTNESS,
+        "contrast": cv.CAP_PROP_CONTRAST,
+        "exposure": cv.CAP_PROP_EXPOSURE,
+        "gamma": cv.CAP_PROP_GAMMA,
+        "gain": cv.CAP_PROP_GAIN,
+        "hue": cv.CAP_PROP_HUE,
+        "saturation": cv.CAP_PROP_SATURATION,
+        "sharpness": cv.CAP_PROP_SHARPNESS,
+        "wb_temp": cv.CAP_PROP_WB_TEMPERATURE
+    }
+
     def __init__(self, resource):
 
         # Reinitialize base class resource
@@ -87,6 +100,12 @@ class QCamera(QResource):
     ##########################################################################################
     ### Camera properties
     ##########################################################################################
+    def set(self, prop, val):
+        self.cap.set(self.props[prop], val)
+
+    def get(self, prop):
+        return self.cap.get(self.props[prop])
+
     @property
     def auto_exp(self):
         return AutoExpMode(self.cap.get(cv.CAP_PROP_AUTO_EXPOSURE)).to_bool()
@@ -102,98 +121,6 @@ class QCamera(QResource):
     @auto_wb.setter
     def auto_wb(self, val):
         self.cap.set(cv.CAP_PROP_AUTO_WB, int(val))
-
-    @property
-    def backlight_comp(self):
-        return self.cap.get(cv.CAP_PROP_BACKLIGHT)
-
-    @backlight_comp.setter
-    def backlight_comp(self, val):
-        self.cap.set(cv.CAP_PROP_BACKLIGHT, val)
-
-    @property
-    def brightness(self):
-        return self.cap.get(cv.CAP_PROP_BRIGHTNESS)
-
-    @brightness.setter
-    def brightness(self, val):
-        self.cap.set(cv.CAP_PROP_BRIGHTNESS, val)
-
-    @property
-    def contrast(self):
-        return self.cap.get(cv.CAP_PROP_CONTRAST)
-
-    @contrast.setter
-    def contrast(self, val):
-        self.cap.set(cv.CAP_PROP_CONTRAST, val)
-
-    @property
-    def fps(self):
-        return self.cap.get(cv.CAP_PROP_FPS)
-
-    @property
-    def exposure(self):
-        return self.cap.get(cv.CAP_PROP_EXPOSURE)
-
-    @exposure.setter
-    def exposure(self, val):
-        self.cap.set(cv.CAP_PROP_EXPOSURE, val)
-
-    @property
-    def gamma(self):
-        return self.cap.get(cv.CAP_PROP_GAMMA)
-
-    @gamma.setter
-    def gamma(self, val):
-        self.cap.set(cv.CAP_PROP_GAMMA, val)
-
-    @property
-    def gain(self):
-        return self.cap.get(cv.CAP_PROP_GAIN)
-
-    @gain.setter
-    def gain(self, val):
-        self.cap.set(cv.CAP_PROP_GAIN, val)
-
-    @property
-    def height(self):
-        return self.cap.get(cv.CAP_PROP_FRAME_HEIGHT)
-
-    @property
-    def hue(self):
-        return self.cap.get(cv.CAP_PROP_HUE)
-
-    @hue.setter
-    def hue(self, val):
-        self.cap.set(cv.CAP_PROP_HUE, val)
-
-    @property
-    def saturation(self):
-        return self.cap.get(cv.CAP_PROP_SATURATION)
-
-    @saturation.setter
-    def saturation(self, val):
-        self.cap.set(cv.CAP_PROP_SATURATION, val)
-
-    @property
-    def sharpness(self):
-        return self.cap.get(cv.CAP_PROP_SHARPNESS)
-
-    @sharpness.setter
-    def sharpness(self, val):
-        self.cap.set(cv.CAP_PROP_SHARPNESS, val)
-
-    @property
-    def wb_temp(self):
-        return self.cap.get(cv.CAP_PROP_WB_TEMPERATURE)
-
-    @wb_temp.setter
-    def wb_temp(self, val):
-        self.cap.set(cv.CAP_PROP_WB_TEMPERATURE, val)
-
-    @property
-    def width(self):
-        return self.cap.get(cv.CAP_PROP_FRAME_WIDTH)
 
 # class QCameraWidget(QGroupBox):
 

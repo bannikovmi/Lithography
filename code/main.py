@@ -45,6 +45,9 @@ class MainWindow(QMainWindow):
         
         self.show()
 
+    def closeEvent(self, event):
+        self.stage_widget.closeEvent(event)
+
 def main():
 
     app = QApplication(sys.argv)
@@ -54,4 +57,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
