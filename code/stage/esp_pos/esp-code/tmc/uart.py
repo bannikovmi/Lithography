@@ -11,11 +11,11 @@ class TMC_UART:
         self.config = config
 
         # Initialize serial communication
-        port = self.config["UART"]["port"]
-        baudrate = self.config["UART"]["baudrate"]
-        parity = self.config["UART"]["parity"]
-        bits = self.config["UART"]["bits"]
-        stop = self.config["UART"]["stop"]
+        port = self.config["port"]
+        baudrate = self.config["baudrate"]
+        parity = self.config["parity"]
+        bits = self.config["bits"]
+        stop = self.config["stop"]
 
         self.communication_pause = 500/baudrate
 

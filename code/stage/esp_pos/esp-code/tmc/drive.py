@@ -12,11 +12,12 @@ class Drive(Resource):
     drive_commands = {
         "POW": "power",
         "SPD": "speed",
-        "MOV": "move",
         "MAX": "at_max",
         "MIN": "at_min",
-        "MST": "microstep",
+        "MST": "mstep",
         "IRN": "irun",
+        "STS": "move_status",
+        "MOV": "move",
     }
 
     # merge with parent commands
@@ -24,24 +25,23 @@ class Drive(Resource):
 
     def __init__(self, esp, name):
     
-        # Save esp resource instance and name
+        super().__init__(name)
         self.esp = esp
-        self.name = name
 
         # Initialize ESP pins
-        self.dir_pin = Pin(self.esp.config[name]["dir_id"], mode=Pin.OUT)
-        self.step_pin = Pin(self.esp.config[name]["step_id"], mode=Pin.OUT)
+        self.dir_pin = Pin(self.config["ids"]["dir"], mode=Pin.OUT)
+        self.step_pin = Pin(self.config["ids"]["step"], mode=Pin.OUT)
 
         # Save motor id
-        self.mtr_id = self.esp.config[name]["mtr_id"]
+        self.mtr_id = self.config["ids"]["mtr"]
 
         # Save PCF pin id's
-        self.en_id = self.esp.config[name]["en_id"]
-        self.min_id = self.esp.config[name]["min_id"]
-        self.max_id = self.esp.config[name]["max_id"]
+        self.en_id = self.config["ids"]["en"]
+        self.min_id = self.config["ids"]["min"]
+        self.max_id = self.config["ids"]["max"]
 
         # Deterimine limit trigger
-        if self.esp.config[name]["limit_on"] == 1:
+        if self.config["limit_on"] == 1:
             self.limit_trigger = Pin.IRQ_RISING
         else:
             self.limit_trigger = Pin.IRQ_FALLING
@@ -54,9 +54,9 @@ class Drive(Resource):
         self.esp.pcf.pin(self.max_id, 1)
 
         # Set default parametres
-        self.speed(self.esp.config[name]["speed"])
-        self.irun(self.esp.config[name]["irun"])
-        self.microstep(self.esp.config[name]["microstep"])
+        self.speed(self.config["speed"]["default"])
+        self.irun(self.config["irun"]["default"])
+        self.mstep(self.config["mstep"]["default"])
 
     ##########################################################################################
     #### Properties
@@ -64,7 +64,7 @@ class Drive(Resource):
     @property
     def direction(self):
         val = self.dir_pin()
-        pos_dir = self.esp.config[self.name]["pos_dir"]
+        pos_dir = self.config["pos_dir"]
         if val == pos_dir:
             return 1
         else:
@@ -73,9 +73,9 @@ class Drive(Resource):
     @direction.setter
     def direction(self, value):
         if int(value) == 1:
-            self.dir_pin(self.esp.config[self.name]["pos_dir"])
+            self.dir_pin(self.config["pos_dir"])
         else:
-            self.dir_pin(not self.esp.config[self.name]["pos_dir"])
+            self.dir_pin(not self.config["pos_dir"])
 
     ##########################################################################################
     #### Host IO commands
@@ -100,11 +100,11 @@ class Drive(Resource):
 
         name = f"{self.name}_MOV"
 
-        if nsteps == "ABT":
+        if nsteps == "ABT": # abort movement
             counter = self.esp.task_manager.tasks[name].counter
             self.esp.task_manager.abort_task(name)
             print(f"{self.name}_MOV_FIN_{counter}")
-        elif nsteps == None:
+        elif nsteps == None: # check movement status
             try:
                 counter = self.esp.task_manager.tasks[name].counter
                 nsteps = self.esp.task_manager.tasks[name].nsteps * self.direction
@@ -120,7 +120,7 @@ class Drive(Resource):
 
     def at_max(self):
 
-        if self.esp.pcf.pin(self.max_id) == self.esp.config[self.name]["limit_on"]:
+        if self.esp.pcf.pin(self.max_id) == self.config["limit_on"]:
             print(f"{self.name}_MAX_1")
             return True
         else:
@@ -129,14 +129,14 @@ class Drive(Resource):
 
     def at_min(self):
 
-        if self.esp.pcf.pin(self.min_id) == self.esp.config[self.name]["limit_on"]:
+        if self.esp.pcf.pin(self.min_id) == self.config["limit_on"]:
             print(f"{self.name}_MIN_1")
             return True
         else:
             print(f"{self.name}_MIN_0")
             return False
 
-    def microstep(self, msres=None):
+    def mstep(self, msres=None):
         
         if msres is None:
 
@@ -181,6 +181,20 @@ class Drive(Resource):
             self._irun = int(val)
             ihold_irun = 0 | self._irun << 8
             self.esp.tmc_uart.write_reg_check(self.mtr_id, reg.IHOLD_IRUN, ihold_irun)
+            
+    def move_status(self):
+        
+        at_min = int(self.esp.pcf.pin(self.min_id) == self.config["limit_on"])
+        at_max = int(self.esp.pcf.pin(self.max_id) == self.config["limit_on"])
+        
+        try:
+            task_name = f"{self.name}_MOV"
+            counter = self.esp.task_manager.tasks[task_name].counter
+        except KeyError:
+            counter = 0
+        
+        print(f"{self.name}_STS_{at_min}_{at_max}_{counter}")
+        return at_min, at_max, counter
 
 class Movement(LastingTask):
 
@@ -203,7 +217,7 @@ class Movement(LastingTask):
             self.drive.direction = 1
             
             int_name = f"{self.name}_MAX"
-            int_id = self.drive.esp.config[self.drive.name]["max_id"]
+            int_id = self.drive.config["ids"]["max"]
         else:    
 
             # Ensure we are not at min
@@ -211,12 +225,12 @@ class Movement(LastingTask):
                 raise Exception(f"{self.name}_MIN")
             self.drive.direction = -1
             int_name = f"{self.name}_MIN"
-            int_id = self.drive.esp.config[self.drive.name]["min_id"]            
+            int_id = self.drive.config["ids"]["min"]            
         
         self.nsteps = abs(nsteps)
         self.counter = 0
 
-        init_val = not self.drive.esp.config[self.drive.name]["limit_on"]
+        init_val = not self.drive.config["limit_on"]
         self.interrupt = MovementInterrupt(int_name, int_id, init_val)
 
     def callback(self, t):

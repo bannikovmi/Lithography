@@ -9,6 +9,7 @@ from PyQt5.QtCore import pyqtSignal, QTimer
 
 # local imports
 from backend.resources.resource import QResource
+from backend.resources.manager import ExecutionMode
 
 class QESPPosMessage:
 

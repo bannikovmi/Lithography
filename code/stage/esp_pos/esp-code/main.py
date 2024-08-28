@@ -12,7 +12,7 @@ from misc.LED import LED
 from misc.switch import Switch
 
 # Initialize ESP and resources
-esp = ESP(config_file="config//config.json")
+esp = ESP()
 
 resources = {
     "ESP": esp,

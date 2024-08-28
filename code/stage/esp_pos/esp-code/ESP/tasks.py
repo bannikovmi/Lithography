@@ -35,7 +35,7 @@ class TaskManager:
                 if bool(self.interrupts) == False:
 
                     # print("emtpy interrupt list")
-                    pin_id = self.esp.config["ESP"]["int_id"]
+                    pin_id = self.esp.config["ids"]["int"]
                     Pin(pin_id, Pin.IN).irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING,
                         handler=self.int_handler)
 
@@ -65,7 +65,7 @@ class TaskManager:
 
             # Detach ESP interrupt if no interrupts are left
             if bool(self.interrupts) == False:
-                pin_id = self.esp.config["ESP"]["int_id"]
+                pin_id = self.esp.config["ids"]["int"]
                 Pin(pin_id, Pin.IN).irq(handler=None)
 
         except KeyError: # task is not running

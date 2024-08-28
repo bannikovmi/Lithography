@@ -83,8 +83,7 @@ class QLenseGB(QGroupBox):
 
     def on_power_toggle(self):
 
-        self.drive.request("max")
-        self.drive.request("min")
+        self.drive.request("move_status")
 
         if self.params.power_cb.isChecked():
             self.drive.set("power", 1)

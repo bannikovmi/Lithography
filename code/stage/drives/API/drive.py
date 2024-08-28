@@ -45,7 +45,8 @@ class QDrive(QResource):
         "power": "POW",
         "max": "MAX",
         "min": "MIN",
-        "irun": "IRN"
+        "irun": "IRN",
+        "move_status": "STS"
     }
 
     def __init__(self, resource):
@@ -69,17 +70,12 @@ class QDrive(QResource):
         # Construct timer for limit checking and launch it
         self.timer = QTimer()
         self.timer.setInterval(self.config["limits_check_interval"])
-        self.timer.timeout.connect(self.on_timer)
+        self.timer.timeout.connect(lambda: self.request("move_status"))
         self.timer.start()
 
         # Send message to start movement
         self.esp.send_message(f"{self.name}_MOV_{nsteps}")
         self.is_moving = True
-
-    def on_timer(self):
-
-        self.request("max")
-        self.request("min")
 
     def abort_movement(self):
 
@@ -105,15 +101,42 @@ class QDrive(QResource):
     def parse(self, command, arguments):
 
         try:
+            if command == "STS": # update movement status
+                
+                print(command, arguments)
+
+                # parse command
+                at_min = int(arguments[0])
+                at_max = int(arguments[1])
+                counter = int(arguments[2])
+                
+                # Emit signals
+                self.max_checked.emit(at_max)
+                self.min_checked.emit(at_min)
+
+                # Check if movement should be aborted
+                if self.is_moving and at_min and self.nsteps < 0:
+                    self.abort_movement()
+                elif self.is_moving and at_max and self.nsteps > 0:
+                    self.abort_movement()
+
+                # Update position
+                pos_shift = Fraction(self.config["pos_direction"]*
+                        np.sign(self.nsteps)*counter, self._mstep)
+                self.pos = DrivePosition(self.pos + pos_shift)
+                self.pos_updated.emit(self.pos)
+                self.config["pos"] = self.pos.to_json()
+                self.dump_config()
+
             if command == "MAX":
-                state = int(arguments[0])
-                self.max_checked.emit(state)
-                if self.is_moving and state and self.nsteps > 0:
+                at_max = int(arguments[0])
+                self.max_checked.emit(at_max)
+                if self.is_moving and at_max and self.nsteps > 0:
                     self.abort_movement()
             elif command == "MIN":
-                state = int(arguments[0])
-                self.min_checked.emit(state)
-                if self.is_moving and state and self.nsteps < 0:
+                at_min = int(arguments[0])
+                self.min_checked.emit(at_min)
+                if self.is_moving and at_min and self.nsteps < 0:
                     self.abort_movement()
             elif command == "MOV":
                 if arguments[0] == "FIN":

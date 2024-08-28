@@ -11,15 +11,21 @@ import pyvisa
 from .interface import QInterface
 from .resource import QResource
 
+class ExecutionMode:
+
+    SIMULATION = 0
+    COMMUNICATION = 1
+
 class QResourceManager(QObject):
 
     resources = {}
     interfaces = {}
 
-    def __init__(self, config):
+    def __init__(self, config, exec_mode = ExecutionMode.COMMUNICATION):
 
         self.config = config
         self.pyvisa_rm = pyvisa.ResourceManager("@py")
+        self.exec_mode = exec_mode
 
         super().__init__()
 
