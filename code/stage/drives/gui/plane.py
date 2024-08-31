@@ -130,8 +130,7 @@ class QPlaneGB(QGroupBox):
 
     def x_on_power_toggle(self):
 
-        self.x_drive.request("max")
-        self.x_drive.request("min")
+        self.x_drive.request("status")
 
         if self.x_params.power_cb.isChecked():
             self.x_drive.set("power", 1)
@@ -140,8 +139,7 @@ class QPlaneGB(QGroupBox):
 
     def y_on_power_toggle(self):
 
-        self.y_drive.request("max")
-        self.y_drive.request("min")
+        self.y_drive.request("status")
 
         if self.y_params.power_cb.isChecked():
             self.y_drive.set("power", 1)
@@ -158,7 +156,7 @@ class QPlaneGB(QGroupBox):
         self.x_drive.set("mstep", int(self.x_params.divider_cmb.currentText()))
         
         self.x_finish_time = QTime.currentTime().addMSecs(int(1e3*abs(nsteps)/speed))
-        self.x_drive.start_movement(nsteps)
+        self.x_drive.move_nsteps(nsteps)
         self.x_drive.timer.timeout.connect(lambda:
             self.positioner.x_eta_le.setText(
                 f"{QTime.currentTime().msecsTo(self.x_finish_time)/1e3:.1f}"))
@@ -173,7 +171,7 @@ class QPlaneGB(QGroupBox):
         self.y_drive.set("mstep", int(self.y_params.divider_cmb.currentText()))
         
         self.y_finish_time = QTime.currentTime().addMSecs(int(1e3*abs(nsteps)/speed))
-        self.y_drive.start_movement(nsteps)
+        self.y_drive.move_nsteps(nsteps)
         self.y_drive.timer.timeout.connect(lambda:
             self.positioner.y_eta_le.setText(
                 f"{QTime.currentTime().msecsTo(self.y_finish_time)/1e3:.1f}"))
@@ -273,9 +271,9 @@ class QPositionerWidget(QGroupBox):
         self.grid.addWidget(self.x_eta_le, 2, 1, alignment=Qt.AlignLeft)
         self.grid.addWidget(self.x_abort_pb, 2, 2, alignment=Qt.AlignLeft)
 
-        self.grid.addWidget(self.y_eta_lab, 2, 0, alignment=Qt.AlignLeft)
-        self.grid.addWidget(self.y_eta_le, 2, 1, alignment=Qt.AlignLeft)
-        self.grid.addWidget(self.y_abort_pb, 2, 2, alignment=Qt.AlignLeft)
+        self.grid.addWidget(self.y_eta_lab, 3, 0, alignment=Qt.AlignLeft)
+        self.grid.addWidget(self.y_eta_le, 3, 1, alignment=Qt.AlignLeft)
+        self.grid.addWidget(self.y_abort_pb, 3, 2, alignment=Qt.AlignLeft)
 
     def x_update_position(self, pos):
 

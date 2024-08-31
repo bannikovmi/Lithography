@@ -65,9 +65,9 @@ class QVerticalGB(QGroupBox):
 
         # Start movement on button click
         self.positioner.arrow_button_group.neg_pb.clicked.connect(lambda:
-            self.on_movement_start(sign=-self.config["params"]["pos_direction"]))
+            self.on_movement_start(sign=-1))
         self.positioner.arrow_button_group.pos_pb.clicked.connect(lambda:
-            self.on_movement_start(sign=+self.config["params"]["pos_direction"]))
+            self.on_movement_start(sign=+1))
 
         # Abort movement on button click
         self.positioner.abort_pb.clicked.connect(self.drive.abort_movement)
@@ -91,8 +91,7 @@ class QVerticalGB(QGroupBox):
 
     def on_power_toggle(self):
 
-        self.drive.request("max")
-        self.drive.request("min")
+        self.drive.request("status")
 
         if self.params.power_cb.isChecked():
             self.drive.set("power", 1)
@@ -111,7 +110,7 @@ class QVerticalGB(QGroupBox):
         self.drive.set("mstep", int(self.params.divider_cmb.currentText()))
         
         self.finish_time = QTime.currentTime().addMSecs(int(1e3*abs(nsteps)/speed))
-        self.drive.start_movement(nsteps)
+        self.drive.move_nsteps(nsteps)
         self.drive.timer.timeout.connect(lambda:
             self.positioner.eta_le.setText(
                 f"{QTime.currentTime().msecsTo(self.finish_time)/1e3:.1f}"))

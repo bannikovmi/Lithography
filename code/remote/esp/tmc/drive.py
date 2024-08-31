@@ -16,8 +16,9 @@ class Drive(Resource):
         "MIN": "at_min",
         "MST": "mstep",
         "IRN": "irun",
-        "STS": "move_status",
+        "STS": "status",
         "MOV": "move",
+        "POS": "pos",
     }
 
     # merge with parent commands
@@ -57,6 +58,9 @@ class Drive(Resource):
         self.speed(self.config["speed"]["default"])
         self.irun(self.config["irun"]["default"])
         self.mstep(self.config["mstep"]["default"])
+        
+        # Load position from config
+        self._pos = self.config["pos"]
 
     ##########################################################################################
     #### Properties
@@ -83,11 +87,11 @@ class Drive(Resource):
     def power(self, state=None):
         
         if state is None:
-            _power = int(not self.esp.pcf.pin(self.en_id))
-            print(f"{self.name}_POW_{_power}")
+            self._power = int(not self.esp.pcf.pin(self.en_id))
+            print(f"{self.name}_POW_{self._power}")
         else:
-            _power = int(state)
-            self.esp.pcf.pin(self.en_id, not _power) # Setting pin to low enables drive power
+            self._power = int(state)
+            self.esp.pcf.pin(self.en_id, not self._power) # Setting pin to low enables drive power
 
     def speed(self, value=None):
     
@@ -95,6 +99,9 @@ class Drive(Resource):
             print(f"{self.name}_SPD_{self._speed}")
         else:
             self._speed = int(value)
+
+    def pos(self):
+        print(f"{self.name}_POS_{self._pos}")
 
     def move(self, nsteps=None):
 
@@ -161,6 +168,8 @@ class Drive(Resource):
             self.esp.tmc_uart.write_reg_check(self.mtr_id, reg.CHOPCONF, chopconf)
             self.mstep_res_select(True)
 
+        self._mstep = int(msres)
+
     def mstep_res_select(self, en):
         
         gconf = self.esp.tmc_uart.read_int(self.mtr_id, reg.GCONF)
@@ -182,19 +191,15 @@ class Drive(Resource):
             ihold_irun = 0 | self._irun << 8
             self.esp.tmc_uart.write_reg_check(self.mtr_id, reg.IHOLD_IRUN, ihold_irun)
             
-    def move_status(self):
+    def status(self):
         
         at_min = int(self.esp.pcf.pin(self.min_id) == self.config["limit_on"])
         at_max = int(self.esp.pcf.pin(self.max_id) == self.config["limit_on"])
+        print(f"{self.name}_STS_{at_min}_{at_max}_{self._pos}")
         
-        try:
-            task_name = f"{self.name}_MOV"
-            counter = self.esp.task_manager.tasks[task_name].counter
-        except KeyError:
-            counter = 0
-        
-        print(f"{self.name}_STS_{at_min}_{at_max}_{counter}")
-        return at_min, at_max, counter
+        # Update drive position in config
+        self.config["pos"] = self._pos
+        self.dump_config()
 
 class Movement(LastingTask):
 
@@ -229,6 +234,7 @@ class Movement(LastingTask):
         
         self.nsteps = abs(nsteps)
         self.counter = 0
+        self.single_step = self.drive.direction * 256//self.drive._mstep
 
         init_val = not self.drive.config["limit_on"]
         self.interrupt = MovementInterrupt(int_name, int_id, init_val)
@@ -239,6 +245,7 @@ class Movement(LastingTask):
 
         if self.counter < self.nsteps:
             self.counter += 1
+            self.drive._pos += self.single_step # Update drive position
             self.drive.step_pin(not self.drive.step_pin()) # Toggle step pin
         else:
             self.finished = True

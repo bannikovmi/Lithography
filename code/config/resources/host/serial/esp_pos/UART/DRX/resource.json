@@ -6,9 +6,9 @@
     "pos_direction": 1,
     "limit_on": 0,
     "speed": 1000,
-    "limits_check_interval": 200,
+    "status_check_interval": 200,
     "pos": [
-        29,
-        64
+        4695,
+        1
     ]
 }

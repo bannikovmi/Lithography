@@ -3,28 +3,25 @@
         "host": {
             "resource": {},
             "serial": {
-                "cam": {
-                    "resource": {}
-                },
                 "esp_enc": {
+                    "resource": {},
                     "I2C": {
-                        "ENCX": {
-                            "resource": {}
-                        },
                         "ENCY": {
                             "resource": {}
                         },
-                        "interface": {}
-                    },
-                    "resource": {}
+                        "interface": {},
+                        "ENCX": {
+                            "resource": {}
+                        }
+                    }
                 },
                 "esp_pos": {
                     "GPIO": {
-                        "BLD": {
+                        "PMP": {
                             "resource": {
-                                "pin_id": 2,
-                                "init_freq": 1000,
-                                "init_duty": 0
+                                "pin_id": 18,
+                                "btn_id": 34,
+                                "on_startup": false
                             }
                         },
                         "FAN": {
@@ -34,14 +31,14 @@
                                 "on_startup": true
                             }
                         },
-                        "interface": {},
-                        "PMP": {
+                        "BLD": {
                             "resource": {
-                                "pin_id": 18,
-                                "btn_id": 34,
-                                "on_startup": false
+                                "pin_id": 2,
+                                "init_freq": 1000,
+                                "init_duty": 0
                             }
                         },
+                        "interface": {},
                         "RLD": {
                             "resource": {
                                 "pin_id": 2,
@@ -50,21 +47,90 @@
                             }
                         }
                     },
-                    "I2C": {
-                        "AHT": {
+                    "resource": {
+                        "pyvisa": {
+                            "address": "ASRL/dev/ttyACM0::INSTR",
+                            "baud_rate": 115200,
+                            "read_termination": "\r\n",
+                            "write_termination": "\r\n",
+                            "timeout": 1000
+                        },
+                        "timer_interval": 50
+                    },
+                    "UART": {
+                        "DRL": {
                             "resource": {
-                                "address": 54,
-                                "max_interval": 30000,
-                                "min_interval": 50,
-                                "init_interval": 10000
+                                "mtr_id": 1,
+                                "step_id": 13,
+                                "dir_id": 12,
+                                "mstep": 1,
+                                "pos_direction": -1,
+                                "limit_on": 0,
+                                "speed": 1000,
+                                "status_check_interval": 200,
+                                "pos": [
+                                    0,
+                                    1
+                                ]
+                            }
+                        },
+                        "DRZ": {
+                            "resource": {
+                                "mtr_id": 1,
+                                "step_id": 14,
+                                "dir_id": 27,
+                                "mstep": 1,
+                                "pos_direction": -1,
+                                "limit_on": 1,
+                                "speed": 1000,
+                                "status_check_interval": 200,
+                                "pos": [
+                                    602,
+                                    1
+                                ]
+                            }
+                        },
+                        "DRY": {
+                            "resource": {
+                                "mtr_id": 1,
+                                "step_id": 25,
+                                "dir_id": 26,
+                                "mstep": 1,
+                                "pos_direction": 1,
+                                "limit_on": 0,
+                                "speed": 1000,
+                                "status_check_interval": 200,
+                                "pos": [
+                                    -200,
+                                    1
+                                ]
                             }
                         },
                         "interface": {
-                            "freq": 400000,
-                            "int_id": 23,
-                            "scl_id": 22,
-                            "sda_id": 21
+                            "port": 2,
+                            "baudrate": 115200,
+                            "parity": null,
+                            "bits": 8,
+                            "stop": 1
                         },
+                        "DRX": {
+                            "resource": {
+                                "mtr_id": 0,
+                                "step_id": 32,
+                                "dir_id": 33,
+                                "mstep": 1,
+                                "pos_direction": 1,
+                                "limit_on": 0,
+                                "speed": 1000,
+                                "status_check_interval": 200,
+                                "pos": [
+                                    4695,
+                                    1
+                                ]
+                            }
+                        }
+                    },
+                    "I2C": {
                         "PCF": {
                             "resource": {
                                 "address": 32,
@@ -81,97 +147,29 @@
                                 "max-l_id": 13,
                                 "min-l_id": 12
                             }
-                        }
-                    },
-                    "resource": {
-                        "pyvisa": {
-                            "address": "ASRL/dev/ttyACM0::INSTR",
-                            "baud_rate": 115200,
-                            "read_termination": "\r\n",
-                            "write_termination": "\r\n",
-                            "timeout": 30
-                        },
-                        "timer_interval": 50,
-                        "comm_delay": 10
-                    },
-                    "UART": {
-                        "DRL": {
-                            "resource": {
-                                "mtr_id": 1,
-                                "step_id": 13,
-                                "dir_id": 12,
-                                "mstep": 1,
-                                "pos_direction": -1,
-                                "limit_on": 0,
-                                "speed": 1000,
-                                "limits_check_interval": 200,
-                                "pos": [
-                                    5,
-                                    1
-                                ]
-                            }
-                        },
-                        "DRX": {
-                            "resource": {
-                                "mtr_id": 0,
-                                "step_id": 32,
-                                "dir_id": 33,
-                                "mstep": 1,
-                                "pos_direction": 1,
-                                "limit_on": 0,
-                                "speed": 1000,
-                                "limits_check_interval": 200,
-                                "pos": [
-                                    29,
-                                    64
-                                ]
-                            }
-                        },
-                        "DRY": {
-                            "resource": {
-                                "mtr_id": 1,
-                                "step_id": 25,
-                                "dir_id": 26,
-                                "mstep": 1,
-                                "pos_direction": 1,
-                                "limit_on": 0,
-                                "speed": 1000,
-                                "limits_check_interval": 200,
-                                "pos": [
-                                    13,
-                                    8
-                                ]
-                            }
-                        },
-                        "DRZ": {
-                            "resource": {
-                                "mtr_id": 1,
-                                "step_id": 14,
-                                "dir_id": 27,
-                                "mstep": 1,
-                                "pos_direction": -1,
-                                "limit_on": 1,
-                                "speed": 1000,
-                                "limits_check_interval": 200,
-                                "pos": [
-                                    4817,
-                                    8
-                                ]
-                            }
                         },
                         "interface": {
-                            "port": 2,
-                            "baudrate": 115200,
-                            "parity": null,
-                            "bits": 8,
-                            "stop": 1
+                            "freq": 400000,
+                            "int_id": 23,
+                            "scl_id": 22,
+                            "sda_id": 21
+                        },
+                        "AHT": {
+                            "resource": {
+                                "address": 54,
+                                "max_interval": 30000,
+                                "min_interval": 50,
+                                "init_interval": 10000
+                            }
                         }
                     }
+                },
+                "cam": {
+                    "resource": {}
                 },
                 "interface": {}
             },
             "ssh": {
-                "interface": {},
                 "rasp0": {
                     "resource": {
                         "hostname": "192.168.3.160",
@@ -179,12 +177,181 @@
                         "username": "litho-proj-1",
                         "password": "FIAN1234"
                     }
-                }
+                },
+                "interface": {}
             }
         }
     },
     "gui": {
         "stage": {
+            "vertical": {
+                "params": {
+                    "label": "Drive config",
+                    "speed": {
+                        "min": 1,
+                        "max": 1000,
+                        "default": 1000,
+                        "step": 1,
+                        "predef": [
+                            10,
+                            30,
+                            100,
+                            300,
+                            1000
+                        ]
+                    },
+                    "steps": {
+                        "min": 1,
+                        "max": 500000,
+                        "default": 1000,
+                        "step": 1,
+                        "predef": [
+                            10,
+                            30,
+                            100,
+                            1000,
+                            10000,
+                            100000
+                        ]
+                    },
+                    "step_div": {
+                        "default": 1,
+                        "predef": [
+                            1,
+                            2,
+                            4,
+                            8,
+                            16,
+                            32,
+                            64,
+                            128,
+                            256
+                        ]
+                    },
+                    "irun": {
+                        "min": 0,
+                        "max": 31,
+                        "default": 5,
+                        "step": 1
+                    },
+                    "pos_direction": -1
+                },
+                "positioner": {}
+            },
+            "plane": {
+                "x_params": {
+                    "label": "X-drive config",
+                    "speed": {
+                        "min": 1,
+                        "max": 1000,
+                        "default": 1000,
+                        "step": 1,
+                        "predef": [
+                            10,
+                            30,
+                            100,
+                            300,
+                            1000
+                        ]
+                    },
+                    "steps": {
+                        "min": 1,
+                        "max": 100000,
+                        "default": 1000,
+                        "step": 1,
+                        "predef": [
+                            10,
+                            30,
+                            100,
+                            300,
+                            1000,
+                            10000
+                        ]
+                    },
+                    "step_div": {
+                        "default": 1,
+                        "predef": [
+                            1,
+                            2,
+                            4,
+                            8,
+                            16,
+                            32,
+                            64,
+                            128,
+                            256
+                        ]
+                    },
+                    "irun": {
+                        "min": 0,
+                        "max": 31,
+                        "default": 10,
+                        "step": 1
+                    },
+                    "pos_direction": 1
+                },
+                "y_params": {
+                    "label": "Y-drive config",
+                    "speed": {
+                        "min": 1,
+                        "max": 1000,
+                        "default": 1000,
+                        "step": 1,
+                        "predef": [
+                            10,
+                            30,
+                            100,
+                            300,
+                            1000
+                        ]
+                    },
+                    "steps": {
+                        "min": 1,
+                        "max": 100000,
+                        "default": 1000,
+                        "step": 1,
+                        "predef": [
+                            10,
+                            30,
+                            100,
+                            300,
+                            1000,
+                            10000
+                        ]
+                    },
+                    "step_div": {
+                        "default": 1,
+                        "predef": [
+                            1,
+                            2,
+                            4,
+                            8,
+                            16,
+                            32,
+                            64,
+                            128,
+                            256
+                        ]
+                    },
+                    "irun": {
+                        "min": 0,
+                        "max": 31,
+                        "default": 5,
+                        "step": 1
+                    },
+                    "pos_direction": 1
+                },
+                "positioner": {}
+            },
+            "illumination": {
+                "label": "Illumination",
+                "min_freq": 100,
+                "max_freq": 10000,
+                "init_freq": 1000,
+                "min_duty": 0,
+                "max_duty": 1023,
+                "init_duty": 0
+            },
             "camera": {
                 "image_width": 1024,
                 "settings": {
@@ -370,14 +537,11 @@
                 }
             },
             "climate": {},
-            "illumination": {
-                "label": "Illumination",
-                "min_freq": 100,
-                "max_freq": 10000,
-                "init_freq": 1000,
-                "min_duty": 0,
-                "max_duty": 1023,
-                "init_duty": 0
+            "projector": {
+                "label": "Projector",
+                "min_exp_time": 1,
+                "max_exp_time": 100000,
+                "init_exp_time": 1000
             },
             "lense": {
                 "params": {
@@ -427,171 +591,6 @@
                         "min": 0,
                         "max": 31,
                         "default": 10,
-                        "step": 1
-                    },
-                    "pos_direction": -1
-                },
-                "positioner": {}
-            },
-            "plane": {
-                "x_params": {
-                    "label": "X-drive config",
-                    "speed": {
-                        "min": 1,
-                        "max": 1000,
-                        "default": 1000,
-                        "step": 1,
-                        "predef": [
-                            10,
-                            30,
-                            100,
-                            300,
-                            1000
-                        ]
-                    },
-                    "steps": {
-                        "min": 1,
-                        "max": 100000,
-                        "default": 1000,
-                        "step": 1,
-                        "predef": [
-                            10,
-                            30,
-                            100,
-                            300,
-                            1000,
-                            10000
-                        ]
-                    },
-                    "step_div": {
-                        "default": 1,
-                        "predef": [
-                            1,
-                            2,
-                            4,
-                            8,
-                            16,
-                            32,
-                            64,
-                            128,
-                            256
-                        ]
-                    },
-                    "irun": {
-                        "min": 0,
-                        "max": 31,
-                        "default": 10,
-                        "step": 1
-                    },
-                    "pos_direction": 1
-                },
-                "y_params": {
-                    "label": "Y-drive config",
-                    "speed": {
-                        "min": 1,
-                        "max": 1000,
-                        "default": 1000,
-                        "step": 1,
-                        "predef": [
-                            10,
-                            30,
-                            100,
-                            300,
-                            1000
-                        ]
-                    },
-                    "steps": {
-                        "min": 1,
-                        "max": 100000,
-                        "default": 1000,
-                        "step": 1,
-                        "predef": [
-                            10,
-                            30,
-                            100,
-                            300,
-                            1000,
-                            10000
-                        ]
-                    },
-                    "step_div": {
-                        "default": 1,
-                        "predef": [
-                            1,
-                            2,
-                            4,
-                            8,
-                            16,
-                            32,
-                            64,
-                            128,
-                            256
-                        ]
-                    },
-                    "irun": {
-                        "min": 0,
-                        "max": 31,
-                        "default": 5,
-                        "step": 1
-                    },
-                    "pos_direction": 1
-                },
-                "positioner": {}
-            },
-            "projector": {
-                "label": "Projector",
-                "min_exp_time": 1,
-                "max_exp_time": 100000,
-                "init_exp_time": 1000
-            },
-            "vertical": {
-                "params": {
-                    "label": "Drive config",
-                    "speed": {
-                        "min": 1,
-                        "max": 1000,
-                        "default": 1000,
-                        "step": 1,
-                        "predef": [
-                            10,
-                            30,
-                            100,
-                            300,
-                            1000
-                        ]
-                    },
-                    "steps": {
-                        "min": 1,
-                        "max": 500000,
-                        "default": 1000,
-                        "step": 1,
-                        "predef": [
-                            10,
-                            30,
-                            100,
-                            1000,
-                            10000,
-                            100000
-                        ]
-                    },
-                    "step_div": {
-                        "default": 1,
-                        "predef": [
-                            1,
-                            2,
-                            4,
-                            8,
-                            16,
-                            32,
-                            64,
-                            128,
-                            256
-                        ]
-                    },
-                    "irun": {
-                        "min": 0,
-                        "max": 31,
-                        "default": 5,
                         "step": 1
                     },
                     "pos_direction": -1

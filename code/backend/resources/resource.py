@@ -21,8 +21,9 @@ class QResource(QObject):
             self.interfaces = {}
             self.config = {}
             
-            # Global thread pool instance
+            # Global thread pool instance and mutex
             self.thread_pool = QThreadPool.globalInstance()
+            self.mutex = QMutex()
 
         super().__init__()
 
@@ -56,8 +57,12 @@ class QResource(QObject):
     def copy_resource(self, resource):
         
         self.name = resource.name
-        self.master_int = resource.master_int
+        
         self.config = resource.config
         self.config_path = resource.config_path
+        
+        self.master_int = resource.master_int
         self.interfaces = resource.interfaces
+        
         self.thread_pool = resource.thread_pool
+        self.mutex = resource.mutex

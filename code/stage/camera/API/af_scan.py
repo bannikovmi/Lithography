@@ -45,31 +45,33 @@ class QScanRunner(QRunnable):
 		self.var_list = []
 
 		# Go to start
-		self.signals.status_updated.emit(f"Moving to shift={start}")
-		self.drive.start_movement(start*self.drive.config["pos_direction"])
-		self.wait_for_movement_end()
-		self.update_lists()
+		self.signals.status_updated.emit(f"Moving to {float(self.drive.pos)+start}")
+		self.drive.move_nsteps(start)
+		self.update()
  
-		while self.drive.pos < self.start_pos + stop:
-	
-			self.signals.status_updated.emit(f"Moving to {float(self.drive.pos)}")
-			self.drive.start_movement(step*self.drive.config["pos_direction"])
-			self.wait_for_movement_end()
-			self.update_lists()
+		while self.drive.pos + step < self.start_pos + stop:
+
+			self.signals.status_updated.emit(f"Moving to {float(self.drive.pos)+step}")
+			self.drive.move_nsteps(step)
 
 		self.signals.status_updated.emit("Idle")
 		self.signals.finished.emit()
 
-	def update_lists(self):
+	def update(self):
 
-		self.pos_list.append(float(self.drive.pos))
-		self.var_list.append(self.var)
-		self.signals.data_updated.emit(self.pos_list, self.var_list)
+		pass
+		# # wait for movement end
+		# while self.drive.is_moving:
+		# 	time.sleep(self.scan_params["polling_interval"]*1e-3)
 
-	def wait_for_movement_end(self):
-		
-		while self.drive.is_moving:
-			time.sleep(self.scan_params["polling_interval"]*1e-3)
+		# # 
+		# # update_counter = 0
+		# # while update_counter <= 0:
+
+		# self.pos_list.append(float(self.drive.pos))
+		# self.var_list.append(self.var)
+		# self.signals.data_updated.emit(self.pos_list, self.var_list)
+			
 
 	def set_drive_settings(self):
 		

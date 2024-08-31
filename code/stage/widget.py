@@ -14,16 +14,16 @@ from PyQt5.QtWidgets import (
     )
 
 # local imports
-from .camera.gui.camera import QCameraWidget
-from .drives.gui.plane import QPlaneGB
-from .drives.gui.vertical import QVerticalGB
-from .drives.gui.lense import QLenseGB
-from .climate.gui import QAHTWidget
-from .LED.gui import QBasicLEDWidget
-from .exposure.gui import QProjectorWidget
-# from .misc.vacuum import QVacuumWidget
-
-from .esp_pos.API import QESPPos
+# Widgets
+from stage.camera.gui.camera import QCameraWidget
+from stage.drives.gui.plane import QPlaneGB
+from stage.drives.gui.vertical import QVerticalGB
+from stage.drives.gui.lense import QLenseGB
+from stage.climate.gui import QAHTWidget
+from stage.LED.gui import QBasicLEDWidget
+from exposure.gui import QProjectorWidget
+# API elements
+from stage.esp.esp import QESPPos
 
 class QStageWidget(QWidget):
 

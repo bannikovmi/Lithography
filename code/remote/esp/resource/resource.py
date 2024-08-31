@@ -19,4 +19,4 @@ class Resource():
         
     def dump_config(self):
         with open(self.config_path, 'w') as file:
-            json.dump(self.config, file, indent=4)
+            json.dump(self.config, file)

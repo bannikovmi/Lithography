@@ -19,7 +19,7 @@ from PyQt5.QtWidgets import (
     )
 
 # local imports
-from stage.exposure.API import QRaspZero
+from exposure.API import QRaspZero
 
 class QProjectorWidget(QGroupBox):
 

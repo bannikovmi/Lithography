@@ -83,7 +83,7 @@ class QLenseGB(QGroupBox):
 
     def on_power_toggle(self):
 
-        self.drive.request("move_status")
+        self.drive.request("status")
 
         if self.params.power_cb.isChecked():
             self.drive.set("power", 1)
@@ -102,7 +102,7 @@ class QLenseGB(QGroupBox):
         self.drive.set("mstep", int(self.params.divider_cmb.currentText()))
         
         self.finish_time = QTime.currentTime().addMSecs(int(1e3*abs(nsteps)/speed))
-        self.drive.start_movement(nsteps)
+        self.drive.move_nsteps(nsteps)
         self.drive.timer.timeout.connect(lambda:
             self.positioner.eta_le.setText(
                 f"{QTime.currentTime().msecsTo(self.finish_time)/1e3:.1f}"))

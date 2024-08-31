@@ -1,35 +1,10 @@
-from fractions import Fraction
-
 import numpy as np
 
 from PyQt5.QtCore import pyqtSignal, QTimer
 
 from backend.resources.resource import QResource
-
-class DrivePosition(Fraction):
-
-    def to_improper(self):
-
-        num = self.numerator
-        den = self.denominator
-
-        quot = num // den
-        rem = num % den
-
-        if rem == 0:
-            return f"{quot}", ""
-        else:
-            if quot >= 0:
-                return f"{quot}", f"{rem}/{den}"
-            else:
-                if quot == -1:
-                    return f"{quot+1}", f"{rem-den}/{den}"
-                else:
-                    return f"{quot+1}", f"{den-rem}/{den}"
-
-    def to_json(self):
-
-        return [int(self.numerator), int(self.denominator)]
+from stage.drives.API.position import DrivePosition
+from stage.drives.API.movement import MovementRunner
 
 class QDrive(QResource):
     
@@ -37,7 +12,7 @@ class QDrive(QResource):
     movement_finished = pyqtSignal()
     max_checked = pyqtSignal(int)
     min_checked = pyqtSignal(int)
-    pos_updated = pyqtSignal(Fraction)
+    pos_updated = pyqtSignal(DrivePosition)
 
     props = {
         "speed": "SPD",
@@ -46,7 +21,7 @@ class QDrive(QResource):
         "max": "MAX",
         "min": "MIN",
         "irun": "IRN",
-        "move_status": "STS"
+        "status": "STS"
     }
 
     def __init__(self, resource):
@@ -55,103 +30,87 @@ class QDrive(QResource):
 
         # master resource
         self.esp = self.master_int.master
-        self.is_moving = False
-        self.nsteps = 0
         self.pos = DrivePosition(*self.config["pos"])
         
         self._mstep = self.config["mstep"]
         self._speed = self.config["speed"]
 
-    def start_movement(self, nsteps):
-
-        self.nsteps = nsteps
-        self.movement_started.emit()
-
-        # Construct timer for limit checking and launch it
-        self.timer = QTimer()
-        self.timer.setInterval(self.config["limits_check_interval"])
-        self.timer.timeout.connect(lambda: self.request("move_status"))
-        self.timer.start()
-
-        # Send message to start movement
-        self.esp.send_message(f"{self.name}_MOV_{nsteps}")
-        self.is_moving = True
-
-    def abort_movement(self):
-
-        self.esp.send_message(f"{self.name}_MOV_ABT")
-        self.on_movement_finish()
-
-    def on_movement_finish(self):
-
-        self.timer.stop()
-        
+        # auxiliary attributes
         self.is_moving = False
-        self.movement_finished.emit()
-        self.request("max")
-        self.request("min")
+        self.nsteps = 0
 
-    def request(self, key):
-        self.esp.send_message(f"{self.name}_{self.props[key]}")
+        self.connect_signals()
+
+    def connect_signals(self):
+
+        self.movement_started.connect(lambda: setattr(self, "is_moving", True))
+        self.movement_finished.connect(lambda: setattr(self, "is_moving", False))
+
+    ##########################################################################################
+    ### Property-related functions
+    ##########################################################################################
+    def get(self, key): 
+        message = self.esp.query(f"{self.name}_{self.props[key]}")
+        return message.split("_")[2:]
         
     def set(self, key, val):
         setattr(self, f"_{key}", val) # update hidden attribute
-        self.esp.send_message(f"{self.name}_{self.props[key]}_{val}")
+        self.esp.write(f"{self.name}_{self.props[key]}_{val}")
 
-    def parse(self, command, arguments):
+    ##########################################################################################
+    ### Movement-related commands 
+    ##########################################################################################
+    def move_nsteps(self, nsteps):
 
-        try:
-            if command == "STS": # update movement status
+        self.movement_runner = MovementRunner(self, nsteps)
+
+        self.movement_runner.signals.started.connect(self.movement_started)
+        self.movement_finished.signals.finished.connect(self.movement_finished)
+        self.movement_finished.signals.pos_updated.connect(self.pos_updated)
+
+        self.thread_pool.start(self.movement_runner)
+
+        # # Construct timer for status checking and launch it
+        # self.request_timer = QTimer()
+        # self.request_timer.setInterval(self.config["status_check_interval"])
+        # self.request_timer.timeout.connect(lambda: self.request("status"))
+        # self.request_timer.start()
+
+    def abort_movement(self):
+
+        if not self.movement_runner.is_finished:
+            self.movement_runner.is_finished = True
+
+    # def parse(self, command, arguments):
+
+    #     try:
+    #         if command == "STS": # update movement status
+
+    #             # parse command
+    #             at_min = int(arguments[0])
+    #             at_max = int(arguments[1])
                 
-                print(command, arguments)
+    #             # Emit signals
+    #             self.max_checked.emit(at_max)
+    #             self.min_checked.emit(at_min)
 
-                # parse command
-                at_min = int(arguments[0])
-                at_max = int(arguments[1])
-                counter = int(arguments[2])
+    #             # Check if movement should be aborted
+    #             if self.is_moving and at_min and self.nsteps < 0:
+    #                 self.abort_movement()
+    #             elif self.is_moving and at_max and self.nsteps > 0:
+    #                 self.abort_movement()
+
+    #             # Update position
+    #             pos_256 = int(arguments[2])
+    #             self.pos = DrivePosition(Fraction(pos_256, 256))
+
+    #             self.pos_updated.emit(self.pos)
+    #             self.config["pos"] = self.pos.to_json()
+    #             self.dump_config()
+
+    #         elif command == "FIN":
+    #             self.on_movement_finish()
                 
-                # Emit signals
-                self.max_checked.emit(at_max)
-                self.min_checked.emit(at_min)
-
-                # Check if movement should be aborted
-                if self.is_moving and at_min and self.nsteps < 0:
-                    self.abort_movement()
-                elif self.is_moving and at_max and self.nsteps > 0:
-                    self.abort_movement()
-
-                # Update position
-                pos_shift = Fraction(self.config["pos_direction"]*
-                        np.sign(self.nsteps)*counter, self._mstep)
-                self.pos = DrivePosition(self.pos + pos_shift)
-                self.pos_updated.emit(self.pos)
-                self.config["pos"] = self.pos.to_json()
-                self.dump_config()
-
-            if command == "MAX":
-                at_max = int(arguments[0])
-                self.max_checked.emit(at_max)
-                if self.is_moving and at_max and self.nsteps > 0:
-                    self.abort_movement()
-            elif command == "MIN":
-                at_min = int(arguments[0])
-                self.min_checked.emit(at_min)
-                if self.is_moving and at_min and self.nsteps < 0:
-                    self.abort_movement()
-            elif command == "MOV":
-                if arguments[0] == "FIN":
-                    
-                    self.on_movement_finish()
-
-                    # After movement finish ESP will send messages like MOV_FIN_XXX,
-                    # Where XXX is the absolute value of msteps made
-                    # We need to update self.pos attribute and config file
-                    pos_shift = Fraction(self.config["pos_direction"]*
-                        np.sign(self.nsteps)*int(arguments[1]), self._mstep)
-                    self.pos = DrivePosition(self.pos + pos_shift)
-                    self.pos_updated.emit(self.pos)
-                    self.config["pos"] = self.pos.to_json()
-                    self.dump_config()
-                
-        except IndexError:
-            pass
+    #     except Exception as e:
+    #         print(f"in {self.name}, parse: received command " +
+    #             f"{command}, arguments: {arguments}, exception: {e}")
