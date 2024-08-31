@@ -8,11 +8,12 @@ class RunnerSignals(QObject):
 
 class ESPCommRunner(QRunnable):
 
-	def __init__(self, handler):
+	def __init__(self, esp):
 
 		super().__init__()
 
-		self.handler = handler
+		self.esp = esp
+		self.handler = esp.handler
 		self.signals = RunnerSignals()
 		self.is_finished = False
 
@@ -32,5 +33,8 @@ class ESPCommRunner(QRunnable):
 		return message
 	
 	def query(self, message):
+		self.esp.mutex.lock()
 		self.write(message)
-		return self.read()
+		ret = self.read()
+		self.exp.mutex.unlock()
+		return ret

@@ -39,19 +39,21 @@ class QDrive(QResource):
         self.is_moving = False
         self.nsteps = 0
 
-        self.connect_signals()
-
-    def connect_signals(self):
-
-        self.movement_started.connect(lambda: setattr(self, "is_moving", True))
-        self.movement_finished.connect(lambda: setattr(self, "is_moving", False))
-
     ##########################################################################################
     ### Property-related functions
     ##########################################################################################
-    def get(self, key): 
+    def get(self, key):
         message = self.esp.query(f"{self.name}_{self.props[key]}")
-        return message.split("_")[2:]
+        return message.split("_")[2]
+
+    def get_status(self):
+        message = self.esp.query(f"{self.name}_{STS}")
+        ret = message.split("_")[2:]
+        at_min = int(ret[0])
+        at_max = int(ret[1])
+        pos = DrivePosition(int(ret[1]), 256)
+        is_moving = int(ret[3])
+        return at_min, at_max, pos, is_moving
         
     def set(self, key, val):
         setattr(self, f"_{key}", val) # update hidden attribute
@@ -65,8 +67,10 @@ class QDrive(QResource):
         self.movement_runner = MovementRunner(self, nsteps)
 
         self.movement_runner.signals.started.connect(self.movement_started)
-        self.movement_finished.signals.finished.connect(self.movement_finished)
-        self.movement_finished.signals.pos_updated.connect(self.pos_updated)
+        self.movement_runner.signals.finished.connect(self.movement_finished)
+        self.movement_runner.signals.pos_updated.connect(self.pos_updated)
+        self.movement_runner.signals.min_checked.connect(self.min_checked)
+        self.movement_runner.signals.max_checked.connect(self.max_checked)
 
         self.thread_pool.start(self.movement_runner)
 
@@ -80,6 +84,10 @@ class QDrive(QResource):
 
         if not self.movement_runner.is_finished:
             self.movement_runner.is_finished = True
+
+    def launch_movement(self, nsteps):
+
+        self.esp.write(f"{self.name}_MOV_{nsteps}")
 
     # def parse(self, command, arguments):
 
