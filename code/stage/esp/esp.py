@@ -52,7 +52,7 @@ class QESPPos(QResource):
         self.pyvisa_handler.write_termination = self.config["pyvisa"]["write_termination"]
         self.pyvisa_handler.timeout = self.config["pyvisa"]["timeout"]
 
-        self.comm_runner = ESPCommRunner(self.pyvisa_handler)
+        self.comm_runner = ESPCommRunner(self)
 
         # connect signals
         self.comm_runner.signals.message_received.connect(self.message_received)

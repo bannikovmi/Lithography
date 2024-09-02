@@ -130,7 +130,7 @@ class QPlaneGB(QGroupBox):
 
     def x_on_power_toggle(self):
 
-        self.x_drive.request("status")
+        self.x_drive.update_status()
 
         if self.x_params.power_cb.isChecked():
             self.x_drive.set("power", 1)
@@ -139,7 +139,7 @@ class QPlaneGB(QGroupBox):
 
     def y_on_power_toggle(self):
 
-        self.y_drive.request("status")
+        self.y_drive.update_status()
 
         if self.y_params.power_cb.isChecked():
             self.y_drive.set("power", 1)
@@ -157,9 +157,9 @@ class QPlaneGB(QGroupBox):
         
         self.x_finish_time = QTime.currentTime().addMSecs(int(1e3*abs(nsteps)/speed))
         self.x_drive.move_nsteps(nsteps)
-        self.x_drive.timer.timeout.connect(lambda:
+        self.x_drive.pos_updated.connect(lambda:
             self.positioner.x_eta_le.setText(
-                f"{QTime.currentTime().msecsTo(self.x_finish_time)/1e3:.1f}"))
+                f"{max(0, QTime.currentTime().msecsTo(self.x_finish_time)/1e3):.2f}"))
 
     def y_on_movement_start(self, sign):
 
@@ -172,9 +172,9 @@ class QPlaneGB(QGroupBox):
         
         self.y_finish_time = QTime.currentTime().addMSecs(int(1e3*abs(nsteps)/speed))
         self.y_drive.move_nsteps(nsteps)
-        self.y_drive.timer.timeout.connect(lambda:
+        self.y_drive.pos_updated.connect(lambda:
             self.positioner.y_eta_le.setText(
-                f"{QTime.currentTime().msecsTo(self.y_finish_time)/1e3:.1f}"))
+                f"{max(0, QTime.currentTime().msecsTo(self.y_finish_time)/1e3):.2f}"))
 
 class QArrowButtonGroup(QWidget):
 

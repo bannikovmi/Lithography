@@ -13,7 +13,7 @@ class ESPCommRunner(QRunnable):
 		super().__init__()
 
 		self.esp = esp
-		self.handler = esp.handler
+		self.handler = esp.pyvisa_handler
 		self.signals = RunnerSignals()
 		self.is_finished = False
 
@@ -36,5 +36,5 @@ class ESPCommRunner(QRunnable):
 		self.esp.mutex.lock()
 		self.write(message)
 		ret = self.read()
-		self.exp.mutex.unlock()
+		self.esp.mutex.unlock()
 		return ret

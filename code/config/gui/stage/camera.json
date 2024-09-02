@@ -1,8 +1,8 @@
 {
 	"image_width": 1024,
 	"settings":{
-		"auto_exp": true,
-		"auto_wb": true,
+		"auto_exp": false,
+		"auto_wb": false,
 		"brightness": {
 			"label": "Brightness",
 			"min": -64,
@@ -29,14 +29,14 @@
 			"min": 1,
 			"max": 5000,
 			"step": 1,
-			"default": 157
+			"default": 200
 		},
 		"gain": {
 			"label": "Gain",
 			"min": 0,
 			"max": 100,
 			"step": 1,
-			"default": 50
+			"default": 20
 		},
 		"gamma": {
 			"label": "Gamma",

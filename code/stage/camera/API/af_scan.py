@@ -22,6 +22,7 @@ class QScanRunner(QRunnable):
 		self.signals = RunnerSignals()
 		
 		# Initial values for position and variance
+		self.drive.update_status()
 		self.start_pos = self.drive.pos
 		self.var = np.nan
 
@@ -32,8 +33,6 @@ class QScanRunner(QRunnable):
 		# Set drive and camera settings
 		self.set_drive_settings()
 		self.set_cam_settings()
-		
-		self.signals.status_updated.emit("Configuring scan params")
 
 		# Construct a grid
 		start = self.scan_params["start"]
@@ -48,29 +47,29 @@ class QScanRunner(QRunnable):
 		self.signals.status_updated.emit(f"Moving to {float(self.drive.pos)+start}")
 		self.drive.move_nsteps(start)
 		self.update()
+
+		current_pos = self.start_pos + start
  
-		while self.drive.pos + step < self.start_pos + stop:
+		while current_pos + step <= self.start_pos + stop:
 
 			self.signals.status_updated.emit(f"Moving to {float(self.drive.pos)+step}")
 			self.drive.move_nsteps(step)
+			current_pos += step
+			self.update()
+			print(f"{self.start_pos + start} < {current_pos},{self.drive.pos} < {self.start_pos + stop}")
 
 		self.signals.status_updated.emit("Idle")
 		self.signals.finished.emit()
 
 	def update(self):
 
-		pass
-		# # wait for movement end
-		# while self.drive.is_moving:
-		# 	time.sleep(self.scan_params["polling_interval"]*1e-3)
+		# wait for movement end
+		while self.drive.is_moving:
+			time.sleep(200e-3)
 
-		# # 
-		# # update_counter = 0
-		# # while update_counter <= 0:
-
-		# self.pos_list.append(float(self.drive.pos))
-		# self.var_list.append(self.var)
-		# self.signals.data_updated.emit(self.pos_list, self.var_list)
+		self.pos_list.append(float(self.drive.pos))
+		self.var_list.append(self.var)
+		self.signals.data_updated.emit(self.pos_list, self.var_list)
 			
 
 	def set_drive_settings(self):
@@ -84,4 +83,3 @@ class QScanRunner(QRunnable):
 	def set_cam_settings(self):
 
 		self.signals.status_updated.emit("Updating camera settings")
-		pass

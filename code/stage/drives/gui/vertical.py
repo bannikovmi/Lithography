@@ -91,7 +91,7 @@ class QVerticalGB(QGroupBox):
 
     def on_power_toggle(self):
 
-        self.drive.request("status")
+        self.drive.update_status()
 
         if self.params.power_cb.isChecked():
             self.drive.set("power", 1)
@@ -111,9 +111,9 @@ class QVerticalGB(QGroupBox):
         
         self.finish_time = QTime.currentTime().addMSecs(int(1e3*abs(nsteps)/speed))
         self.drive.move_nsteps(nsteps)
-        self.drive.timer.timeout.connect(lambda:
+        self.drive.pos_updated.connect(lambda:
             self.positioner.eta_le.setText(
-                f"{QTime.currentTime().msecsTo(self.finish_time)/1e3:.1f}"))
+                f"{max(0, QTime.currentTime().msecsTo(self.finish_time)/1e3):.2f}"))
 
 class QArrowButtonGroup(QWidget):
 

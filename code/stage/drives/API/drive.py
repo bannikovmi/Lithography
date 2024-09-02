@@ -30,14 +30,16 @@ class QDrive(QResource):
 
         # master resource
         self.esp = self.master_int.master
-        self.pos = DrivePosition(*self.config["pos"])
         
+        # hidden attributes
         self._mstep = self.config["mstep"]
         self._speed = self.config["speed"]
 
         # auxiliary attributes
         self.is_moving = False
         self.nsteps = 0
+
+        self.update_status()
 
     ##########################################################################################
     ### Property-related functions
@@ -46,19 +48,23 @@ class QDrive(QResource):
         message = self.esp.query(f"{self.name}_{self.props[key]}")
         return message.split("_")[2]
 
-    def get_status(self):
-        message = self.esp.query(f"{self.name}_{STS}")
-        ret = message.split("_")[2:]
-        at_min = int(ret[0])
-        at_max = int(ret[1])
-        pos = DrivePosition(int(ret[1]), 256)
-        is_moving = int(ret[3])
-        return at_min, at_max, pos, is_moving
-        
     def set(self, key, val):
         setattr(self, f"_{key}", val) # update hidden attribute
         self.esp.write(f"{self.name}_{self.props[key]}_{val}")
 
+    def update_status(self):
+        message = self.esp.query(f"{self.name}_STS")
+        ret = message.split("_")[2:]
+        at_min = int(ret[0])
+        at_max = int(ret[1])
+        
+        self.pos = DrivePosition(int(ret[2]), 256)
+        self.dump_config()
+
+        self.is_moving = int(ret[3])
+        self.min_checked.emit(at_min)
+        self.max_checked.emit(at_max)
+        self.pos_updated.emit(self.pos)
     ##########################################################################################
     ### Movement-related commands 
     ##########################################################################################
@@ -68,9 +74,9 @@ class QDrive(QResource):
 
         self.movement_runner.signals.started.connect(self.movement_started)
         self.movement_runner.signals.finished.connect(self.movement_finished)
-        self.movement_runner.signals.pos_updated.connect(self.pos_updated)
-        self.movement_runner.signals.min_checked.connect(self.min_checked)
-        self.movement_runner.signals.max_checked.connect(self.max_checked)
+
+        # is_moving flag should be set in the same thread that launches move_nsteps
+        self.is_moving = True
 
         self.thread_pool.start(self.movement_runner)
 
@@ -82,8 +88,8 @@ class QDrive(QResource):
 
     def abort_movement(self):
 
-        if not self.movement_runner.is_finished:
-            self.movement_runner.is_finished = True
+        if self.is_moving:
+            self.esp.write(f"{self.name}_ABT")
 
     def launch_movement(self, nsteps):
 
