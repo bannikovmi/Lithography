@@ -40,7 +40,7 @@ class QImageProcessor(QObject):
 				cv.line(img, (x, y-half_length), (x, y+half_length),
 					color=color, thickness=thickness)
 
-	def laplacian(self, img, rect, transform_img = False):
+	def laplacian(self, img, rect):
 
 		# Perform laplacian transformation on a rectangular region of the image
 		x1 = rect.left()
@@ -48,9 +48,4 @@ class QImageProcessor(QObject):
 		y1 = rect.top()
 		y2 = rect.bottom()
 
-		laplacian = cv.Laplacian(img[y1:y2, x1:x2], cv.CV_64F)
-		
-		if transform_img:
-			img[y1:y2, x1:x2] = laplacian
-
-		return laplacian
+		return cv.Laplacian(img[y1:y2, x1:x2], cv.CV_64F)

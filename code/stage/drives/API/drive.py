@@ -39,8 +39,6 @@ class QDrive(QResource):
         self.is_moving = False
         self.nsteps = 0
 
-        self.update_status()
-
     ##########################################################################################
     ### Property-related functions
     ##########################################################################################
@@ -54,7 +52,14 @@ class QDrive(QResource):
 
     def update_status(self):
         message = self.esp.query(f"{self.name}_STS")
-        ret = message.split("_")[2:]
+        print(f"in {self.name} update_status: received {message}")
+
+        try:
+            ret = message.split("_")[2:]
+        except Exception as e:
+            print(e)
+            self.update_status()
+
         at_min = int(ret[0])
         at_max = int(ret[1])
         
@@ -94,6 +99,11 @@ class QDrive(QResource):
     def launch_movement(self, nsteps):
 
         self.esp.write(f"{self.name}_MOV_{nsteps}")
+
+    def check_finish(self):
+
+        return self.esp.read() == f"{self.name}_FIN"
+
 
     # def parse(self, command, arguments):
 

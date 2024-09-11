@@ -4,7 +4,7 @@
         "baud_rate": 115200,
         "read_termination": "\r\n",
         "write_termination": "\r\n",
-        "timeout": 1000
+        "timeout": 5000
     },
     "timer_interval": 50
 }

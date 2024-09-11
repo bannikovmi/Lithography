@@ -25,14 +25,14 @@ def dir_scan(dir_name):
 def init_config(dir_path):
 
     res_path = os.path.join(dir_path, "resources")
-    gui_path = os.path.join(dir_path, "gui")
+    GUI_path = os.path.join(dir_path, "GUI")
 
     resources = dir_scan(res_path)
-    gui = dir_scan(gui_path)
+    GUI = dir_scan(GUI_path)
 
     config = {
         "resources": resources,
-        "gui": gui
+        "GUI": GUI
     }
     with open(os.path.join(dir_path, "config.json"), 'w') as file:
         json.dump(config, file, indent=4)

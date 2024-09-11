@@ -66,6 +66,9 @@ class QESPPos(QResource):
     def query(self, message):
         return self.comm_runner.query(message)
 
+    def read(self):
+        return self.comm_runner.read()
+
     # def read_message(self):
     #     message = self.pyvisa_handler.read()
     #     self.message_received.emit(message)

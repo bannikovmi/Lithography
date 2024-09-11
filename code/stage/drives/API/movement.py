@@ -23,14 +23,20 @@ class MovementRunner(QRunnable):
 	def run(self):
 
 		self.signals.started.emit()
+
+		old_timeout = self.drive.esp.pyvisa_handler.timeout
+		new_timeout = int(2000+1.2e3*abs(self.nsteps)/self.drive._speed)
+		self.drive.esp.pyvisa_handler.timeout = new_timeout
+		print(f"timeouts: old={old_timeout:.2f}, new={new_timeout:.2f}")
+
 		self.drive.launch_movement(self.nsteps)
 
 		while self.drive.is_moving:
 			
-			self.drive.update_status()
+			self.drive.is_moving = not self.drive.check_finish()
 
-			# Allow other threads to work and get some time between communications
-			time.sleep(30e-3) 
+		self.drive.update_status()
+		time.sleep(100e-3)
+		self.drive.esp.pyvisa_handler.timeout = old_timeout
 
 		self.signals.finished.emit()
-		print("movement: finished")

@@ -25,12 +25,18 @@ class ESPCommRunner(QRunnable):
 
 	def write(self, message):
 		self.handler.write(message)
-		self.handler.read() # skip echo
+		echo = self.read() # skip echo
+		print("echo:", end='\t')
 
 	def read(self):
-		message = self.handler.read()
-		self.signals.message_received.emit(message)
-		return message
+		try:
+			message = self.handler.read()
+			self.signals.message_received.emit(message)
+			print(f"comm read msg: {message}")
+			return message
+		except Exception as e:
+			print(f"comm read exc: {e}")
+			return ""
 	
 	def query(self, message):
 		self.esp.mutex.lock()
