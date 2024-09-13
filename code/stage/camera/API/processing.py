@@ -1,4 +1,6 @@
+import numpy as np
 import cv2 as cv
+
 from PyQt5.QtCore import QObject
 
 class QImageProcessor(QObject):
@@ -49,3 +51,16 @@ class QImageProcessor(QObject):
 		y2 = rect.bottom()
 
 		return cv.Laplacian(img[y1:y2, x1:x2], cv.CV_64F)
+
+	def crop(self, img):
+
+		h, w = img.shape[:2]
+
+		pts1 = np.float32([[432, 380], [432, 677], [1125, 382]])
+		pts2 = np.float32([[0, 0], [0, h], [w, 0]])
+		M = cv.getAffineTransform(pts1, pts2)
+
+		for pt in pts1:
+			cv.circle(img, (int(pt[0]), int(pt[1])), 5, (255, 0, 0))
+
+		return cv.warpAffine(img, M, (w, h))

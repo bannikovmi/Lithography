@@ -126,12 +126,12 @@ class QRaspZero(QResource):
 
     def end_loop(self):
 
-        self.send("q")
+        self.send("STP")
 
-    def set_pixels(self, x1, x2, y1, y2, i):
+    def set_pixels(self, x1, y1, x2, y2, i):
 
-        self.send(f"{x1} {x2} {y1} {y2} {i}")
+        self.send(f"PIX {x1} {y1} {x2} {y2} {i}")
 
-    def end_loop(self):
+    def start_exposure(self, name, t_delay):
 
-        self.send("q")
+        self.send(f"PIC {name} {t_delay}")

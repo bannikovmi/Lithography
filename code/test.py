@@ -1,7 +1,6 @@
-from PyQt5.QtWidgets import QApplication
-from tests.exposure import App
-
 import sys
+from PyQt5.QtWidgets import QApplication
+from tests.exposure.app import App
 
 app = QApplication(sys.argv)
 a = App()

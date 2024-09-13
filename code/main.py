@@ -150,3 +150,26 @@ if __name__ == '__main__':
 
 # result = stdout.read().decode('utf-8')
 # print(result)
+
+# import cv2 as cv
+# import numpy as np
+# import matplotlib.pyplot as plt
+
+# img = cv.imread('exposure/pics/grid.png')
+# assert img is not None, "file could not be read, check with os.path.exists()"
+
+# rows,cols,ch = img.shape
+# pts1 = np.float32([[150, 150],[325, 150], [323, 323]])
+# pts2 = np.float32([[0, 0], [473, 0], [473, 473]])
+
+# for pt1, pt2 in zip(pts1, pts2):
+#     cv.circle(img, (int(pt1[0]), int(pt1[1])), 10, (0,0,255), -1)
+#     cv.circle(img, (int(pt2[0]), int(pt2[1])), 10, (255,0,0), -1)
+
+# M = cv.getAffineTransform(pts1,pts2)
+# dst = cv.warpAffine(img,M,(cols,rows))
+
+
+# plt.subplot(121),plt.imshow(img),plt.title('Input')
+# plt.subplot(122),plt.imshow(dst),plt.title('Output')
+# plt.show()

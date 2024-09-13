@@ -439,7 +439,7 @@
                 }
             },
             "camera": {
-                "image_width": 960,
+                "image_width": 1000,
                 "settings": {
                     "auto_exp": false,
                     "auto_wb": false,

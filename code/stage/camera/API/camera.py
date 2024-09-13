@@ -26,6 +26,7 @@ class CaptureRunner(QRunnable):
 
         self.cap = cap
         self.signals = RunnerSignals()
+        
         self.is_finished = False
 
     def run(self):
@@ -64,10 +65,12 @@ class QCamera(QResource):
         "exposure": cv.CAP_PROP_EXPOSURE,
         "gamma": cv.CAP_PROP_GAMMA,
         "gain": cv.CAP_PROP_GAIN,
+        "height": cv.CAP_PROP_FRAME_HEIGHT,
         "hue": cv.CAP_PROP_HUE,
         "saturation": cv.CAP_PROP_SATURATION,
         "sharpness": cv.CAP_PROP_SHARPNESS,
-        "wb_temp": cv.CAP_PROP_WB_TEMPERATURE
+        "wb_temp": cv.CAP_PROP_WB_TEMPERATURE,
+        "width": cv.CAP_PROP_FRAME_WIDTH
     }
 
     def __init__(self, resource):
@@ -82,8 +85,12 @@ class QCamera(QResource):
         # Global thread pool instance
         self.thread_pool = QThreadPool.globalInstance()
 
-        # Starti videocapture
+        # Connect videocapture
         self.cap = cv.VideoCapture(0)
+
+        # Set FULL_HD resolution
+        self.set("width", 1920)
+        self.set("height", 1080)
 
     def start(self):
         

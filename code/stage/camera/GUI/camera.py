@@ -45,7 +45,7 @@ class QCameraGB(QGroupBox):
 
         self.show_rect = False
         self.show_cross = False
-        self.focus_rect = None  
+        self.focus_rect = None
 
         self.initUI()
         self.connect_signals()
@@ -69,6 +69,9 @@ class QCameraGB(QGroupBox):
         self.image_lab = QLabel(self)
         self.image_width = self.config["image_width"]
 
+        # Pic crop
+        self.crop_cb = QCheckBox("Crop to projector")
+
         # Create and fill layouts
         self.grid = QGridLayout()
         self.setLayout(self.grid)
@@ -78,6 +81,7 @@ class QCameraGB(QGroupBox):
 
         self.vbox.addWidget(self.settings_pb)
         self.vbox.addWidget(self.illumination_gb)
+        self.vbox.addWidget(self.crop_cb)
         self.vbox.addStretch(1)
 
         self.grid.addWidget(self.image_lab, 0, 1, 2, 1, alignment=Qt.AlignRight)
@@ -123,7 +127,7 @@ class QCameraGB(QGroupBox):
     @pyqtSlot(np.ndarray)
     def update_image(self, cv_img):
         """Updates the image_lab with a new opencv image"""
-        
+
         # Perform laplacian transform and update variance
         laplacian = self.image_proc.laplacian(cv_img, self.focus_rect)
         self.var_updated.emit(laplacian.var())
@@ -133,6 +137,10 @@ class QCameraGB(QGroupBox):
             self.image_proc.draw_rect(cv_img, self.focus_rect)
         if self.show_cross:
             self.image_proc.draw_crosses(cv_img, self.focus_rect)
+
+        # crop picture if necessary
+        if self.crop_cb.isChecked():
+            self.image_proc.crop(cv_img)
 
         # Convert cv_img to qt_img and set pixmap
         qt_img = self.convert_cv_qt(cv_img)
