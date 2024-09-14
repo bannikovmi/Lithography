@@ -89,8 +89,8 @@ class QCamera(QResource):
         self.cap = cv.VideoCapture(0)
 
         # Set FULL_HD resolution
-        self.set("width", 1920)
-        self.set("height", 1080)
+        self.set("width", 640)
+        self.set("height", 480)
 
     def start(self):
         

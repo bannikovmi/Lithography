@@ -6,6 +6,7 @@ import cv2 as cv
 from PyQt5.QtCore import pyqtSignal, QObject, QRunnable
 
 T_DELAY = 0.3
+MAX_SCAN_COUNTER = 300
 
 class ExpoSignals(QObject):
 
@@ -76,6 +77,8 @@ class ExpoRunner(QRunnable):
 
         cv_img = self.get_frame()
 
+        self.scan_counter = 0
+
         for x in range(x_params["start"], x_params["stop"], x_step):
                 
             for y in range(y_params["start"], y_params["stop"], y_step):
@@ -85,13 +88,18 @@ class ExpoRunner(QRunnable):
                     if not self._run_flag:
                         break
 
-                    self.signals.status_changed.emit(f"at ({x}, {y}), int={i}")
+                    self.signals.status_changed.emit(f"at ({x}, {y}), int={i}, {self.scan_counter}:{MAX_SCAN_COUNTER}")
                     self.rasp0.set_pixels(x, y, x+x_step, y+y_step, i)
+                    self.scan_counter += 1
                     
                     time.sleep(T_DELAY)
 
                     cv_img = self.get_frame()                
                     cv.imwrite(f"{self.dir_path}/{x}_{y}_{i}.png", cv_img)
+
+                # check scan counter
+                if self.scan_counter > MAX_SCAN_COUNTER:
+                    self.reboot_proj()
 
                 # dark pixels
                 self.rasp0.set_pixels(x, y, x+x_step, y+y_step, 0)
@@ -121,6 +129,15 @@ class ExpoRunner(QRunnable):
     def transform_pic(self, img):
 
         return cv.warpAffine(img, self.affine_matrix, (self.matrix_width, self.matrix_height))
+
+    def reboot_proj(self):
+
+        self.scan_counter = 0
+        self.signals.status_changed.emit("rebooting projector")
+        self.rasp0.end_loop()
+        time.sleep(5)
+        self.rasp0.start_loop()
+        time.sleep(5)
 
 class VideoSignals(QObject):
 
