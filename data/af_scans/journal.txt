@@ -1,2 +1,0 @@
-2.dat good
-red_then_blue_2.dat good (decreasing coordinate, first focus red, then lower blue), 150 difference
