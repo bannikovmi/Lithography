@@ -1,0 +1,65 @@
+{
+	"x": {
+		"name": "X",
+		"start": {
+			"min": 0,
+			"max": 719,
+			"step": 1,
+			"default": 0
+		},
+		"stop": {
+			"min": 1,
+			"max": 720,
+			"step": 1,
+			"default": 720
+		},
+		"step": {
+			"min": 1,
+			"max": 720,
+			"step": 1,
+			"default": 90
+		}
+	},
+	"y": {
+		"name": "Y",
+		"start": {
+			"min": 0,
+			"max": 1279,
+			"step": 1,
+			"default": 0
+		},
+		"stop": {
+			"min": 1,
+			"max": 1280,
+			"step": 1,
+			"default": 1280
+		},
+		"step": {
+			"min": 1,
+			"max": 1280,
+			"step": 1,
+			"default": 160
+		}
+	},
+	"i": {
+		"name": "I",
+		"start": {
+			"min": 0,
+			"max": 255,
+			"step": 1,
+			"default": 0
+		},
+		"stop": {
+			"min": 1,
+			"max": 256,
+			"step": 1,
+			"default": 256
+		},
+		"step": {
+			"min": 1,
+			"max": 256,
+			"step": 1,
+			"default": 15
+		}
+	}
+}

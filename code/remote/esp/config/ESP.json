@@ -1,0 +1,13 @@
+{
+    "ids": {
+        "int": 23,
+        "scl": 22,
+        "sda": 21
+    },
+    "UART": {
+        "port": 2,
+        "baudrate": 115200,
+        "parity": null,
+        "bits": 8,
+        "stop": 1
+}

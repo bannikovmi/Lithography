@@ -11,15 +11,21 @@ import pyvisa
 from .interface import QInterface
 from .resource import QResource
 
+class ExecutionMode:
+
+    SIMULATION = 0
+    COMMUNICATION = 1
+
 class QResourceManager(QObject):
 
     resources = {}
     interfaces = {}
 
-    def __init__(self, config):
+    def __init__(self, config, exec_mode = ExecutionMode.COMMUNICATION):
 
         self.config = config
         self.pyvisa_rm = pyvisa.ResourceManager("@py")
+        self.exec_mode = exec_mode
 
         super().__init__()
 
@@ -42,8 +48,9 @@ class QResourceManager(QObject):
 
         # Create resource and load config
         res_name = os.path.basename(os.path.normpath(dir_path))
-        resource = QResource(res_name, master_int=master_int)
-        resource.load_config(os.path.join(dir_path, "resource.json"))
+        config_path = os.path.join(dir_path, "resource.json")
+        resource = QResource(res_name, config_path, master_int)
+        resource.load_config()
 
         # Add resource to interfaces' slave dictionary and to self dictionary
         if master_int is not None:
@@ -74,8 +81,9 @@ class QResourceManager(QObject):
 
         # Create interface and load config
         int_name = os.path.basename(os.path.normpath(dir_path))
-        interface = QInterface(name=int_name, master=master)
-        interface.load_config(os.path.join(dir_path, "interface.json"))
+        config_path = os.path.join(dir_path, "interface.json")
+        interface = QInterface(int_name, config_path, master)
+        interface.load_config()
 
         # Add interface to masters' interfaces dictionary and to self dictionary
         master.add_interface(interface)

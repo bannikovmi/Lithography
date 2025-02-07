@@ -1,0 +1,96 @@
+{
+	"region": {
+		"show_rect": false,
+		"show_cross": false,
+		"show_transform": false,
+		"x": {
+			"range": 640,
+			"margin": 5,
+			"min_length": 30,
+			"default_low": 300,
+			"default_high": 400
+		},
+		"y": {
+			"range": 480,
+			"margin": 5,
+			"min_length": 30,
+			"default_low": 200,
+			"default_high": 300
+		}
+	},
+	"merit": {
+		"avg": {
+			"min": 1,
+			"max": 50,
+			"step": 1,
+			"default": 5
+		}
+	},
+	"sub_focus": {
+		"drive": {
+			"name": "DRZ",
+			"speed": 200,
+			"mstep": 1
+		},
+		"polling_interval": 10,
+		"start": {
+			"min": -5000,
+			"max": -20,
+			"step": 1,
+			"default": -100
+		},
+		"stop": {
+			"min": 20,
+			"max": 5000,
+			"step": 1,
+			"default": 100
+		},
+		"step": {
+			"min": 1,
+			"max": 1000,
+			"step": 1,
+			"default": 5
+		}
+	},
+	"proj_focus": {
+		"drive": {
+			"name": "DRL",
+			"speed": 100,
+			"mstep": 1
+		},
+		"polling_interval": 10,
+		"start": {
+			"min": -6000,
+			"max": -20,
+			"step": 1,
+			"default": -100
+		},
+		"stop": {
+			"min": 20,
+			"max": 6000,
+			"step": 1,
+			"default": 100
+		},
+		"step": {
+			"min": 1,
+			"max": 1000,
+			"step": 1,
+			"default": 5
+		}
+	},
+	"scanner": {
+		"plot": {
+			"color": "b",
+			"font-size": "20pt"
+		},
+		"avg": {
+			"min": 1,
+			"max": 50,
+			"step": 1,
+			"default": 5
+		},
+		"recorder": {
+			
+		}
+	}
+}

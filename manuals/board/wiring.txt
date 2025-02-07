@@ -24,8 +24,8 @@ DRZ
 	3 A1
 	4 A2
 
-	dir 0: ClockWise, DOWN, towards MAX, positive nsteps, GUI down
-	dir 1: CounterClockWise, UP, towards MIN, negative nsteps, GUI up
+	dir 0: ClockWise, DOWN, towards MIN, negative nsteps, GUI down
+	dir 1: CounterClockWise, UP, towards MAX, positive nsteps, GUI up
 	
 DRL
 	1 B1

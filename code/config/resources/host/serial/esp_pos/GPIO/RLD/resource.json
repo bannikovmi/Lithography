@@ -1,4 +1,5 @@
 {
+    "name": "RLD",
     "pin_id": 2,
     "init_freq": 1000,
     "init_duty": 0	

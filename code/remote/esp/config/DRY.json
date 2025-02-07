@@ -1,0 +1,30 @@
+{
+    "ids": {
+        "mtr": 1,
+        "en": 1,
+        "step": 25,
+        "dir": 26,
+        "min": 6,
+        "max": 7
+    },
+    "mstep": {
+        "values": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+        "default": 1,
+        "value": 1
+    },
+    "irun": {
+        "min": 0,
+        "max": 31,
+        "default": 15,
+        "value": 15
+    },
+    "speed": {
+        "min": 1,
+        "max": 1000,
+        "default": 1000,
+        "value": 1000
+    },
+    "pos": 0,
+    "pos_dir": 0,
+    "limit_on": 0
+}
