@@ -33,7 +33,7 @@ class QESPPos(QResource):
 
         self.timer = QTimer()
         self.timer.setInterval(self.config["timer_interval"])
-        self.timer.timeout.connect(self.on_timer)
+        # self.timer.timeout.connect(self.on_timer)
 
         # Update interfaces
         for key in self.interfaces:
@@ -53,9 +53,9 @@ class QESPPos(QResource):
         self.timer.start()
 
     def read_message(self):
-        # print("reading: ", end='')
+        print("reading: ", end='')
         message = self.pyvisa_handler.read()
-        # print(message)
+        print(message)
         self.message_received.emit(message)
         # time.sleep(self.config["comm_delay"])
         
@@ -63,6 +63,7 @@ class QESPPos(QResource):
 
     def send_message(self, message):
         self.pyvisa_handler.write(message)
+        print("sending message:", message)
         # print("echoing:", self.pyvisa_handler.read()) # skip echo
         # time.sleep(self.config["comm_delay"]*1e-3)
 
@@ -75,8 +76,8 @@ class QESPPos(QResource):
         # print("esp.timeout >>> ")
         try:
             msg = QESPPosMessage(self.read_message())
-            # print(">>", msg.resource_name, msg.command, msg.arguments, end='\t')
-            # print(">>", self.slaves[msg.resource_name])
+            print(">>", msg.resource_name, msg.command, msg.arguments, end='\t')
+            print(">>", self.slaves[msg.resource_name])
             self.slaves[msg.resource_name].parse(msg.command, msg.arguments)
         except pyvisa.errors.VisaIOError:
             pass

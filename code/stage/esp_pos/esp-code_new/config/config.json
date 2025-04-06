@@ -1,0 +1,110 @@
+{
+    "ESP": {
+        "int_id": 23,
+        "scl_id": 22,
+        "sda_id": 21,
+        "blink_id": 2
+    },
+    "PMP": {
+        "pin_id": 11,
+        "btn_id": 10,
+        "on_startup": false
+    },
+    "BLD": {
+        "pin_id": 2,
+        "freq": 1000,
+        "duty": 0
+    },
+    "RLD": {
+        "pin_id": 15,
+        "freq": 1000,
+        "duty": 0
+    },
+    "DRX": {
+        "pos": 0,
+    
+        "mtr_id": 0,
+        "en_id": 0,
+        "dir_id": 4,
+        
+        "step_id": 12,
+        "max_en": 1,
+        "min_en": 1,
+        "min_id": 34,
+        "max_id": 35,
+        
+        "microstep": 1,
+        "irun": 15,
+        "speed": 1000,
+        
+        "pos_dir": 0,
+        "limit_on": 0
+    },
+    "DRY": {
+        "pos": 0,
+    
+        "mtr_id": 1,
+        "en_id": 1,
+        "dir_id": 5,
+        
+        "step_id": 13,
+        "max_en": 1,
+        "min_en": 1,
+        "min_id": 32,
+        "max_id": 33,
+        
+        "microstep": 1,
+        "irun": 15,
+        "speed": 1000,
+        
+        "pos_dir": 0,
+        "limit_on": 0
+    },
+    "DRZ": {
+        "pos": 0,
+    
+        "mtr_id": 2,
+        "en_id": 2,
+        "dir_id": 6,
+        
+        "step_id": 19,
+        "max_en": 0,
+        "min_en": 0,
+        "min_id": 25,
+        "max_id": 26,
+        
+        "microstep": 1,
+        "irun": 15,
+        "speed": 1000,
+        
+        "pos_dir": 0,
+        "limit_on": 1
+    },
+    "DRL": {
+        "pos": 0,
+    
+        "mtr_id": 3,
+        "en_id": 3,
+        "dir_id": 7,
+        
+        "step_id": 18,
+        "max_en": 1,
+        "min_en": 1,
+        "min_id": 25,
+        "max_id": 26,
+        
+        "microstep": 1,
+        "irun": 15,
+        "speed": 1000,
+        
+        "pos_dir": 0,
+        "limit_on": 0
+    },
+    "UART": {
+        "port": 2,
+        "baudrate": 115200,
+        "parity": null,
+        "bits": 8,
+        "stop": 1
+    }
+}

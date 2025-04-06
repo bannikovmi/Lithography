@@ -4,28 +4,29 @@ from machine import ADC, SoftI2C, Pin, PWM, Timer
 # local imports
 from resource.resource import Resource
 from ESP.tasks import TaskManager
-from ESP.ADCReader import ADCReader
+# from ESP.ADCReader import ADCReader
 from ESP.PCF import PCF
 from tmc.uart import TMC_UART
 
 class ESP(Resource):
 
     esp_commands = {
+        "PIN": "pin",
         "ADC": "ADC_read",
         "PCF": "PCF_pin",
-        "INT": "INT"
+        "INT": "INT",
+        "END": "end"
     }
 
     # merge with parent commands
     available_commands = Resource.available_commands | esp_commands
 
-    def __init__(self, config_file):
+    def __init__(self, config_path):
         
         super().__init__()
         
-        self.config_file = config_file
-        with open(self.config_file, "r") as file:
-            self.config = json.load(file)
+        self.config_path = config_path
+        self.load_config()
 
         # Create TaskManager
         self.task_manager = TaskManager(self)
@@ -39,10 +40,18 @@ class ESP(Resource):
         # Initialize UART communication with TMC drives
         self.tmc_uart = TMC_UART(self.config)
 
-        # # Attach interrupt to int pin
-        # self.int_pin = Pin(self.config["ESP"]["int_id"], Pin.IN, Pin.PULL_UP)
-        # self.int_pin.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=self.on_pcf_int)
-
+    def pin(self, pin_id, val=None):
+        
+        name = f"ESP_PIN_{pin_id}"
+        pin_id = int(pin_id)
+        
+        if val == None:
+            pin = Pin(pin_id, Pin.IN)
+            print(f"{name}_{pin.value()}")
+        else:
+            pin = Pin(pin_id, Pin.OUT)
+            pin.value(bool(int(val)))
+    
     def ADC_read(self, adc_id, freq=1000, nsteps=1):
 
         name = f"ESP_ADC_{adc_id}"
@@ -70,6 +79,26 @@ class ESP(Resource):
         for name in self.task_manager.interrupts:
             interrupt = self.task_manager.interrupts[name]
             print(name, interrupt.name, interrupt.int_id, interrupt.init_val)
+            
+    def load_config(self, config_path=None):
+        
+        if config_path is None:
+            config_path = self.config_path
+        
+        with open(config_path, "r") as file:
+            self.config = json.load(file)
+            
+    def dump_config(self, config_path=None):
+        
+        if config_path is None:
+            config_path = self.config_path
+        
+        with open(config_path, "w") as file:
+            json.dump(self.config, file)
+    
+    def update_config(self):
+        
+        pass
 
     # def blink(self, sleep_time):
 

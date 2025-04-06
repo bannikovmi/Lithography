@@ -8,6 +8,9 @@ DRX
 
 	dir 0: ClockWise, Inwards (To motor), towards MAX, positive steps, GUI right
 	dir 1: CounterClockWise, Outwards (From motor), towards MIN, negative steps, GUI left
+	MAX: limit_on 0, limit_off 5 V, limit_switcher at 1500
+	MIN: limit_on 0, limit_off 5 V, limit_switcher at 1500
+	Approximate full range: 43_000
 
 DRY
 	1 B1
@@ -17,6 +20,9 @@ DRY
 
 	dir 0: ClockWise, Inwards (To motor), towards MAX, positive steps, GUI UP
 	dir 1: CounterClockWise, Outwards (From motor), towards MIN, negative steps, GUI DOWN
+	MAX: limit_on 0, limit_off 5 V, limit_switcher at 1500
+	MIN: limit_on 0, limit_off 5 V, limit_switcher at 1500
+	Approximate full range: 42_000
 
 DRZ
 	1 B1
@@ -26,6 +32,9 @@ DRZ
 
 	dir 0: ClockWise, DOWN, towards MAX, positive nsteps, GUI down
 	dir 1: CounterClockWise, UP, towards MIN, negative nsteps, GUI up
+	MAX: limit_on 5 V, limit_off 0, limit_switcher at 1500
+	MIN: limit_on 5 V, limit_off 0, limit_switcher at 1500
+	Approximate full range: 200_000
 	
 DRL
 	1 B1
@@ -35,3 +44,6 @@ DRL
 
 	dir 0: ClockWise, Inwards (To motor), towards MAX, positive nsteps, GUI left
 	dir 1: CounterClockWise, Outwards (From motor), towards MIN, negative nsteps, GUI right
+	MAX: limit_on 0, limit_off 5 V, limit_switcher at 1500
+	MIN: limit_on 0, limit_off 5 V, limit_switcher at 1500
+	Approximate full range: 

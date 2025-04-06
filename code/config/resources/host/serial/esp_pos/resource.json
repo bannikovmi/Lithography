@@ -1,6 +1,6 @@
 {
     "pyvisa": {
-        "address": "ASRL/dev/ttyACM0::INSTR",
+        "address": "ASRL/dev/ttyUSB0",
         "baud_rate": 115200,
         "read_termination": "\r\n",
         "write_termination": "\r\n",

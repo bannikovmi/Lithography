@@ -42,7 +42,7 @@ class ExposureRunner(QRunnable):
 
     def run(self):
 
-        # Run expose_remote in current thread (separate_thread is False by default)
+        # Run expose_remote in current thread
         self.rasp0.expose_remote(self.name, self.exposure_time) 
         self.signals.finished.emit()
 
